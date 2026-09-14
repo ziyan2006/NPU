@@ -27,6 +27,9 @@
 | ADR-016 | 提案 | concat 使用 segmented Tensor view。 | 当前 U-Net 解码层地址发生器原型和周期结果。 |
 | ADR-017 | 提案 | depthwise 是 P0，使用 MAC 阵列的独立 lane 模式。 | 网络 B 确认和实现成本评估。 |
 | ADR-018 | 提案 | 任务周期目标 4,000,000 cycle，最低 100 MHz、目标 200 MHz。 | DMA/命令周期模型和 post-route 时序。 |
+| ADR-019 | 提案 | tanh 输入采用 max 标定的 signed INT12，step=`0.0046281479`；输出采用 signed INT12、step=`1/2047` 的 4096 项 LUT。 | 2,097,152 个 pre-tanh 观测值无裁剪，tanh 输出量化 SNR 56.31 dB。 |
+
+当前网络 A 的软件证据：64-lane 的不重叠分析为 2,348,400 cycle，O8I8 权重仅增加约 0.23%，所有建议 tile 容量检查通过。这支持 ADR-010/012/018 继续进入原型，但在第二网络、bank conflict 和 post-route 结果出现前仍不升级为“已接受”。
 
 ## 3. 必须确认的系统问题
 

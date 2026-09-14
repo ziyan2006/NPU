@@ -498,5 +498,49 @@
     "deploy16": 27.22,
     "deploy_ch": 13.91,
     "deploy_noin": 8.45
+  },
+  "pre_tanh_calibration": {
+    "observer": "output of CausalSpectralUNet.out before torch.tanh",
+    "checkpoint_step": 2855,
+    "cache": "train",
+    "files": 32,
+    "batches": 8,
+    "batch": 4,
+    "crop_frames": 256,
+    "sample_count": 2097152,
+    "minimum": -5.664379596710205,
+    "maximum": 9.4738187789917,
+    "max_abs": 9.4738187789917,
+    "abs_percentiles": {
+      "99": 2.6524345874786377,
+      "99.9": 3.6252763271331787,
+      "99.99": 4.775271892547607
+    },
+    "candidates": {
+      "max": {
+        "span": 9.4738187789917,
+        "step_int12": 0.0046281479135279425,
+        "input_saturation_pct": 0.0,
+        "tanh_output_snr_db": 56.30924053488681,
+        "tanh_output_max_abs_error": 0.0023134760558605194
+      },
+      "p99_99": {
+        "span": 4.775271892547607,
+        "step_int12": 0.0023328147985088457,
+        "input_saturation_pct": 0.010013580322265625,
+        "tanh_output_snr_db": 62.26609413271716,
+        "tanh_output_max_abs_error": 0.00116625614464283
+      },
+      "p99_9": {
+        "span": 3.6252763271331787,
+        "step_int12": 0.0017710192120826472,
+        "input_saturation_pct": 0.10004043579101562,
+        "tanh_output_snr_db": 64.6351849851091,
+        "tanh_output_max_abs_error": 0.0014174580574035645
+      }
+    },
+    "recommended": "max",
+    "recommended_step_int12": 0.0046281479135279425,
+    "reason": "Matches the existing max-calibrated activation policy and clips no observed values."
   }
 }

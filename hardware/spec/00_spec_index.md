@@ -125,6 +125,7 @@ v1 的 NPU 输入/输出是量化张量。PCM、STFT/iSTFT、滤波器组、OLA�
 | `21_control_registers.md` | 通用 NPU AXI4-Lite 控制接口草案 |
 | `30_microarchitecture_budget.md` | 模块划分、数据流、片上存储、资源和周期预算 |
 | `40_verification_plan.md` | 从位精确模型到板级长稳的验证闭环 |
+| `50_p2_executable_spec.md` | 当前模型的指令编译、整数语义、存储与周期结果 |
 | `90_decision_log.md` | 已决定事项、开放问题和需要补做的实验 |
 | `01_npu_architecture.md` | 历史专用人声消除加速器基线 |
 | `02_register_map.md` | 历史专用版寄存器草案 |

@@ -25,6 +25,8 @@
     "bias": "signed int32 in accumulator units",
     "accumulator": "signed int32",
     "mask": "uint8 after tanh and affine conversion",
+    "pre_tanh_activation_step_int12": 0.0046281479135279425,
+    "post_tanh_output_step_int12": 0.0004885197850512946,
     "calibration_report": "results/quant_opt_bott2_mir1k_5m_model.json"
   },
   "totals": {
@@ -562,7 +564,7 @@
       "scheduled_cycles_pout8_pin8": 8192,
       "mac_lane_utilization": 0.5,
       "input_activation_step_int12": 0.028609477283829995,
-      "output_activation_step_int12": 0.0004885197850512946,
+      "output_activation_step_int12": 0.0046281479135279425,
       "weight_offset": 823872,
       "weight_bytes": 128,
       "bias_offset": 3584,
@@ -571,7 +573,9 @@
       "scale_bytes": 32,
       "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
       "weight_layout": "OIHW int8",
-      "weight_relative_rmse": 0.005710388999432325
+      "weight_relative_rmse": 0.005710388999432325,
+      "pre_tanh_activation_step_int12": 0.0046281479135279425,
+      "post_tanh_output_step_int12": 0.0004885197850512946
     }
   ]
 }

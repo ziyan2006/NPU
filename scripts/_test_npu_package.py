@@ -26,6 +26,9 @@ assert manifest["totals"]["parameters"] == 824_900
 assert manifest["totals"]["macs_per_chunk"] == 123_338_752
 assert manifest["totals"]["scheduled_cycles_pout8_pin8"] == 1_986_560
 assert manifest["totals"]["pe_array"]["mac_lanes"] == 64
+assert manifest["quantization"]["pre_tanh_activation_step_int12"] > 0
+assert manifest["layers"][-1]["pre_tanh_activation_step_int12"] > 0
+assert manifest["layers"][-1]["post_tanh_output_step_int12"] == 1 / 2047
 
 checkpoint = ROOT / manifest["checkpoint"]
 assert len(manifest["checkpoint_sha256"]) == 64

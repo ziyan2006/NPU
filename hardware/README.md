@@ -11,11 +11,14 @@
 5. `spec/21_control_registers.md`：通用 NPU AXI4-Lite 控制接口草案；
 6. `spec/30_microarchitecture_budget.md`：MAC、DMA、BRAM、周期与资源预算；
 7. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
-8. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
+8. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
+9. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
 `spec/01_npu_architecture.md` 与 `spec/02_register_map.md` 保留为早期固定人声消除加速器基线，不再作为通用 NPU 顶层规格。
 
 `generated/bott2_mir1k_v1/` 是由当前候选检查点生成的算法参考包。它的 OIHW 权重和 float scale 还需经过布局重排与整数 requant 编译，不能由 RTL 直接消费。
+
+`generated/bott2_mir1k_v1_program/` 是第一版通用 ISA 架构包，已经包含 128-bit 命令、固定大小描述符、O8I8 权重、整数 requant 参数和 4096 项 INT12 tanh LUT。它尚未完成 tile 级调度，因此不是板级可加载镜像。
 
 重新导出硬件包：
 
@@ -24,3 +27,10 @@ python scripts/25_export_npu_package.py
 ```
 
 最终 RTL/HLS 不读取 PyTorch/ONNX/JSON，而读取编译后的二进制任务包。满足 v1 ISA 和资源边界的不同静态 CNN 应能在不重新综合 bitstream 的情况下切换。
+
+生成并验证架构包：
+
+```powershell
+python scripts/26_compile_npu_program.py
+python scripts/_test_npu_isa.py
+```
