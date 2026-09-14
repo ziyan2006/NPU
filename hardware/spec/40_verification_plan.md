@@ -181,3 +181,8 @@ P0 回归失败、未解释的 bit mismatch、负时序、资源超限或 deadli
 6. 再开始 MAC、requant 和 DMA 的 RTL/HLS 单元原型。
 
 当前增量：Command Processor 已接受网络 A 的 1,869 条真实 tile 命令流；Descriptor Cache/Fetch/AGU 已让全部 1,078 条 DMA command 的 RTL 请求与软件 reference 逐 bit 一致。AXI DMA Engine 已覆盖 4 KiB/256-beat 拆分、窄尾部、三维 stride、双向 back-pressure、错误收尾和 busy reset；全网 45,664 个 burst 已静态审计。A/W/O Scratchpad 已覆盖六 bank 路由、byte strobe、response back-pressure、并行访问、冲突仲裁、A/O 128-bit 行、W 512-bit 行和连续每拍计算读；集成子系统已完成命令到 AXI read、BRAM 落地、event 以及错误 PC/tag 的端到端测试。Vivado 2026.1 OOC 综合确认宽口 Scratchpad 为 3,147 Slice LUT、596 FF、56 RAMB36，200 MHz WNS `+0.360 ns`；旧 DMA 子系统基线在 100 MHz WNS `+1.888 ns`。尚未覆盖真实 HP interconnect、多个 outstanding、MAC 与双宽口集成、数值计算和 post-route。
+
+CONV2D 控制器增量已用真实 binary descriptor 和 O8I8 权重逐项核对 9,472 对
+activation/weight 地址、672 个 8-lane INT32 结果，并覆盖随机双向反压、三类非法
+descriptor 和 soft reset 恢复。其 OOC 综合只占 MAC 的 64 DSP，100 MHz WNS
+`+2.660 ns`；200 MHz WNS `-2.340 ns`，因此当前完整集成频率基线仍为 100 MHz。

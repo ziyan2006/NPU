@@ -1,6 +1,6 @@
 # STEM NPU
 
-本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Fetch/Cache、DMA AGU、AXI DMA Engine、A/W/O Scratchpad、集成 DMA Subsystem 和 8x8 Tensor MAC 可综合模块。
+本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Fetch/Cache、DMA AGU、AXI DMA Engine、A/W/O Scratchpad、集成 DMA Subsystem、8x8 Tensor MAC 和 CONV2D tile 控制器可综合模块。
 
 建议按以下顺序阅读：
 
@@ -15,9 +15,10 @@
 9. `spec/33_axi_dma_engine_microarchitecture.md`：AXI burst、4 KiB 拆分和错误行为；
 10. `spec/34_dma_subsystem_scratchpad_microarchitecture.md`：DMA 集成、BRAM bank 和计算端口边界；
 11. `spec/35_tensor_mac_microarchitecture.md`：64-lane MAC 数值语义、流水线、资源和供数边界；
-12. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
-13. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
-14. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
+12. `spec/36_conv2d_controller_microarchitecture.md`：CONV2D tile 循环、地址和真实数据验证；
+13. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
+14. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
+15. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
 RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 开始；前者说明如何引用生成的 SystemVerilog package，后者给出算子到指令序列及逐指令执行契约。
 
@@ -49,6 +50,7 @@ python scripts/_test_npu_dma.py
 python scripts/_test_npu_axi_dma.py
 python scripts/_test_npu_isa_headers.py
 python scripts/_test_npu_rtl.py
+python scripts/_test_npu_conv2d.py
 ```
 
 Vivado 2026.1 OOC 综合当前 DMA 子系统：
@@ -74,4 +76,6 @@ vivado -mode batch -nojournal -nolog `
 MAC 单元使用 1,996 Slice LUT、1,968 FF、64 DSP48E1、0 BRAM，200 MHz OOC
 WNS `+1.701 ns`。lane-striped Scratchpad 使用 3,147 Slice LUT、596 FF、56 RAMB36，
 计算端提供 128-bit A/O 与 512-bit W，200 MHz OOC WNS `+0.360 ns`。两者尚未通过
-CONV2D loop controller 集成和 post pipeline 验证。
+完整 Scratchpad/CONV2D 集成和 post pipeline 验证。CONV2D controller + MAC 使用
+3,610 LUT、2,645 FF、64 DSP；100 MHz WNS `+2.660 ns`，200 MHz WNS
+`-2.340 ns`。

@@ -2,8 +2,8 @@
 
 文档版本：`0.1-draft`
 
-状态：P4 可综合数值切片；MAC 算术、流协议和 Scratchpad 供数宽度已验证，
-CONV2D loop controller、bias/requant/post-op 尚未接入
+状态：P4 可综合数值切片；MAC 算术、流协议、Scratchpad 供数宽度和 CONV2D
+loop controller 已验证，bias/requant/post-op 尚未接入
 
 ## 1. 模块边界
 
@@ -65,8 +65,8 @@ MAC 满速每拍需要 128-bit activation 和 512-bit weight，共 640 bit。Scr
 或复制 BRAM 数据。
 
 宽口 Scratchpad 在不增加 56 个 RAMB36 容量映射的情况下通过 200 MHz OOC，且回归
-证明计算读可连续每拍发射。尚未证明的是 CONV2D loop controller 能正确生成两类
-地址并维持整条 A/W/MAC 流水；这由下一阶段真实 tile 仿真关闭。
+证明计算读可连续每拍发射。CONV2D loop controller 已用 4 个真实 tile 验证地址、
+尾 lane、INT32 结果和双向反压；下一步是把 Scratchpad 与该控制器接入同一顶层。
 
 ## 5. Vivado 2026.1 OOC 证据
 
@@ -91,6 +91,6 @@ Icarus 回归使用独立 Python golden，覆盖 INT12/INT16 正负值、INT8 �
 尾 lane、单 token/多 token 累加、INT32 回绕和随机结果反压，并检查结果在反压时
 保持稳定。
 
-下一步实现 `CONV2D` loop controller，先执行一个真实 O8I8 `1x1` tile，再扩展到
-`1x3/3x3`、padding、stride 和 segmented input。随后接 bias + per-channel Q31
-requant/RNE，形成首个命令级 bit-exact 计算闭环。
+CONV2D 控制器现已执行真实 O8I8 `1x1/1x3/3x3` 和 stride-2 tile，详细证据见
+`36_conv2d_controller_microarchitecture.md`。下一步接 bias + per-channel Q31
+requant/RNE，并与 Scratchpad 形成首个命令级 bit-exact 计算闭环。

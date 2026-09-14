@@ -8,5 +8,6 @@
 timing check 和机器可读摘要。OOC 报告不是 post-route 结论，SoC 顶层约束和 PS AXI
 互连接入后必须重新综合、实现并检查 CDC。
 
-当前保存 `npu_dma_subsystem`、`npu_scratchpad` 和 `npu_tensor_mac_8x8` 三个 top。
-MAC 报告只覆盖算术 slice，不包含 row buffer、loop controller 或 requant/post。
+当前保存 `npu_dma_subsystem`、`npu_scratchpad`、`npu_tensor_mac_8x8` 和
+`npu_conv2d_controller` 四个 top。Controller 报告包含 loop 与 MAC，但不包含
+Scratchpad、bias、requant 或 post-op；它在 100 MHz 闭合，在 200 MHz 尚未闭合。

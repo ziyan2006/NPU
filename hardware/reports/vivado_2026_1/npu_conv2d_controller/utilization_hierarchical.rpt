@@ -1,0 +1,31 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Tue Sep 15 01:02:15 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -hierarchical_depth 4 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_conv2d_controller/utilization_hierarchical.rpt
+| Design       : npu_conv2d_controller
+| Device       : xc7z020clg400-1
+| Speed File   : -1
+| Design State : Synthesized
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++---------------------------+--------------------+------------+------------+---------+------+------+--------+--------+------------+
+|          Instance         |       Module       | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++---------------------------+--------------------+------------+------------+---------+------+------+--------+--------+------------+
+| npu_conv2d_controller     |              (top) |       3046 |       3037 |       0 |    9 | 2645 |      0 |      0 |         64 |
+|   (npu_conv2d_controller) |              (top) |        420 |        420 |       0 |    0 |  448 |      0 |      0 |          0 |
+|   mac                     | npu_tensor_mac_8x8 |       2138 |       2129 |       0 |    9 | 1967 |      0 |      0 |         64 |
+|   setup_multiplier        |   npu_u32_mul_iter |        488 |        488 |       0 |    0 |  230 |      0 |      0 |          0 |
++---------------------------+--------------------+------------+------------+---------+------+------+--------+--------+------------+
+
+
