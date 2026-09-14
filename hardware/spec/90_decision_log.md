@@ -45,6 +45,17 @@ DMA burst planner 采用两级状态。Vivado 2026.1 OOC 结果为 7,546 Slice L
 `-3.112 ns`。因此 100 MHz 是当前已验证基线，200 MHz 继续保持目标而非承诺。
 参考 part 为 `xc7z020clg400-1`，实际板卡器件确认前不得据此冻结封装或 speed grade。
 
+P4 的 8x8 Tensor MAC 数值切片已经实现并通过独立随机 golden。Vivado 2026.1
+OOC 结果为 1,996 Slice LUT、1,968 FF、64 DSP48E1、0 BRAM36，200 MHz WNS
+`+1.701 ns`；这支持 ADR-010 的阵列算术规模，但还缺第二网络、row-buffer 带宽和
+post-route 证据，因此 ADR-010 仍保持“提案”。综合比较同时排除了让加法树自动占用
+额外 16 个 DSP 的方案：64 个 DSP 仅用于乘法，加法树使用 LUT/carry chain。
+
+MAC 满速输入为每拍 128-bit activation + 512-bit weight。当前 A/W 各一个 64-bit
+计算端口不足以直连，下一版采用 512-bit weight buffer 与 128-bit activation
+ping/pong buffer 做预取，并用真实 tile 循环测 refill stall；在该实验前不冻结
+ADR-020 的物理 bank 组织。
+
 ## 3. 必须确认的系统问题
 
 | ID | 问题 | 为什么会影响设计 | 关闭时机 |

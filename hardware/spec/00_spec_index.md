@@ -42,15 +42,16 @@
 | P1 需求基线 | 带编号的功能、性能、接口、资源要求 | 每个 P0 要求有验证方法 | **进行中** |
 | P2 工作负载分析 | 算子覆盖、张量尺寸、MAC/带宽/生命周期 | 当前模型和第二模型均可映射 | 部分完成 |
 | P3 架构/ISA 探索 | 数据流、存储层次、ISA、周期模型 | 性能和 BRAM 预算闭合 | **进行中，网络 A 已有 tile 证据** |
-| P4 微架构规格 | 模块接口、流水线、时序、异常行为 | RTL 接口和逐周期行为可实现 | **进行中：控制与端到端 DMA/Scratchpad 原型** |
+| P4 微架构规格 | 模块接口、流水线、时序、异常行为 | RTL 接口和逐周期行为可实现 | **进行中：控制、DMA/SP 和 8x8 MAC 原型** |
 | P5 可执行参考 | 图编译器、位精确模拟器、测试向量 | 所有 P0 指令有 golden | **进行中：ISA/DMA golden 已完成** |
-| P6 RTL/HLS 实现 | 可综合模块和软件驱动 | 模块仿真通过 | **进行中：控制与 DMA/Scratchpad 已实现** |
+| P6 RTL/HLS 实现 | 可综合模块和软件驱动 | 模块仿真通过 | **进行中：控制、DMA/SP 和 MAC slice 已实现** |
 | P7 集成验证 | SoC、DMA、中断、CDC、回归 | 覆盖率和需求回归闭合 | 未开始 |
-| P8 实现收敛 | 综合、布局布线、时序、功耗 | 资源和时钟满足规格 | **部分开始：DMA 子系统已做 OOC 综合** |
+| P8 实现收敛 | 综合、布局布线、时序、功耗 | 资源和时钟满足规格 | **部分开始：DMA 与 MAC 已做 OOC 综合** |
 | P9 上板验收 | 长稳、实时性、音频效果 | 所有 P0 板级测试通过 | 未开始 |
 
 P4/P5/P6 当前按垂直切片并行推进。DMA/Scratchpad 切片已有软件 golden、RTL
-回归和 OOC 综合证据；Tensor MAC/Vector 数值切片仍需完成后才能进入完整 SoC 集成。
+回归和 OOC 综合证据；8x8 Tensor MAC 算术切片也已 bit-exact 并通过 200 MHz OOC，
+但 CONV2D loop/row buffer 与 Vector/post 数值切片仍需完成后才能进入完整 SoC 集成。
 
 ## 4. 系统边界
 
@@ -130,6 +131,7 @@ v1 的 NPU 输入/输出是量化张量。PCM、STFT/iSTFT、滤波器组、OLA�
 | `32_dma_frontend_microarchitecture.md` | 描述符缓存、section 重定位、三维 DMA AGU 和边界检查 |
 | `33_axi_dma_engine_microarchitecture.md` | AXI burst、4 KiB 拆分、scratchpad 接口、错误排空和验证 |
 | `34_dma_subsystem_scratchpad_microarchitecture.md` | 描述符 sequencer、DMA 子系统集成、双口 BRAM bank 和计算端口边界 |
+| `35_tensor_mac_microarchitecture.md` | 8x8 Tensor MAC 数值语义、流水线、反压、资源和 row-buffer 输入 |
 | `40_verification_plan.md` | 从位精确模型到板级长稳的验证闭环 |
 | `50_p2_executable_spec.md` | 当前模型的指令编译、整数语义、存储与周期结果 |
 | `90_decision_log.md` | 已决定事项、开放问题和需要补做的实验 |

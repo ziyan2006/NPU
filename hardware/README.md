@@ -1,6 +1,6 @@
 # STEM NPU
 
-本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Fetch/Cache、DMA AGU、AXI DMA Engine、A/W/O Scratchpad 和集成 DMA Subsystem 可综合模块。
+本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Fetch/Cache、DMA AGU、AXI DMA Engine、A/W/O Scratchpad、集成 DMA Subsystem 和 8x8 Tensor MAC 可综合模块。
 
 建议按以下顺序阅读：
 
@@ -14,9 +14,10 @@
 8. `spec/32_dma_frontend_microarchitecture.md`：描述符缓存、三维 DMA 请求和地址规则；
 9. `spec/33_axi_dma_engine_microarchitecture.md`：AXI burst、4 KiB 拆分和错误行为；
 10. `spec/34_dma_subsystem_scratchpad_microarchitecture.md`：DMA 集成、BRAM bank 和计算端口边界；
-11. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
-12. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
-13. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
+11. `spec/35_tensor_mac_microarchitecture.md`：64-lane MAC 数值语义、流水线、资源和供数边界；
+12. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
+13. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
+14. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
 RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 开始；前者说明如何引用生成的 SystemVerilog package，后者给出算子到指令序列及逐指令执行契约。
 
@@ -61,3 +62,14 @@ vivado -mode batch -nojournal -nolog `
 参考器件上的当前结果为 7,546 Slice LUT、7,144 FF、56 RAMB36、0 DSP；
 100 MHz WNS `+1.888 ns`，200 MHz WNS `-3.112 ns`。这是综合后 OOC 证据，
 不是最终板卡的 post-route 结论；详细报告见 `reports/vivado_2026_1/`。
+
+综合 8x8 Tensor MAC 数值切片：
+
+```powershell
+vivado -mode batch -nojournal -nolog `
+  -source scripts/32_synthesize_npu_rtl.tcl `
+  -tclargs npu_tensor_mac_8x8 xc7z020clg400-1 5.000
+```
+
+MAC 单元使用 1,996 Slice LUT、1,968 FF、64 DSP48E1、0 BRAM，200 MHz OOC
+WNS `+1.701 ns`。它尚未包含 CONV2D loop controller、row buffer 和 post pipeline。

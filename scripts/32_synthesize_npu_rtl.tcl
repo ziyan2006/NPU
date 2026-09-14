@@ -18,7 +18,7 @@ set output_dir [expr {$argc >= 4
   ? [file normalize [lindex $argv 3]]
   : [file join $repo_root hardware reports vivado_2026_1 $top]}]
 
-set valid_tops {npu_scratchpad npu_dma_subsystem}
+set valid_tops {npu_scratchpad npu_dma_subsystem npu_tensor_mac_8x8}
 if {[lsearch -exact $valid_tops $top] < 0} {
   puts stderr "unsupported top '$top'; choose one of: $valid_tops"
   exit 2
@@ -36,7 +36,8 @@ set source_files [list \
   [file join $rtl_dir npu_dma_engine.sv] \
   [file join $rtl_dir npu_scratchpad_bank.sv] \
   [file join $rtl_dir npu_scratchpad.sv] \
-  [file join $rtl_dir npu_dma_subsystem.sv]]
+  [file join $rtl_dir npu_dma_subsystem.sv] \
+  [file join $rtl_dir npu_tensor_mac_8x8.sv]]
 
 read_verilog -sv $source_files
 synth_design -top $top -part $part -mode out_of_context \

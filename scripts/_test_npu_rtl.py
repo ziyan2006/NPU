@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import json
+import random
 import shutil
 import subprocess
 import tempfile
@@ -55,6 +56,26 @@ def run(command: list[str]) -> str:
     result = subprocess.run(command, cwd=ROOT, check=True,
                             capture_output=True, text=True)
     return result.stdout + result.stderr
+
+
+def signed32(value: int) -> int:
+    value &= 0xFFFFFFFF
+    return value - (1 << 32) if value & (1 << 31) else value
+
+
+def pack_mac_token(activations: list[int], weights: list[list[int]],
+                   input_mask: int, output_mask: int,
+                   first: bool, last: bool) -> int:
+    activation_bits = sum(
+        (value & 0xFFFF) << (lane * 16)
+        for lane, value in enumerate(activations))
+    weight_bits = sum(
+        (weights[out_lane][in_lane] & 0xFF)
+        << ((out_lane * 8 + in_lane) * 8)
+        for out_lane in range(8) for in_lane in range(8))
+    return (activation_bits | (weight_bits << 128)
+            | (input_mask << 640) | (output_mask << 648)
+            | (int(first) << 656) | (int(last) << 657))
 
 
 iverilog = shutil.which("iverilog")
@@ -284,7 +305,78 @@ with tempfile.TemporaryDirectory() as temporary:
     output += run([vvp, str(subsystem_image)])
     assert "npu_dma_subsystem: PASS" in output
 
+    rng = random.Random(0x8A8_2026)
+    mac_tokens: list[int] = []
+    mac_results: list[int] = []
+
+    def add_mac_group(length: int, input_mask: int, output_mask: int,
+                      *, full_int16: bool = False,
+                      overflow_stress: bool = False) -> None:
+        accumulators = [0] * 8
+        for token_index in range(length):
+            if overflow_stress:
+                activations = [32767] * 8
+                weights = [[127] * 8 for _ in range(8)]
+            else:
+                low, high = (-32768, 32767) if full_int16 else (-2048, 2047)
+                activations = [rng.randint(low, high) for _ in range(8)]
+                weights = [
+                    [rng.randint(-128, 127) for _ in range(8)]
+                    for _ in range(8)
+                ]
+            first = token_index == 0
+            last = token_index == length - 1
+            mac_tokens.append(pack_mac_token(
+                activations, weights, input_mask, output_mask, first, last))
+            for output_lane in range(8):
+                if not (output_mask >> output_lane) & 1:
+                    accumulators[output_lane] = 0
+                    continue
+                dot = sum(
+                    activations[input_lane] * weights[output_lane][input_lane]
+                    for input_lane in range(8)
+                    if (input_mask >> input_lane) & 1)
+                accumulators[output_lane] = signed32(
+                    dot if first else accumulators[output_lane] + dot)
+        mac_results.append(sum(
+            (value & 0xFFFFFFFF) << (lane * 32)
+            for lane, value in enumerate(accumulators)))
+
+    add_mac_group(1, 0xFF, 0xFF)
+    add_mac_group(3, 0x0F, 0x07)
+    add_mac_group(80, 0xFF, 0xFF, overflow_stress=True)
+    for group_index in range(40):
+        input_lanes = rng.randint(1, 8)
+        output_lanes = rng.randint(1, 8)
+        add_mac_group(
+            rng.randint(1, 13), (1 << input_lanes) - 1,
+            (1 << output_lanes) - 1,
+            full_int16=group_index % 7 == 0)
+
+    mac_token_path = temp / "mac_tokens.hex"
+    mac_expected_path = temp / "mac_expected.hex"
+    mac_token_path.write_text(
+        "".join(f"{token:0165x}\n" for token in mac_tokens),
+        encoding="ascii")
+    mac_expected_path.write_text(
+        "".join(f"{result:064x}\n" for result in mac_results),
+        encoding="ascii")
+    mac_image = temp / "tb_npu_tensor_mac_8x8.vvp"
+    output = run([
+        iverilog, "-g2012", "-Wall", "-s", "tb_npu_tensor_mac_8x8",
+        "-o", str(mac_image), str(RTL / "npu_tensor_mac_8x8.sv"),
+        str(RTL / "tb" / "tb_npu_tensor_mac_8x8.sv"),
+    ])
+    output += run([
+        vvp, str(mac_image),
+        f"+TOKEN_HEX={mac_token_path.as_posix()}",
+        f"+EXPECTED_HEX={mac_expected_path.as_posix()}",
+        f"+TOKEN_COUNT={len(mac_tokens)}",
+        f"+RESULT_COUNT={len(mac_results)}",
+    ])
+    assert f"PASS ({len(mac_tokens)} tokens, {len(mac_results)} results)" in output
+
     run([iverilog, "-g2012", "-Wall", "-tnull", "-f",
          str(RTL / "npu_rtl.f")])
 
-print("NPU command processor and DMA front-end/execution RTL tests: PASS")
+print("NPU command, DMA, scratchpad, and Tensor MAC RTL tests: PASS")

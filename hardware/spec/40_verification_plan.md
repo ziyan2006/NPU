@@ -47,6 +47,8 @@
 
 ### Tensor MAC / CONV2D
 
+- 当前 `npu_tensor_mac_8x8` 已覆盖 signed INT16xINT8、三级无丢位加法树、INT32
+  回绕、输入/输出尾 lane、连续累加与随机结果反压；
 - `Cin/Cout` 小于、等于和大于 8，尤其尾通道 1、7、8、9；
 - shape 最小值和描述符允许的最大值；
 - `1×1`、`1×3`、`3×3`，stride 1/2；

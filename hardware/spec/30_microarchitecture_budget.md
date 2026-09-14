@@ -204,6 +204,13 @@ Cache 的 record size 和 Engine 的 beat size 使用移位，因此控制路径
 Tensor MAC 的 DSP。100 MHz WNS 为 `+1.888 ns`；200 MHz WNS 为 `-3.112 ns`，
 故当前只关闭最低验收频率，目标频率仍需在完整约束和布局布线阶段优化。
 
+8x8 Tensor MAC 数值切片单独综合为 1,996 Slice LUT、1,968 FF、64 DSP48E1、
+0 BRAM36，200 MHz WNS `+1.701 ns`。乘法固定使用 64 DSP，加法树使用 LUT/carry
+chain。DMA 与 MAC 的 OOC 资源简单相加约为 9,542 Slice LUT、9,112 FF、56
+BRAM36 和 64 DSP，仍在 NPU 基线预算内；完整集成后的共享逻辑和布线结果才是最终值。
+MAC 每拍需要 128-bit A 和 512-bit W，现有 64-bit accelerator 端口必须增加预取
+row buffer，不能依据 MAC 单体时序宣称完整计算路径已经闭合。
+
 ## 9. 时钟与复位
 
 - 目标 PL 时钟 200 MHz，最低验收点 100 MHz；最终以 post-route timing 为准；

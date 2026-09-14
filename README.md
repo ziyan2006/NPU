@@ -18,7 +18,7 @@
 | **延迟** | 通路 **133.5 ms**（恒定）· 按键响应 **≈30 ms** · 冷启动 **≈110 ms** |
 | **训练** | 无标注音乐 + HTDemucs 蒸馏（教师 80 MB 已就绪）；v1→v4 四轮 + 3 个损失探针 + K 片段实验 |
 | **出货权重** | **`models/student_k3s_model.pt`** + 推理期 `<250 Hz` 掩码置 0 |
-| **NPU RTL** | DMA/Scratchpad 垂直链路已综合：56 BRAM36、0 DSP；100 MHz OOC 时序通过，200 MHz 尚未闭合 |
+| **NPU RTL** | DMA/Scratchpad 已综合；8x8 MAC 为 64 DSP、200 MHz OOC 通过；loop/row-buffer/post 尚未完成 |
 
 ---
 
@@ -59,8 +59,8 @@ out = mix_delay − g · vocal_est
 - ✅ 算法定义、规格、量化方案、延迟账、训练权重、评测结论：**已定稿**
 - ✅ INT8/INT12 量化方案与精度损失：**已实测**
 - ✅ NPU ISA、描述符、tile 编译器、bank/周期模型：**已有可执行提案**
-- 🚧 PL 侧 RTL：**P4/P6 并行原型**，已有 Command Processor 和端到端 DMA/Scratchpad 垂直链路；Vivado 2026.1 OOC 综合在参考 `xc7z020clg400-1` 上通过 100 MHz，最终器件封装和 post-route 尚未确认
-- 🔜 Tensor MAC/Vector 数值数据通路、SoC AXI 集成和端到端上板实测：**未完成**
+- 🚧 PL 侧 RTL：**P4/P6 并行原型**，已有 Command Processor、端到端 DMA/Scratchpad 和 8x8 Tensor MAC；MAC 单体通过 200 MHz OOC，DMA 子系统通过 100 MHz OOC
+- 🔜 CONV2D loop/row-buffer、Vector/post 数值通路、SoC AXI 集成和端到端上板实测：**未完成**
 
 ---
 
