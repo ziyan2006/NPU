@@ -1,0 +1,687 @@
+==============================================================================
+SMOKE TEST -- distillation pipeline end to end
+==============================================================================
+device cuda  (NVIDIA GeForce RTX 4070 Laptop GPU)
+
+[1/3] data + teacher pseudo-labels
+  library scan: 274 training tracks from D:\DJ_Music_Library, 24 held out for scoring
+  teacher: HTDemucs, 41.98 M params, on cuda
+  window screening: decode 180s -> teacher once -> keep the top 3 non-overlapping of 5 x 60s windows by vocal energy   [crops/track=3, teacher cost unchanged]
+     #  file                                      dec  teach   spec   kHz  voc dB  off s             cands
+     0  Culture Shock, Grafix - Make It Pump.m  0.61s 11.98s  0.66s  15.0    -7.7    0.0   -8 -10 -13 -10 -8  -> 3c @ 0s,120s,60s
+     1  James Woods - Everywhere Music (Origin  0.81s 11.34s  0.76s  15.9   -13.2   60.0   -16 -16 -13 -14 -16  -> 3c @ 60s,120s,0s
+     2  Lane 8, Arctic Lake - Say The Word.mp3  0.79s 11.48s  0.64s  15.7    -3.8  120.0   -10 -9 -9 -6 -4  -> 3c @ 120s,60s,0s
+     3  Duce, terro - Too Close.mp3             0.73s 11.60s  0.42s  15.1   -14.0    0.0   -14 -18 -17 -16 -16  -> 2c @ 0s,87s
+     4  Fred V, Hybrid Minds, Lottie Jones - F  0.71s 11.42s  0.86s  15.8    -6.6    0.0   -7 -11 -14 -10 -9  -> 3c @ 0s,120s,60s
+     5  Dimension - Bass Thump.mp3              0.72s 11.22s  0.74s  16.0    -7.1   60.0   -8 -8 -7 -9 -13  -> 3c @ 60s,0s,120s
+     6  Sub Focus, bbyclose, Kanine - On & On   0.73s 10.95s  0.49s  16.0    -5.9    0.0   -6 -8 -6 -8 -8  -> 2c @ 0s,86s
+     7  Strike - U Sure Do.mp3                  0.77s 11.34s  0.64s  15.9   -11.3  120.0   -12 -13 -14 -15 -11  -> 3c @ 120s,0s,60s
+     8  Jerro - Reason Why.mp3                  0.71s 10.94s  0.47s  16.4    -5.1   90.0   -8 -10 -10 -5 -8  -> 2c @ 90s,0s
+     9  Darude - Sandstorm.mp3                  0.73s 10.79s  0.42s  16.7   -36.8   90.0   -38 -39 -37 -37 -39  -> 2c @ 90s,0s
+    10  Culture Shock - Get Physical.mp3        0.72s 10.80s  0.63s  16.7   -17.5   60.0   -20 -18 -17 -18 -21  -> 3c @ 60s,0s,120s
+    11  Feint, Andromedik, Cammie Robinson - I  0.74s 11.41s  0.49s  15.8    -8.5   90.0   -10 -12 -10 -8 -9  -> 2c @ 90s,0s
+    12  Flite - Tragedy, Humanity.mp3           0.76s 11.57s  0.64s  15.6    -8.9   60.0   -49 -24 -9 -9 -14  -> 3c @ 60s,120s,0s
+    13  Marsh - Gjipe.mp3                       0.71s 11.41s  0.67s  15.8   -16.9  120.0   -21 -24 -52 -22 -17  -> 3c @ 120s,0s,60s
+    14  John Summit, The Chainsmokers, Ilsey -  0.81s 11.83s  0.86s  15.2    -7.7   60.0   -11 -10 -8 -9 -11  -> 3c @ 60s,120s,0s
+    15  ÆON_MODE - Laserbeam (ÆON_MODE Remix V  0.79s 11.65s  0.52s  15.5    -9.0    0.0   -9 -12 -13 -10 -11  -> 2c @ 0s,90s
+    16  Lane 8, Sultan + Shepard - Quiet Rush.  0.76s 11.73s  0.46s  15.3   -30.6    0.0   -31 -32 -32 -32 -34  -> 2c @ 0s,90s
+    17  PRAANA, Freddie Elmberg - When I Need   0.76s 11.32s  0.74s  15.9    -7.8   60.0   -14 -10 -8 -12 -15  -> 3c @ 60s,0s,120s
+    18  Le Youth - Waves (Extended Mix).mp3     0.76s 11.24s  0.49s  16.0   -10.8   30.0   -13 -11 -14 -15 -13  -> 2c @ 30s,120s
+    19  Friction - Ultrafunk.mp3                0.69s 11.34s  0.61s  15.9   -13.0   90.0   -14 -15 -15 -13 -15  -> 2c @ 90s,0s
+    20  Marie Vaunt, Dimension, Subsonic - Tha  0.79s 11.19s  0.63s  15.7   -11.7   86.5   -13 -14 -12 -12 -15  -> 2c @ 87s,0s
+    21  Sonny Fodera, Paul Woolford, Ella Hend  0.75s 10.90s  0.89s  16.5    -5.4    0.0   -5 -7 -9 -9 -7  -> 3c @ 0s,120s,60s
+    22  Jerro - Pantheon.mp3                    0.84s 11.03s  0.83s  16.3   -22.5   60.0   -27 -25 -22 -23 -30  -> 3c @ 60s,0s,120s
+    23  Jauz, Netsky, The Prototypes - Higher   0.74s 11.05s  0.64s  16.3    -8.2    0.0   -8 -12 -14 -9 -10  -> 2c @ 0s,90s
+    24  Basement Jaxx - Good Luck (Circadian R  0.72s 11.69s  0.84s  15.4    -7.0   60.0   -8 -11 -7 -8 -13  -> 3c @ 60s,0s,120s
+    25  Bumpÿ, JAMES.C - Kind of Love (feat. M  0.87s 11.29s  0.61s  16.0    -5.2    0.0   -5 -8 -10 -6 -9  -> 2c @ 0s,90s
+    26  Shallou, Queen D - It's You.mp3         0.75s 11.16s  0.65s  16.1    -9.7  120.0   -14 -11 -12 -14 -10  -> 2c @ 120s,30s
+    27  Sub Focus, Katy B - Push The Tempo.mp3  0.72s 10.23s  0.50s  15.8    -4.3    0.0   -4 -8 -8 -7 -8  -> 2c @ 0s,76s
+    28  Quinn Karter, Natalie Major - Living i  0.76s 11.28s  0.70s  16.0    -6.1   60.0   -8 -9 -6 -8 -9  -> 3c @ 60s,0s,120s
+    29  Wilkinson - Take You Higher.mp3         0.77s 11.35s  0.53s  15.9    -6.6   90.0   -9 -13 -11 -7 -9  -> 2c @ 90s,0s
+    30  Kanine - Bloodstream.mp3                0.72s 11.39s  0.47s  15.8    -6.1    0.0   -6 -10 -9 -8 -11  -> 2c @ 0s,90s
+    31  MK - Take My Chance.mp3                 0.73s 11.31s  0.71s  15.9    -5.9    0.0   -6 -9 -9 -10 -11  -> 3c @ 0s,60s,120s
+    32  Lane 8, Kasbo, BJOERN - World Is Mine.  0.70s 11.37s  0.63s  15.8    -3.3  120.0   -3 -5 -6 -4 -3  -> 3c @ 120s,0s,60s
+    33  Ray Volpe, Blanke - Laserbeam (ÆON_MOD  0.65s 10.85s  0.45s  15.2    -9.4    0.0   -9 -10 -13 -12 -14  -> 2c @ 0s,78s
+    34  1991, Alex Hosking - Jungle.mp3         0.73s 11.19s  0.45s  16.1    -5.1    0.0   -5 -10 -10 -8 -11  -> 2c @ 0s,90s
+    35  The Midnight - The Right Way.mp3        0.83s 11.17s  0.44s  16.1    -6.4   30.0   -7 -6 -8 -8 -7  -> 2c @ 30s,120s
+    36  Sless, Loboski - I Like It.mp3          0.79s 11.27s  0.47s  15.9   -11.0   89.5   -12 -15 -14 -11 -14  -> 2c @ 89s,0s
+    37  Culture Shock - Panorama.mp3            0.75s 11.22s  0.60s  16.0   -19.1   90.0   -21 -36 -22 -19 -35  -> 2c @ 90s,0s
+    38  Feint - Mirror signal.mp3               0.68s 10.61s  0.63s  17.0   -11.6    0.0   -12 -14 -22 -12 -12  -> 2c @ 0s,90s
+    39  Metrik - Fatso (VIP).mp3                0.75s 10.52s  0.84s  17.1   -17.0  120.0   -18 -21 -29 -22 -17  -> 3c @ 120s,0s,60s
+    40  Feint, Leah Rye - Starseed.mp3          0.70s 11.46s  0.67s  15.7    -6.3   60.0   -11 -9 -6 -10 -10  -> 3c @ 60s,120s,0s
+    41  Lane 8 - Childish.mp3                   0.77s 10.68s                -50.7         SIFTED OUT
+    42  Culture Shock - DiscoTheque.mp3         0.73s 11.57s  0.64s  15.6    -8.4    0.0   -8 -10 -10 -10 -10  -> 3c @ 0s,120s,60s
+    43  Kanine, SOTA, Mila Falls - Touchdown.m  0.69s 10.64s  0.49s  15.1    -9.6    0.0   -10 -10 -14 -13 -13  -> 2c @ 0s,100s
+    44  Culture Shock - Troglodyte.mp3          0.76s 12.01s  0.82s  15.0   -11.7    0.0   -12 -13 -15 -22 -16  -> 3c @ 0s,60s,120s
+    45  Circadian - Body Work VIP.mp3           0.77s 11.94s  0.85s  15.1    -7.9   60.0   -15 -12 -8 -9 -13  -> 3c @ 60s,120s,0s
+    46  Metrik - Route 174.mp3                  0.81s 12.10s  0.60s  14.9   -18.7   60.0   -20 -19 -19 -19 -23  -> 3c @ 60s,0s,120s
+    47  Tinlicker, Julia Church - Slipstream (  0.75s 12.07s  0.35s  14.9    -6.3   90.0   -8 -10 -7 -6 -9  -> 2c @ 90s,0s
+    48  Luxe Agoris, Kryoman, Samuel Miller -   0.71s 12.15s  0.72s  14.8    -7.6   60.0   -11 -12 -8 -9 -11  -> 3c @ 60s,120s,0s
+    49  PRAANA, ready ready wait - Falling Off  0.77s 11.97s  0.45s  15.0    -8.7   30.0   -11 -9 -10 -14 -21  -> 2c @ 30s,90s
+    50  Grafix - Final Cut.mp3                  0.73s 11.74s  0.43s  15.3    -8.4   90.0   -9 -11 -11 -8 -10  -> 2c @ 90s,0s
+    51  Sub Focus, Fireboy DML, iRah - Origina  0.65s 10.99s  0.42s  15.3    -6.1    0.0   -6 -8 -7 -6 -8  -> 2c @ 0s,81s
+    52  Florence + The Machine - Dog Days Are   0.70s 11.50s  0.71s  15.7    -4.6    0.0   -5 -5 -6 -8 -7  -> 3c @ 0s,60s,120s
+    53  Agressor Bunx, MaxNRG - Coming Back.mp  0.76s 11.56s  0.71s  15.6    -6.7   60.0   -9 -11 -7 -8 -15  -> 3c @ 60s,0s,120s
+    54  Marshmello, Space Laces - Rave Repeate  0.68s 11.19s  0.49s  15.1   -10.4    0.0   -10 -12 -12 -13 -12  -> 2c @ 0s,109s
+    55  K Motionz - Generator.mp3               0.72s 12.12s  0.59s  14.9    -6.5    0.0   -7 -11 -11 -7 -11  -> 2c @ 0s,90s
+    56  Nina Sung, GILLIAD, Oliverse - Rendezv  0.82s 12.00s  0.62s  15.0    -5.3    0.0   -5 -8 -8 -5 -8  -> 2c @ 0s,90s
+    57  Feint, MUZZ, Koven - Worth The Lie.mp3  0.83s 12.04s  0.73s  15.0    -8.7  120.0   -9 -12 -12 -17 -9  -> 3c @ 120s,0s,60s
+    58  ORACLE, Nina Carr - Golden.mp3          0.75s 11.69s  0.44s  15.4    -8.2   90.0   -11 -9 -9 -8 -9  -> 2c @ 90s,30s
+    59  Tantrum Desire - Unleashed.mp3          0.71s 11.39s  0.48s  15.8   -16.3   90.0   -17 -18 -21 -16 -18  -> 2c @ 90s,0s
+    60  Dimension, Grafix - Offender (Dimensio  0.71s 11.28s  0.63s  16.0   -12.1   90.0   -13 -15 -13 -12 -13  -> 2c @ 90s,0s
+    61  Delta Heavy, Grafix - Nocturnal.mp3     0.76s 11.22s  0.44s  16.0   -11.6    0.0   -12 -14 -16 -13 -15  -> 2c @ 0s,90s
+    62  Sultan + Shepard, The Kite String Tang  0.72s 11.43s  0.44s  15.8    -4.6   90.0   -32 -24 -13 -5 -8  -> 2c @ 90s,30s
+    63  Document One - Spin Doctor.mp3          0.72s 11.21s  0.64s  16.1   -12.2   60.0   -14 -15 -12 -16 -15  -> 3c @ 60s,0s,120s
+    64  Shallou, Sultan + Shepard - Pacifica (  0.71s 11.47s  0.84s  15.7    -4.1  120.0   -5 -11 -15 -8 -4  -> 3c @ 120s,0s,60s
+    65  Biscits - Crush.mp3                     0.70s 11.37s  0.52s  15.8    -8.7    0.0   -9 -12 -12 -9 -12  -> 2c @ 0s,90s
+    66  ÆON_MODE - Stop, Go.mp3                 0.77s 11.36s  0.67s  15.8    -8.8    0.0   -9 -12 -12 -10 -10  -> 3c @ 0s,120s,60s
+    67  Delta Heavy, Hayley May - Get Down Ton  0.69s 11.00s  0.41s  15.4    -6.0    0.0   -6 -9 -10 -9 -10  -> 2c @ 0s,82s
+    68  Feint - Outer Reaches (Instrumental).m  0.71s 11.19s  0.67s  16.1   -22.0   60.0   -25 -47 -22 -23 -28  -> 3c @ 60s,0s,120s
+    69  Feint, Laura Brehm - We Won't Be Alone  0.72s 11.37s  0.49s  15.8    -6.8   90.0   -7 -11 -9 -7 -11  -> 2c @ 90s,0s
+    70  Sub Focus, Wilkinson, Tom Cane - Illum  0.73s 11.32s  0.46s  15.9   -10.0   90.0   -14 -14 -12 -10 -14  -> 2c @ 90s,0s
+    71  Duce, Yasmin Jane, Jeans - Begin Again  0.66s 10.96s  0.49s  15.7   -10.2    0.0   -10 -12 -13 -16 -15  -> 2c @ 0s,112s
+    72  Basstripper - Ready For It.mp3          0.77s 11.43s  0.68s  15.7    -9.6   90.0   -11 -12 -11 -10 -12  -> 2c @ 90s,0s
+    73  Mau P - On Again.mp3                    0.71s 11.30s  0.60s  15.9    -7.4   90.0   -10 -8 -9 -7 -9  -> 2c @ 90s,30s
+    74  rshand, Donner - Sky Dreamer.mp3        0.69s 11.10s  0.53s  15.7    -7.9    0.0   -8 -11 -10 -9 -11  -> 2c @ 0s,86s
+    75  PRAANA - Mojave (Extended Mix).mp3      0.75s 11.26s  0.55s  16.0    -5.8   30.0   -13 -6 -8 -10 -7  -> 2c @ 30s,120s
+    76  Jerro, FARLEY - In Your Eyes.mp3        0.82s 11.45s  0.68s  15.7    -3.6  120.0   -7 -8 -8 -8 -4  -> 3c @ 120s,0s,60s
+    77  Culture Shock - Empire.mp3              0.74s 11.08s  0.65s  16.2   -14.1    0.0   -14 -18 -24 -35 -18  -> 3c @ 0s,120s,60s
+    78  Tantrum Desire - Killerz.mp3            0.74s 11.16s  0.82s  16.1   -20.9    0.0   -21 -25 -23 -27 -25  -> 3c @ 0s,60s,120s
+    79  Sultan + Shepard - Cloud Lifter (Exten  0.72s 11.14s  0.59s  16.2   -18.0   30.0   -23 -18 -20 -24 -22  -> 2c @ 30s,120s
+    80  Jerro - Presence.mp3                    0.71s 10.89s  0.66s  16.5   -26.3   90.0   -29 -31 -28 -26 -30  -> 2c @ 90s,0s
+    81  Lexurus - Close To You.mp3              0.75s 10.21s  0.51s  17.6    -7.9    0.0   -8 -13 -14 -12 -13  -> 2c @ 0s,90s
+    82  TONI SIZER, CATMOONK - Turn The Lights  0.76s 10.82s  0.44s  16.6    -8.4   90.0   -11 -13 -10 -8 -11  -> 2c @ 90s,0s
+    83  LAR, Fagin, Marg Pappas - Shadow Of A   0.69s 10.21s  0.47s  16.9    -9.9  112.0   -11 -14 -13 -10 -10  -> 2c @ 112s,0s
+    84  Perlo - Call Me a Fool.mp3              0.73s 10.10s  0.65s  17.8    -6.3    0.0   -6 -7 -7 -7 -8  -> 3c @ 0s,60s,120s
+    85  ÆON_MODE, Blanke - dashstar_ (ÆON_MODE  0.64s  7.84s  0.20s  16.9   -12.0   36.4   -13 -13 -12 -14 -14  -> 1c @ 36s
+    86  Porter Robinson, Darren Styles, Gammer  0.69s 10.33s  0.65s  17.4    -8.3    0.0   -8 -14 -15 -9 -8  -> 3c @ 0s,120s,60s
+    87  Sub Focus, AR_CO - Vibration (One More  0.71s 10.50s  0.42s  17.1    -4.6    0.0   -5 -7 -7 -5 -7  -> 2c @ 0s,90s
+    88  Jack Willard, Lovlee - Wanna Know (Ext  0.69s 10.46s  0.46s  17.2   -10.3   90.0   -18 -14 -13 -10 -14  -> 2c @ 90s,30s
+    89  Dossa & Locuzzed - Funkyfied.mp3        0.74s 10.33s  0.50s  17.4   -22.7   90.0   -30 -31 -32 -23 -25  -> 2c @ 90s,0s
+    90  Sultan + Shepard, Nathan Nicholson - U  0.69s 10.05s  0.42s  17.9    -5.7   30.0   -18 -6 -6 -11 -16  -> 2c @ 30s,90s
+    91  Sub Focus, SOTA - Elevate (SOTA Remix)  0.70s 10.43s  0.49s  17.3    -5.2    0.0   -5 -8 -12 -8 -9  -> 2c @ 0s,90s
+    92  Mary J. Blige - Family Affair.mp3       0.79s 10.42s  0.62s  17.3    -5.5  120.0   -7 -6 -6 -6 -6  -> 3c @ 120s,60s,0s
+    93  Dabin, TRØVES - Lights.mp3              0.71s 10.19s  0.65s  17.7    -8.7   60.0   -10 -11 -9 -10 -11  -> 3c @ 60s,0s,120s
+    94  Mazare, RIENK - Kingslayer.mp3          0.71s 10.39s  0.61s  17.3    -5.7   60.0   -10 -10 -6 -8 -10  -> 3c @ 60s,120s,0s
+    95  Rameses B - Tokyo Drift.mp3             0.63s  8.98s  0.48s  16.9   -11.9    0.0   -12 -12 -12 -15 -15  -> 2c @ 0s,92s
+    96  Sultan + Shepard, Prinze George - Cent  0.76s 10.40s  0.50s  17.3   -10.8   90.0   -11 -11 -11 -11 -11  -> 2c @ 90s,0s
+    97  Dimension - DJ Turn It Up.mp3           0.74s 10.48s  0.45s  17.0    -7.6   88.4   -8 -9 -8 -8 -11  -> 2c @ 88s,0s
+    98  Delta Heavy, ÆON_MODE, Nu-La - Glow.mp  0.70s 10.20s  0.44s  17.6    -4.8   90.0   -5 -8 -8 -5 -8  -> 2c @ 90s,0s
+    99  Robyn, Jamie xx - Dopamine (Jamie xx R  0.71s 10.28s  0.46s  17.5    -6.7    0.0   -7 -12 -15 -14 -16  -> 2c @ 0s,90s
+   100  Mykool - Signal.mp3                     0.82s 10.07s  0.46s  17.9   -10.8   90.0   -11 -13 -13 -11 -12  -> 2c @ 90s,0s
+   101  Feint, Laura Brehm - Defiant.mp3        0.74s 10.37s  0.64s  17.4    -6.7   60.0   -10 -16 -7 -7 -11  -> 3c @ 60s,0s,120s
+   102  Feint, Josh Rubin - Let Me Go.mp3       0.73s 10.28s  0.42s  17.5    -8.4    0.0   -8 -13 -10 -9 -11  -> 2c @ 0s,90s
+   103  Tinlicker - Fractal.mp3                 0.70s 10.21s  0.82s  17.6   -18.3  120.0   -31 -29 -24 -20 -18  -> 3c @ 120s,60s,0s
+   104  Culture Shock - Breathe.mp3             0.70s 10.43s  0.60s  17.3    -6.6   90.0   -8 -12 -11 -7 -7  -> 2c @ 90s,0s
+   105  Dan Dakota, Blooom - Yot Klub (Blooom   0.72s 10.44s  0.52s  17.2   -11.9    0.0   -12 -15 -15 -14 -16  -> 2c @ 0s,90s
+   106  Artino, JESSEE, Sam Welch - Bring The   0.74s 10.21s  0.86s  17.6    -7.6    0.0   -8 -9 -10 -9 -8  -> 3c @ 0s,120s,60s
+   107  Calvin Harris, Clementine Douglas - Bl  0.71s 10.24s  0.44s  17.6    -9.3    0.0   -9 -12 -12 -10 -14  -> 2c @ 0s,90s
+   108  Wilkinson - Come Down.mp3               0.71s 10.23s  0.48s  17.6    -4.6   90.0   -5 -6 -5 -5 -6  -> 2c @ 90s,0s
+   109  Culture Shock - i like the way you kis  0.70s  9.24s  0.27s  17.3    -5.2   50.0   -7 -7 -5 -6 -7  -> 1c @ 50s
+   110  Culture Shock - Rise (Extended Mix).mp  0.72s 10.05s  0.62s  17.9   -10.6   90.0   -11 -11 -11 -11 -12  -> 2c @ 90s,0s
+   111  Awind, SADRECORDS - You Wanna Love Ton  0.76s 10.26s  0.50s  17.6    -8.2   90.0   -10 -10 -9 -8 -12  -> 2c @ 90s,0s
+   112  Dimension, Karen Harding - Guardian An  0.73s 10.45s  0.81s  17.2    -3.2    0.0   -3 -6 -8 -6 -5  -> 3c @ 0s,120s,60s
+   113  Subsonic, Ekko & Sidetrack - Pressure.  0.74s 10.04s  0.51s  17.9    -8.5   90.0   -12 -21 -16 -9 -13  -> 2c @ 90s,0s
+   114  Sub Focus - Wildfire.mp3                0.74s 10.15s  0.46s  17.7    -2.9    0.0   -3 -8 -8 -6 -6  -> 2c @ 0s,90s
+   115  Culture Shock - Feel Again.mp3          0.74s 10.14s  0.67s  17.7    -4.3    0.0   -4 -7 -9 -6 -6  -> 3c @ 0s,120s,60s
+   116  PRAANA, Ed Graves - Sanctuary (Extende  0.76s 10.25s  0.65s  17.6    -4.4  120.0   -10 -15 -15 -8 -4  -> 3c @ 120s,0s,60s
+   117  Kideko, Shells - Touch.mp3              0.68s  9.33s  0.60s  17.9    -8.9    0.0   -9 -10 -11 -10 -11  -> 2c @ 0s,80s
+   118  Culture Shock - U & I.mp3               0.72s 10.06s  0.43s  17.5    -6.4    0.0   -6 -8 -10 -11 -9  -> 2c @ 0s,117s
+   119  Jerro, Le Youth, Lizzy Land - Forever   0.72s 10.07s  0.63s  17.9    -6.8   60.0   -11 -11 -7 -9 -11  -> 3c @ 60s,120s,0s
+   120  Le Youth, Jerro, Lizzy Land - Lost.mp3  0.71s 10.22s  0.64s  17.6    -6.1  120.0   -8 -9 -8 -6 -6  -> 3c @ 120s,60s,0s
+   121  Pendulum, Armin van Buuren, Rob Swire   0.74s 10.75s  0.45s  16.7    -3.6    0.0   -4 -7 -9 -6 -8  -> 2c @ 0s,90s
+   122  Tantrum Desire - Step.mp3               0.74s 10.17s  0.47s  17.7   -15.7    0.0   -16 -19 -20 -19 -19  -> 2c @ 0s,90s
+   123  Coben, Puppet - Killing Giants (Coben   0.81s 10.92s  0.52s  16.5   -12.3    0.0   -12 -19 -18 -17 -20  -> 2c @ 0s,90s
+   124  Tinlicker, Julia Church - Glasshouse (  0.71s 10.35s  0.49s  17.4    -6.1    0.0   -6 -12 -14 -10 -12  -> 2c @ 0s,90s
+   125  Dimension - DJ Turn It Up (Ben Nicky R  0.59s  8.23s  0.40s  16.8    -9.6    0.0   -10 -10 -10 -12 -12  -> 2c @ 0s,78s
+   126  Armin van Buuren, Dimension - Lose Thi  0.70s 10.59s  0.42s  17.0    -4.9   90.0   -6 -6 -5 -5 -7  -> 2c @ 90s,0s
+   127  Tantrum Desire, Sophie Grace - Moonlig  0.72s 10.52s  0.60s  17.1   -10.1    0.0   -10 -14 -13 -13 -15  -> 3c @ 0s,60s,120s
+   128  KNEECAP, Sub Focus - No Comment.mp3     0.59s  7.46s  0.39s  16.6    -5.4   64.1   -6 -7 -7 -6 -5  -> 2c @ 64s,0s
+   129  Eliminate, I Set My Friends on Fire -   0.68s 10.49s  0.48s  17.1    -6.7    0.0   -7 -12 -9 -8 -11  -> 2c @ 0s,89s
+   130  Lexurus, Diede - Live The Lie.mp3       0.70s 10.24s  0.70s  17.6    -9.1    0.0   -9 -11 -11 -11 -11  -> 3c @ 0s,60s,120s
+   131  Chicane, Bryan Adams, Grafix - Don't G  0.76s 10.42s  0.47s  17.3    -6.3    0.0   -6 -9 -9 -8 -12  -> 2c @ 0s,90s
+   132  Grafix - CTRL.mp3                       0.76s 10.54s  0.66s  17.1    -8.0    0.0   -8 -9 -11 -11 -12  -> 3c @ 0s,60s,120s
+   133  Feint, Veela - Vagrant.mp3              0.68s 10.46s  0.61s  17.2    -5.0   60.0   -10 -9 -5 -7 -11  -> 3c @ 60s,0s,120s
+   134  Sultan + Shepard, Lane 8 - The Little   0.70s 10.17s  0.64s  17.7   -11.0  120.0   -26 -35 -24 -15 -11  -> 3c @ 120s,60s,0s
+   135  Gryffin, Julia Church - Spin Me Slowly  0.69s 10.33s  0.51s  17.4    -5.8   90.0   -7 -9 -8 -6 -8  -> 2c @ 90s,0s
+   136  Space Laces - Dominate VIP.mp3          0.74s 10.25s  0.65s  17.6   -14.5   90.0   -15 -19 -15 -15 -19  -> 2c @ 90s,0s
+   137  BUNT., Graham - Maybe.mp3               0.72s  9.71s  0.48s  17.5    -6.8   82.6   -9 -11 -9 -7 -9  -> 2c @ 83s,0s
+   138  Feint - Flicker.mp3                     0.70s 10.36s  0.84s  17.4    -9.1   60.0   -12 -13 -9 -10 -13  -> 3c @ 60s,0s,120s
+   139  Fly By Midnight, Rachel Grae - Differe  0.78s  9.96s  0.72s  18.1    -7.1  120.0   -8 -7 -7 -8 -7  -> 3c @ 120s,60s,0s
+   140  Lane 8, Art School Girlfriend - The De  0.80s 10.40s  0.46s  17.3    -6.9   30.0   -7 -7 -7 -10 -12  -> 2c @ 30s,90s
+   141  Metrik - Immortal.mp3                   0.71s 10.36s  0.46s  17.4    -8.9   90.0   -11 -14 -11 -9 -12  -> 2c @ 90s,0s
+   142  1991 - Chant.mp3                        0.76s 10.22s  0.42s  17.6   -10.1    0.0   -10 -15 -15 -11 -12  -> 2c @ 0s,90s
+   143  Culture Shock - The Time Is Now.mp3     0.71s 10.18s  0.41s  17.7    -9.4    0.0   -9 -11 -12 -11 -12  -> 2c @ 0s,90s
+   144  Feint, Laura Brehm - Words.mp3          0.71s 10.33s  0.42s  17.4    -6.3   90.0   -7 -11 -14 -6 -8  -> 2c @ 90s,0s
+   145  Delta Heavy - Ascend.mp3                0.70s 10.28s  0.45s  17.5   -10.9   90.0   -13 -16 -12 -11 -14  -> 2c @ 90s,0s
+   146  Archaellum, Annastacia Boudwin - Go No  0.76s 10.26s  0.49s  17.5   -12.1    0.0   -12 -12 -14 -13 -15  -> 2c @ 0s,90s
+   147  1991, Rova - Hijack.mp3                 0.76s  9.06s  0.44s  17.2   -12.1   24.0   -13 -12 -13 -12 -12  -> 2c @ 24s,96s
+   148  Hannah Laing, Marlon Hoffstadt, Caroli  0.76s 10.15s  0.61s  17.7    -8.8    0.0   -9 -9 -11 -10 -11  -> 2c @ 0s,90s
+   149  Lane 8, Channy Leaneagh, Sultan + Shep  0.78s 10.14s  0.65s  17.7    -7.6    0.0   -8 -13 -13 -10 -12  -> 2c @ 0s,90s
+   150  Sultan + Shepard - Butter.mp3           0.71s 10.14s  0.69s  17.7    -9.1    0.0   -9 -9 -12 -15 -10  -> 3c @ 0s,120s,60s
+   151  The Prodigy - Voodoo People.mp3         0.71s 10.22s  0.60s  17.6   -12.9   30.0   -16 -13 -15 -24 -26  -> 2c @ 30s,90s
+   152  Lane 8 - Little Voices.mp3              0.85s 10.17s  0.41s  17.7   -18.8  120.0   -40 -19 -21 -21 -19  -> 2c @ 120s,30s
+   153  PRAANA - Zilker Gardens Echo (Extended  0.67s 10.24s  0.70s  17.6    -5.3   60.0   -10 -7 -5 -10 -10  -> 3c @ 60s,120s,0s
+   154  Tourist - Run.mp3                       0.74s 10.42s  0.45s  17.3    -3.3   30.0   -3 -3 -4 -10 -10  -> 2c @ 30s,120s
+   155  Sub Focus - Rock It (Wilkinson Remix).  0.76s 10.16s  0.65s  17.7   -13.9   60.0   -20 -15 -14 -18 -18  -> 3c @ 60s,120s,0s
+   156  Sultan + Shepard, Tishmal - Back Throu  0.70s 10.23s  0.62s  17.6    -3.5    0.0   -4 -7 -12 -11 -6  -> 3c @ 0s,120s,60s
+   157  Rhea Silvia - Say Goodbye (Extended Mi  0.73s 10.30s  0.61s  17.5   -20.7   60.0   -22 -24 -21 -21 -26  -> 3c @ 60s,0s,120s
+   158  Grafix - Don't Slow Down.mp3            0.76s 10.34s  0.43s  17.4   -10.9    0.0   -11 -11 -12 -11 -12  -> 2c @ 0s,90s
+   159  Feed Me, Grafix - One Click Headshot (  0.68s 10.35s  0.45s  17.4    -8.8   90.0   -11 -12 -10 -9 -11  -> 2c @ 90s,0s
+   160  Shallou - Habitat.mp3                   0.67s 10.27s  0.43s  17.5   -11.7    0.0   -12 -12 -16 -14 -16  -> 2c @ 0s,90s
+   161  Culture Shock - There For You.mp3       0.70s 10.39s  0.45s  17.3   -10.6   90.0   -12 -13 -14 -11 -12  -> 2c @ 90s,0s
+   162  Maiah Manser, What So Not, Synergy - W  0.74s 10.28s  0.41s  17.5    -7.8    0.0   -8 -13 -13 -12 -13  -> 2c @ 0s,90s
+   163  Andromedik, John Summit, HAYLA, Cassia  0.72s  9.27s  0.40s  17.3    -4.8   25.0   -6 -5 -7 -10 -10  -> 2c @ 25s,100s
+   164  Tris - still holding on.mp3             0.64s  9.75s  0.40s  17.3    -5.2    0.0   -5 -6 -6 -6 -8  -> 2c @ 0s,82s
+   165  Lane 8, Arctic Lake - The Choice.mp3    0.69s 10.42s  0.62s  17.3    -6.8  120.0   -9 -10 -11 -8 -7  -> 3c @ 120s,0s,60s
+   166  Jerro, The Kite String Tangle - Mess I  0.68s 10.32s  0.53s  17.4    -9.0   90.0   -11 -13 -11 -9 -10  -> 2c @ 90s,0s
+   167  Feint - Hideaway.mp3                    0.68s 10.31s  0.63s  17.5    -9.6  120.0   -11 -15 -13 -10 -10  -> 3c @ 120s,0s,60s
+   168  Friction, Jonny L - Back To Your Roots  0.76s 10.08s  0.62s  17.9    -5.8    0.0   -6 -7 -8 -7 -7  -> 3c @ 0s,120s,60s
+   169  Scro, whyislavndr - i don’t wanna writ  0.71s 10.27s  0.59s  17.5    -4.8    0.0   -5 -5 -6 -6 -7  -> 3c @ 0s,60s,120s
+   170  Chase & Status, J Hus, IRAH - Disgrunt  0.71s 10.33s  0.68s  17.4    -6.5    0.0   -7 -7 -7 -8 -9  -> 3c @ 0s,60s,120s
+   171  Metrik - Simulation.mp3                 0.72s 10.17s  0.41s  17.7   -20.1   90.0   -23 -27 -24 -20 -23  -> 2c @ 90s,0s
+   172  Tinlicker, Tom Smith - This Life (feat  0.72s 10.01s  0.82s  18.0    -6.4    0.0   -6 -7 -9 -8 -7  -> 3c @ 0s,120s,60s
+   173  ÆON_MODE - RUN.mp3                      0.83s 10.16s  0.61s  17.7   -16.5   90.0   -22 -22 -19 -16 -17  -> 2c @ 90s,30s
+   174  Bicep - Glue.mp3                        0.77s 10.27s  0.47s  17.5   -10.5   90.0   -30 -22 -14 -10 -13  -> 2c @ 90s,30s
+   175  Sultan + Shepard - Pikachew.mp3         0.79s 10.24s  0.61s  17.6   -15.8   30.0   -24 -16 -18 -26 -35  -> 2c @ 30s,90s
+   176  Culture Shock - Get To Me.mp3           0.74s 10.11s  0.49s  17.8    -7.0   90.0   -8 -10 -8 -7 -9  -> 2c @ 90s,0s
+   177  1991 - Get A Good Feeling.mp3           0.75s 10.08s  0.61s  17.9    -9.4    0.0   -9 -12 -11 -12 -12  -> 3c @ 0s,60s,120s
+   178  Sub Focus - Off The Ground.mp3          0.69s 10.11s  0.71s  17.8    -5.0  120.0   -6 -11 -12 -7 -5  -> 3c @ 120s,0s,60s
+   179  Sub Focus - Solar System.mp3            0.73s 10.26s  0.63s  17.5   -13.5    0.0   -13 -15 -17 -20 -15  -> 3c @ 0s,120s,60s
+   180  Koven - Chase The Sun (Extended Mix).m  0.68s 10.23s  0.47s  17.6    -7.9   90.0   -8 -9 -10 -8 -9  -> 2c @ 90s,0s
+   181  DaBaby - POP DAT THANG.mp3              0.63s  8.00s  0.21s  17.3    -9.8   39.1   -10 -10 -10 -10 -11  -> 1c @ 39s
+   182  Lane 8 - Sunday Song.mp3                0.68s 10.33s  0.83s  17.4   -12.3    0.0   -12 -14 -15 -15 -13  -> 3c @ 0s,120s,60s
+   183  Fred again.., Baby Keem - leavemealone  0.72s 10.14s  0.50s  17.7    -8.7   90.0   -12 -14 -12 -9 -12  -> 2c @ 90s,0s
+   184  Shojin - OIIA OIIA (Spinning Car).mp3   0.47s  4.94s  0.20s  16.6   -10.8   16.4   -11 -11 -11 -11 -13  -> 1c @ 16s
+   185  Don Diablo, Steve Aoki, Lush & Simon -  0.71s 10.22s  0.44s  17.6    -8.0   90.0   -8 -10 -9 -8 -10  -> 2c @ 90s,0s
+   186  Jerro - Forever (Extended Mix).mp3      0.75s  9.89s  0.63s  18.2   -13.7   30.0   -17 -14 -15 -17 -20  -> 2c @ 30s,90s
+   187  Jerro, Lizzy Land - Need Somebody.mp3   0.75s  9.85s  0.80s  18.3    -9.6   60.0   -10 -12 -10 -10 -12  -> 3c @ 60s,0s,120s
+   188  Pirapus - ENERGY (I Feel).mp3           0.70s 10.17s  0.52s  17.7   -10.6    0.0   -11 -13 -14 -13 -15  -> 2c @ 0s,90s
+   189  Trivecta, MitiS, Dia Frampton - Weight  0.74s 10.09s  0.45s  17.8    -7.7    0.0   -8 -12 -12 -9 -10  -> 2c @ 0s,90s
+   190  Tantrum Desire - Deep.mp3               0.72s 10.04s  0.66s  17.9   -16.8    0.0   -17 -26 -18 -19 -24  -> 3c @ 0s,60s,120s
+   191  IMANU, Rhode - Of Two Minds.mp3         0.73s 10.17s  0.61s  17.7    -7.5   60.0   -10 -12 -8 -9 -12  -> 3c @ 60s,0s,120s
+   192  Delta Heavy - Ecstasy.mp3               0.69s 10.10s  0.44s  17.8    -8.8   30.0   -11 -9 -13 -13 -14  -> 2c @ 30s,90s
+   193  Andromedik, Lauren L'aimant - Air.mp3   0.73s  9.97s  0.68s  18.1    -5.7   60.0   -6 -8 -6 -6 -10  -> 3c @ 60s,0s,120s
+   194  Fred V - Really Happy Aliens.mp3        0.72s 10.01s  0.50s  18.0   -16.4    0.0   -16 -20 -20 -18 -23  -> 2c @ 0s,90s
+   195  Blanke, ÆON_MODE - Another Planet.mp3   0.73s 10.13s  0.49s  17.8    -9.4   90.0   -11 -14 -11 -9 -14  -> 2c @ 90s,0s
+   196  Koven - Say What You Want.mp3           0.76s 10.13s  0.45s  17.8    -7.6   90.0   -9 -10 -9 -8 -10  -> 2c @ 90s,0s
+   197  Modera, Phoebe Tsen - Lotus Flower (Ex  0.69s 10.24s  0.42s  17.6   -10.7    0.0   -11 -14 -14 -11 -12  -> 2c @ 0s,90s
+   198  Lane 8, RBBTS, OCULA - Visions (OCULA   0.69s 10.16s  0.65s  17.7    -9.0    0.0   -9 -12 -19 -15 -10  -> 3c @ 0s,120s,60s
+   199  Duce, Plaha, maybealice - All The Way   0.64s  8.14s  0.43s  17.4   -13.3   61.2   -15 -15 -13 -13 -16  -> 2c @ 61s,0s
+   200  Delta Heavy - Substance.mp3             0.67s 10.21s  0.89s  17.6    -7.6    0.0   -8 -13 -17 -12 -12  -> 3c @ 0s,120s,60s
+   201  Andromedik, Kanine - Ascension.mp3      0.73s 10.40s  0.67s  17.3    -6.6    0.0   -7 -9 -7 -9 -10  -> 3c @ 0s,60s,120s
+   202  Sultan + Shepard, Le Youth, Julia Chur  0.75s 10.36s  0.48s  17.4    -5.0   90.0   -11 -19 -10 -5 -10  -> 2c @ 90s,0s
+   203  Sultan + Shepard - All Access.mp3       0.73s 10.10s  0.59s  17.8   -16.4    0.0   -16 -18 -21 -16 -17  -> 2c @ 0s,90s
+   204  Rockwell - Somebody's Watching Me.mp3   0.73s 10.26s  0.61s  17.5    -7.6   90.0   -8 -8 -9 -8 -8  -> 2c @ 90s,0s
+   205  PRETTY YOUNG - Out Of The Blue.mp3      0.71s  9.47s  0.24s  17.8    -5.9   54.4   -6 -7 -6 -6 -8  -> 1c @ 54s
+   206  A.M.C - I See You.mp3                   0.71s 10.12s  0.46s  17.8    -7.0    0.0   -7 -11 -11 -8 -13  -> 2c @ 0s,90s
+   207  OCULA - Tephra (Extended Mix).mp3       0.69s 10.24s  0.61s  17.6   -25.9   60.0   -33 -28 -26 -31 -31  -> 3c @ 60s,120s,0s
+   208  Le Youth, MYRNE, Bertie Scott - golden  0.78s 10.33s  0.45s  17.4    -5.0   90.0   -20 -22 -13 -5 -8  -> 2c @ 90s,0s
+   209  Feint - Hope I Did Okay.mp3             0.72s 10.29s  0.47s  17.5   -31.1    0.0   -31 -33 -33 -33 -34  -> 2c @ 0s,90s
+   210  Marlon Hoffstadt, Dimension, DJ Daddy   0.76s 10.10s  0.61s  17.8    -5.5   90.0   -7 -9 -8 -5 -8  -> 2c @ 90s,0s
+   211  Pendulum - Voodoo People.mp3            0.75s 10.15s  0.46s  17.7   -23.4   90.0   -26 -33 -24 -23 -27  -> 2c @ 90s,0s
+   212  ISOxo, Fussy - STARsound (pt2).mp3      0.68s  9.14s  0.43s  17.5    -4.9    0.0   -5 -5 -9 -11 -10  -> 2c @ 0s,100s
+   213  Maduk, Feint, Diamond Eyes - Colours (  0.73s 10.27s  0.42s  17.5    -5.8    0.0   -6 -8 -10 -7 -8  -> 2c @ 0s,90s
+   214  Lane 8 - No Captain.mp3                 0.71s 10.22s  0.69s  17.6    -9.1  120.0   -10 -16 -17 -11 -9  -> 3c @ 120s,0s,60s
+   215  SOTA, A.M.C - Machete (A.M.C Remix).mp  0.70s 10.14s  0.65s  17.8   -11.4    0.0   -11 -14 -20 -18 -14  -> 3c @ 0s,120s,60s
+   216  Culture Shock, Sarah De Warren - All T  0.63s  9.25s  0.46s  17.2    -6.6    0.0   -7 -7 -8 -8 -8  -> 2c @ 0s,99s
+   217  Flowidus, Loboski - Lock It.mp3         0.71s 10.13s  0.64s  17.8    -9.6    0.0   -10 -11 -11 -12 -13  -> 3c @ 0s,60s,120s
+   218  Leo Stannard, Kidnap - Moments.mp3      0.68s 10.13s  0.49s  17.8    -7.4   30.0   -8 -7 -8 -8 -9  -> 2c @ 30s,90s
+   219  Koven, A.M.C - Hooked.mp3               0.67s  9.44s  0.47s  17.6    -6.1    0.0   -6 -7 -8 -7 -7  -> 2c @ 0s,106s
+   220  Kanine - Feel The Vibration.mp3         0.75s 10.12s  0.70s  17.8    -9.6    0.0   -10 -10 -10 -10 -11  -> 3c @ 0s,60s,120s
+   221  Chaney - Need You (Higher) (Extended M  0.81s  9.94s  0.44s  18.1    -4.8  120.0   -8 -7 -9 -8 -5  -> 2c @ 120s,30s
+   222  Le Youth - About Us.mp3                 0.72s 10.04s  0.76s  17.9   -12.7  120.0   -17 -17 -15 -13 -13  -> 3c @ 120s,60s,0s
+   223  Grafix - Body Language.mp3              0.75s 10.09s  0.44s  17.8    -6.8   90.0   -7 -9 -9 -7 -8  -> 2c @ 90s,0s
+   224  Nora En Pure - Diving with Whales.mp3   0.70s 10.05s  0.84s  17.9   -22.8    0.0   -23 -24 -35 -34 -24  -> 3c @ 0s,120s,60s
+   225  ÆON_MODE, ANY - Fireflies.mp3           0.72s 10.08s  0.46s  17.9    -3.3    0.0   -3 -7 -9 -7 -11  -> 2c @ 0s,90s
+   226  Funk LeBlanc, Holland Greco - Listen 4  0.74s 10.05s  0.61s  17.9    -6.5   90.0   -7 -7 -7 -7 -7  -> 2c @ 90s,30s
+   227  Wilkinson, Becky Hill - Afterglow.mp3   0.70s 10.05s  0.53s  17.9    -3.7   90.0   -5 -6 -5 -4 -6  -> 2c @ 90s,0s
+   228  Feint - Farcall.mp3                     0.72s  9.87s  0.48s  17.3   -21.5   83.3   -23 -26 -24 -22 -23  -> 2c @ 83s,0s
+   229  Circadian, Nu-La - ReBirth.mp3          0.67s 10.02s  0.61s  18.0    -6.8   90.0   -8 -10 -8 -7 -11  -> 2c @ 90s,0s
+   230  Ben Böhmer, Panama - Weightless.mp3     0.74s 10.10s  0.51s  17.8   -10.8   30.0   -17 -11 -11 -16 -16  -> 2c @ 30s,120s
+   231  Pirapus - BODY DROP (Won't Stop).mp3    0.77s 10.01s  0.85s  18.0    -9.6    0.0   -10 -11 -11 -12 -11  -> 3c @ 0s,60s,120s
+   232  Boyinaband, Feint, Veela - Time Bomb.m  0.82s 10.17s  0.88s  17.7    -9.4    0.0   -9 -10 -10 -11 -10  -> 3c @ 0s,120s,60s
+   233  John Summit, Absolutely - DON'T BELIEV  0.77s  9.93s  0.89s  18.1    -6.2   60.0   -9 -10 -6 -7 -10  -> 3c @ 60s,0s,120s
+   234  Jerro - Lake Nivu.mp3                   0.85s 10.09s  0.61s  17.8   -18.1   90.0   -24 -24 -20 -18 -21  -> 2c @ 90s,0s
+   235  Louis Millne - Sweet Escape.mp3         0.76s  9.96s  0.60s  18.1    -8.0   90.0   -8 -10 -10 -8 -10  -> 2c @ 90s,0s
+   236  Tinlicker, Julia Church - Glasshouse (  0.77s  9.98s  0.67s  18.0    -5.1    0.0   -5 -9 -13 -12 -10  -> 3c @ 0s,120s,60s
+   237  Sub Focus - Fine Day.mp3                0.72s 10.12s  0.55s  17.8    -3.4    0.0   -3 -6 -7 -4 -6  -> 2c @ 0s,90s
+   238  Kanine - Power.mp3                      0.77s 10.13s  0.44s  17.8    -8.9    0.0   -9 -11 -12 -9 -10  -> 2c @ 0s,90s
+   239  Subsonic - Genesis.mp3                  0.69s 10.19s  0.64s  17.7   -12.2   60.0   -20 -16 -12 -15 -22  -> 3c @ 60s,0s,120s
+   240  Flowidus, Loboski - Amplify.mp3         0.75s 10.31s  0.61s  17.5    -8.5   60.0   -12 -13 -9 -9 -13  -> 3c @ 60s,0s,120s
+   241  Adam F - Circles (Original Mix).mp3     0.69s 10.23s  0.41s  17.6   -15.6  120.0   -16 -16 -21 -28 -16  -> 2c @ 120s,30s
+   242  ATOM - confused future.mp3              0.68s 10.11s                -53.6         SIFTED OUT
+   243  Sultan + Shepard, Nathan Nicholson - U  0.73s 10.01s  0.62s  18.0    -5.3  120.0   -11 -15 -21 -8 -5  -> 3c @ 120s,0s,60s
+   244  Kanine - Get Down.mp3                   0.70s 10.27s  0.63s  17.5   -19.8    0.0   -20 -20 -20 -24 -21  -> 3c @ 0s,60s,120s
+   245  Ben Böhmer - After Earth (Orginal Mix)  0.68s  9.98s  0.83s  18.0   -31.6  120.0   -45 -48 -47 -35 -32  -> 3c @ 120s,0s,60s
+   246  Maduk, Dualistic, Cammie Robinson - Wa  0.77s 10.06s  0.44s  17.9    -6.8   90.0   -9 -12 -9 -7 -9  -> 2c @ 90s,0s
+   247  EMBRZ - Letting Go.mp3                  0.71s 10.07s  0.45s  17.9    -7.4   90.0   -18 -22 -12 -7 -9  -> 2c @ 90s,0s
+   248  Lexurus, Gomey - The Distance.mp3       0.70s 10.14s  0.72s  17.8    -6.4    0.0   -6 -9 -11 -9 -9  -> 3c @ 0s,120s,60s
+   249  family affair.mp3                       0.58s  6.77s  0.20s  16.4    -8.1    0.0   -8 -9 -11 -12 -13  -> 1c @ 0s
+   250  Jerro, Sultan + Shepard, The Temper Tr  0.74s 10.16s  0.85s  17.7    -5.3   60.0   -17 -7 -5 -8 -11  -> 3c @ 60s,120s,0s
+   251  Jerro - Forever.mp3                     0.74s 10.42s  0.86s  17.3   -13.4   60.0   -15 -16 -13 -15 -18  -> 3c @ 60s,0s,120s
+   252  Kasbo, Frida Sundemo - This Is It.mp3   0.70s 10.43s  0.46s  17.3    -9.8   90.0   -12 -11 -12 -10 -12  -> 2c @ 90s,30s
+   253  Jack Ü - Get Free _ Cinema VIP.mp3      0.77s 10.40s  0.81s  17.3    -4.6    0.0   -5 -8 -15 -14 -5  -> 3c @ 0s,120s,60s
+   254  Synergy - Spiral.mp3                    0.72s 10.26s  0.45s  17.5   -11.2   90.0   -12 -12 -12 -11 -11  -> 2c @ 90s,0s
+   255  Courtney Storm - West Coast.mp3         0.69s 10.25s  0.67s  17.6   -15.2   60.0   -26 -17 -15 -21 -23  -> 3c @ 60s,120s,0s
+   256  1991, Pirapus - Full Send (Pirapus Rem  0.73s 10.31s  0.68s  17.5   -12.0   60.0   -14 -15 -12 -13 -15  -> 3c @ 60s,0s,120s
+   257  Sub Focus - Airplane (Culture Shock Re  0.69s 10.24s  0.67s  17.6    -8.7    0.0   -9 -10 -14 -14 -13  -> 3c @ 0s,120s,60s
+   258  A.M.C, Turno - Ice Cold VIP.mp3         0.71s 10.22s  0.83s  17.6   -11.9  120.0   -12 -15 -14 -12 -12  -> 3c @ 120s,0s,60s
+   259  Malaa (Alter Ego), ÆON_MODE, Malaa - G  0.68s  9.40s  0.61s  17.4    -6.7    0.0   -7 -11 -11 -12 -13  -> 2c @ 0s,77s
+   260  CRi, Nicky Elisabeth - This Is Our Lif  0.71s 10.20s  0.64s  17.6    -9.7  120.0   -14 -13 -13 -14 -10  -> 3c @ 120s,60s,0s
+   261  Ellie Goulding - Hanging On (Sigma Rem  0.68s 10.23s  0.64s  17.6    -9.3   90.0   -22 -21 -10 -9 -21  -> 2c @ 90s,30s
+   262  cypress, ORACLE, MØØNE - go, for now.m  0.76s 10.26s  0.64s  17.5    -8.3    0.0   -8 -11 -13 -10 -9  -> 3c @ 0s,120s,60s
+   263  Lane 8, Sultan + Shepard, sadHAPPY - D  0.72s 10.29s  0.42s  17.5    -7.8   90.0   -11 -10 -8 -8 -11  -> 2c @ 90s,30s
+   264  Colyn, Sultan + Shepard - 1973.mp3      0.71s 10.20s  0.42s  17.6   -10.4   90.0   -15 -15 -19 -10 -13  -> 2c @ 90s,30s
+   265  Synergy - Mirage.mp3                    0.68s 10.15s  0.44s  17.7   -11.5   90.0   -11 -14 -13 -11 -15  -> 2c @ 90s,0s
+   266  Pola & Bryson, Hugh Hardie - Lifted.mp  0.78s 10.20s  0.43s  17.6    -9.6   30.0   -10 -10 -11 -11 -12  -> 2c @ 30s,90s
+   267  Fox Stevenson - Still Here.mp3          0.77s 10.19s  0.48s  17.7    -5.0    0.0   -5 -6 -6 -5 -7  -> 2c @ 0s,90s
+   268  Zedd, VALORANT, Foxes - Clarity (BUNT.  0.74s 10.21s  0.73s  17.6    -2.7    0.0   -3 -8 -9 -7 -7  -> 3c @ 0s,120s,60s
+   269  Eliminate - Weeble Wobble VIP.mp3       0.69s 10.05s  0.52s  17.0    -9.8    0.0   -10 -11 -11 -11 -11  -> 2c @ 0s,111s
+   270  Sultan + Shepard, Shallou - Raye (Exte  0.78s 10.14s  0.68s  17.8    -5.5    0.0   -5 -6 -12 -21 -13  -> 3c @ 0s,60s,120s
+   271  Feint, V O E - The Light.mp3            0.71s 10.27s  0.45s  17.5    -5.7   90.0   -8 -10 -7 -6 -9  -> 2c @ 90s,0s
+   272  BrEaCh - Jack (Hoax Rework).mp3         0.77s 10.35s  0.65s  17.4   -12.1    0.0   -12 -13 -13 -13 -12  -> 3c @ 0s,120s,60s
+   273  Fred again.., Jozzy - ten.mp3           0.69s 10.43s  0.64s  17.3    -9.8   60.0   -12 -11 -10 -11 -17  -> 3c @ 60s,0s,120s
+  cached excerpts: 644, vocal-to-mixture energy median -8.4 dB, 79% above -12 dB
+  total 38640 labelled audio-s from 48572 scan audio-s in 3227.2 wall-s -> 15.1 audio-s/s (teacher)
+
+[2/3] student training
+  577 train crops / 27 val crops (245 train / 27 val songs), crop 256 frames = 1486 ms, batch 16, lr 0.0003
+  model: CausalSpectralUNet, 529,732 params (0.5297 M), INT8 517 KB
+  warm start: ../results/_probeC_best.pt (trained 1850 steps, best val 0.9588576927781105)
+  val log-L1 at initialisation: 0.96775
+     step        lr     train       val     sec   aud-s/s
+        1  1.50e-06    0.9078    0.9678     0.0 5661242.2
+      250  3.00e-04    0.9912    0.9945    28.8     206.1
+      500  3.00e-04    1.1166    0.9886    56.9     208.8
+      750  3.00e-04    0.9889    0.9856    85.0     209.9
+     1000  3.00e-04    0.9941    1.0015   112.9     210.7
+     1250  3.00e-04    1.1216    0.9988   141.1     210.7
+     1500  3.00e-04    0.9466    0.9920   169.2     210.8
+     1750  3.00e-04    0.9330    0.9902   197.6     210.6
+     2000  3.00e-04    0.9959    1.0168   225.7     210.7
+     2250  3.00e-04    1.0140    0.9958   254.0     210.7
+     2500  3.00e-04    0.9664    1.0449   282.3     210.6
+     2750  2.99e-04    1.0156    1.0099   310.3     210.7
+     3000  2.99e-04    0.9456    1.0024   338.7     210.6
+     3250  2.99e-04    0.9695    0.9983   366.5     210.8
+     3500  2.99e-04    0.9226    0.9936   394.2     211.1
+     3750  2.99e-04    1.2064    0.9906   422.2     211.2
+     4000  2.99e-04    1.0508    1.0113   450.3     211.2
+     4250  2.99e-04    1.0319    1.0157   478.1     211.3
+     4500  2.98e-04    0.9440    0.9805   507.2     211.0
+     4750  2.98e-04    0.9044    0.9878   534.9     211.1
+     5000  2.98e-04    0.9620    0.9930   562.2     211.5
+     5250  2.98e-04    1.0009    1.0238   588.8     212.0
+     5500  2.98e-04    1.1403    1.0039   614.1     213.0
+     5750  2.97e-04    1.0172    1.0153   642.6     212.8
+     6000  2.97e-04    0.9424    0.9971   669.3     213.2
+     6250  2.97e-04    0.9601    0.9824   699.1     212.6
+     6500  2.97e-04    1.1179    1.0767   728.4     212.2
+     6750  2.96e-04    0.9820    1.0038   758.7     211.5
+     7000  2.96e-04    0.9484    0.9810   788.3     211.1
+     7250  2.96e-04    1.0621    0.9923   816.5     211.1
+     7500  2.96e-04    1.0959    1.0117   846.8     210.6
+     7750  2.95e-04    0.9251    1.0083   874.0     210.8
+     8000  2.95e-04    1.0388    1.0258   900.6     211.2
+     8250  2.95e-04    0.7865    0.9862   927.8     211.4
+     8500  2.94e-04    0.9592    1.0181   956.2     211.4
+     8750  2.94e-04    0.9154    0.9813   984.9     211.2
+     9000  2.94e-04    0.9725    1.0193  1013.5     211.1
+     9250  2.93e-04    1.0436    1.0269  1042.0     211.1
+     9500  2.93e-04    1.0411    1.0117  1070.4     211.0
+     9750  2.93e-04    0.9160    0.9961  1098.9     211.0
+    10000  2.92e-04    1.0351    0.9955  1127.5     210.9
+    10250  2.92e-04    0.9721    1.0062  1156.2     210.8
+    10500  2.91e-04    1.0122    0.9828  1184.4     210.8
+    10750  2.91e-04    0.8507    1.0210  1214.8     210.4
+    11000  2.91e-04    1.0456    1.0766  1241.1     210.7
+    11250  2.90e-04    0.9373    0.9918  1269.6     210.7
+    11500  2.90e-04    0.9053    0.9953  1298.0     210.7
+    11750  2.89e-04    0.9121    1.0198  1326.7     210.6
+    12000  2.89e-04    0.9753    0.9989  1354.8     210.6
+    12250  2.88e-04    0.9116    1.0126  1383.4     210.5
+    12500  2.88e-04    0.9566    1.0047  1411.0     210.6
+    12750  2.87e-04    0.8987    0.9893  1438.6     210.7
+    13000  2.87e-04    0.9719    0.9871  1465.6     210.9
+    13250  2.87e-04    0.9295    0.9871  1492.8     211.0
+    13500  2.86e-04    0.8259    1.0088  1520.0     211.2
+    13750  2.86e-04    0.9494    1.0072  1548.3     211.2
+    14000  2.85e-04    0.9956    0.9960  1576.2     211.2
+    14250  2.84e-04    0.9146    0.9960  1605.0     211.1
+    14500  2.84e-04    1.0138    0.9998  1633.5     211.1
+    14750  2.83e-04    0.8787    0.9986  1661.8     211.0
+    15000  2.83e-04    0.9742    1.0049  1690.5     211.0
+    15250  2.82e-04    0.8931    1.0172  1718.8     211.0
+    15500  2.82e-04    0.7888    1.0173  1747.7     210.9
+    15750  2.81e-04    0.9541    1.0009  1775.6     210.9
+    16000  2.80e-04    1.0216    1.0101  1803.7     210.9
+    16250  2.80e-04    1.1624    0.9991  1832.3     210.9
+    16500  2.79e-04    1.0741    1.0035  1861.0     210.8
+    16750  2.79e-04    0.9719    0.9977  1889.3     210.8
+    17000  2.78e-04    0.9193    1.0111  1917.6     210.8
+    17250  2.77e-04    0.9478    1.0177  1945.9     210.8
+    17500  2.77e-04    0.8095    1.0151  1973.5     210.8
+    17750  2.76e-04    1.0811    1.0175  2001.6     210.9
+    18000  2.75e-04    0.8458    0.9832  2029.9     210.8
+    18250  2.75e-04    0.9057    1.0058  2056.9     211.0
+    18500  2.74e-04    0.9658    1.0281  2084.0     211.1
+    18750  2.74e-04    0.9722    1.0096  2111.1     211.2
+    19000  2.73e-04    0.9590    0.9981  2138.3     211.3
+    19250  2.72e-04    0.9403    1.0141  2165.4     211.4
+    19500  2.71e-04    1.0413    1.0204  2192.6     211.5
+    19750  2.71e-04    0.9792    0.9947  2219.9     211.5
+    20000  2.70e-04    0.9209    1.0284  2247.0     211.6
+    20250  2.69e-04    0.9616    1.0129  2274.3     211.7
+    20500  2.69e-04    0.9586    0.9941  2301.6     211.8
+    20750  2.68e-04    0.9155    1.0093  2328.8     211.9
+    21000  2.67e-04    0.8716    1.0103  2356.0     211.9
+    21250  2.66e-04    0.9452    0.9976  2384.8     211.9
+    21500  2.66e-04    1.0472    1.0374  2413.2     211.8
+    21750  2.65e-04    1.1626    1.0111  2440.9     211.9
+    22000  2.64e-04    0.9677    0.9843  2469.2     211.8
+    22250  2.63e-04    1.0761    1.0243  2497.5     211.8
+    22500  2.63e-04    0.9701    1.0035  2526.1     211.8
+    22750  2.62e-04    0.9648    0.9935  2554.6     211.7
+    23000  2.61e-04    0.8965    0.9912  2583.0     211.7
+    23250  2.60e-04    1.0279    1.0010  2611.7     211.7
+    23500  2.59e-04    1.0745    1.0171  2639.6     211.7
+    23750  2.58e-04    0.9618    1.0228  2668.4     211.6
+    24000  2.58e-04    0.9962    1.0212  2696.7     211.6
+    24250  2.57e-04    0.9224    0.9990  2725.3     211.6
+    24500  2.56e-04    0.9327    1.0432  2753.4     211.6
+    24750  2.55e-04    0.8887    0.9918  2782.1     211.5
+    25000  2.54e-04    0.8955    0.9982  2810.9     211.5
+    25250  2.53e-04    1.0148    1.0117  2839.2     211.5
+    25500  2.52e-04    0.9015    1.0216  2867.0     211.5
+    25750  2.52e-04    0.9332    0.9985  2895.7     211.4
+    26000  2.51e-04    1.0947    1.0205  2924.1     211.4
+    26250  2.50e-04    0.9087    0.9961  2952.3     211.4
+    26500  2.49e-04    0.8436    0.9951  2980.3     211.4
+    26750  2.48e-04    1.0611    1.0200  3008.7     211.4
+    27000  2.47e-04    0.8444    1.0350  3036.9     211.4
+    27250  2.46e-04    0.9588    0.9978  3065.6     211.4
+    27500  2.45e-04    0.8485    1.0215  3093.9     211.3
+    27750  2.44e-04    1.0647    1.0004  3122.9     211.3
+    28000  2.43e-04    0.9407    1.0096  3151.5     211.3
+    28250  2.42e-04    1.0459    1.0026  3180.1     211.2
+    28500  2.41e-04    0.8531    0.9948  3208.3     211.2
+    28750  2.40e-04    0.8803    1.0237  3236.7     211.2
+    29000  2.39e-04    0.9789    1.0120  3263.7     211.3
+    29250  2.38e-04    1.0148    0.9868  3291.3     211.3
+    29500  2.37e-04    0.9743    1.0168  3320.0     211.3
+    29750  2.36e-04    0.9706    1.0139  3348.7     211.2
+    30000  2.36e-04    0.9721    1.0096  3376.3     211.3
+    30250  2.35e-04    0.8141    1.0115  3404.2     211.3
+    30500  2.34e-04    1.0249    1.0252  3432.9     211.3
+    30750  2.33e-04    0.9164    1.0111  3461.3     211.2
+    31000  2.31e-04    0.9511    1.0266  3489.5     211.2
+    31250  2.30e-04    0.9359    0.9938  3517.6     211.2
+    31500  2.29e-04    0.7607    0.9959  3545.8     211.2
+    31750  2.28e-04    0.8943    1.0136  3573.7     211.2
+    32000  2.27e-04    0.8746    1.0057  3602.4     211.2
+    32250  2.26e-04    0.8416    1.0187  3629.1     211.3
+    32500  2.25e-04    0.9533    1.0062  3656.0     211.4
+    32750  2.24e-04    0.8940    1.0074  3682.7     211.5
+    33000  2.23e-04    0.9151    1.0053  3710.4     211.5
+    33250  2.22e-04    0.9067    1.0011  3736.7     211.6
+    33500  2.21e-04    0.9256    0.9975  3764.1     211.6
+    33750  2.20e-04    1.0240    1.0256  3792.5     211.6
+    34000  2.19e-04    0.9854    1.0024  3820.6     211.6
+    34250  2.18e-04    0.8189    1.0313  3848.3     211.6
+    34500  2.17e-04    0.8762    1.0055  3876.3     211.6
+    34750  2.16e-04    1.0476    1.0147  3903.8     211.7
+    35000  2.15e-04    1.0232    0.9957  3932.2     211.6
+    35250  2.14e-04    1.0487    0.9913  3960.7     211.6
+    35500  2.13e-04    0.8834    1.0106  3987.1     211.7
+    35750  2.12e-04    0.8684    1.0002  4015.4     211.7
+    36000  2.11e-04    0.8955    1.0002  4042.8     211.7
+    36250  2.10e-04    0.9863    1.0016  4071.1     211.7
+    36500  2.09e-04    0.9335    1.0268  4099.0     211.7
+    36750  2.07e-04    0.9799    1.0198  4126.7     211.7
+    37000  2.06e-04    0.8914    1.0203  4154.7     211.7
+    37250  2.05e-04    0.9539    0.9869  4182.9     211.7
+    37500  2.04e-04    0.8076    1.0077  4211.3     211.7
+    37750  2.03e-04    0.9269    1.0159  4239.2     211.7
+    38000  2.02e-04    0.9578    1.0213  4267.5     211.7
+    38250  2.01e-04    0.8710    1.0167  4296.1     211.7
+    38500  2.00e-04    0.8716    1.0116  4324.8     211.7
+    38750  1.98e-04    0.9289    1.0235  4353.8     211.6
+    39000  1.97e-04    0.9779    1.0162  4383.7     211.5
+    39250  1.96e-04    0.8894    1.0144  4412.0     211.5
+    39500  1.95e-04    0.7977    1.0018  4438.7     211.6
+    39750  1.94e-04    0.9707    1.0016  4466.9     211.6
+    40000  1.93e-04    0.9034    1.0128  4488.7     211.9
+    40250  1.92e-04    0.8529    1.0193  4518.8     211.8
+    40500  1.91e-04    0.8704    1.0095  4548.9     211.7
+    40750  1.89e-04    0.9244    1.0015  4580.2     211.5
+    41000  1.88e-04    0.8476    1.0124  4611.8     211.4
+    41250  1.87e-04    0.8924    1.0217  4643.1     211.2
+    41500  1.85e-04    0.9715    1.0004  4674.4     211.1
+    41750  1.84e-04    0.9614    1.0118  4705.5     211.0
+    42000  1.83e-04    0.8790    1.0080  4736.7     210.8
+    42250  1.82e-04    0.8147    0.9943  4768.1     210.7
+    42500  1.80e-04    0.8569    1.0152  4799.5     210.6
+    42750  1.79e-04    0.9068    1.0028  4830.8     210.4
+    43000  1.78e-04    0.9594    0.9925  4862.3     210.3
+    43250  1.76e-04    0.9540    1.0128  4893.6     210.1
+    43500  1.75e-04    0.8219    1.0124  4924.7     210.0
+    43750  1.74e-04    0.9095    1.0057  4955.5     209.9
+    44000  1.72e-04    0.8625    1.0060  4987.0     209.8
+    44250  1.71e-04    0.8129    1.0162  5018.4     209.7
+    44500  1.70e-04    0.8498    1.0128  5049.8     209.5
+    44750  1.68e-04    0.9555    1.0175  5080.7     209.4
+    45000  1.67e-04    0.9834    1.0026  5112.1     209.3
+    45250  1.66e-04    1.0682    1.0082  5143.1     209.2
+    45500  1.65e-04    1.0746    1.0186  5174.1     209.1
+    45750  1.63e-04    0.8921    1.0114  5204.6     209.0
+    46000  1.62e-04    1.0359    1.0245  5235.3     208.9
+    46250  1.61e-04    0.8813    1.0097  5265.7     208.8
+    46500  1.59e-04    0.8305    1.0053  5296.4     208.8
+    46750  1.58e-04    0.8997    1.0260  5327.0     208.7
+    47000  1.57e-04    0.8227    1.0144  5357.5     208.6
+    47250  1.56e-04    0.9377    1.0120  5388.1     208.5
+    47500  1.54e-04    0.8919    1.0162  5418.6     208.4
+    47750  1.53e-04    0.8302    1.0173  5449.9     208.3
+    48000  1.52e-04    0.9042    1.0209  5480.2     208.3
+    48250  1.50e-04    0.9341    1.0035  5510.9     208.2
+    48500  1.49e-04    0.8403    1.0120  5541.3     208.1
+    48750  1.48e-04    0.8320    1.0144  5572.1     208.0
+    49000  1.46e-04    0.8279    0.9942  5603.0     207.9
+    49250  1.45e-04    0.9349    1.0003  5633.8     207.9
+    49500  1.44e-04    0.9841    1.0287  5664.5     207.8
+    49750  1.43e-04    0.9026    1.0145  5695.2     207.7
+    50000  1.41e-04    0.8423    1.0043  5725.5     207.6
+    50250  1.40e-04    1.0335    1.0092  5756.3     207.6
+    50500  1.39e-04    0.8262    1.0140  5787.4     207.5
+    50750  1.37e-04    0.8941    1.0206  5817.7     207.4
+    51000  1.36e-04    0.9754    1.0276  5848.0     207.4
+    51250  1.35e-04    0.8516    1.0079  5878.5     207.3
+    51500  1.34e-04    0.8749    1.0256  5909.1     207.2
+    51750  1.32e-04    0.9126    1.0048  5940.5     207.1
+    52000  1.31e-04    0.9606    1.0200  5970.7     207.1
+    52250  1.30e-04    0.8484    1.0094  6001.3     207.0
+    52500  1.29e-04    0.8407    0.9979  6031.7     207.0
+    52750  1.27e-04    0.7616    1.0234  6062.8     206.9
+    53000  1.26e-04    0.7474    1.0121  6093.0     206.8
+    53250  1.25e-04    0.9061    1.0018  6123.9     206.8
+    53500  1.23e-04    1.0131    1.0101  6154.8     206.7
+    53750  1.22e-04    0.8763    1.0030  6185.4     206.6
+    54000  1.21e-04    0.8264    1.0191  6216.1     206.6
+    54250  1.20e-04    0.9138    1.0005  6247.0     206.5
+    54500  1.18e-04    0.8576    1.0158  6277.4     206.4
+    54750  1.17e-04    0.8800    1.0118  6308.4     206.4
+    55000  1.16e-04    0.9154    1.0227  6339.7     206.3
+    55250  1.15e-04    0.9184    1.0028  6370.1     206.2
+    55500  1.13e-04    0.8160    1.0217  6400.5     206.2
+    55750  1.12e-04    0.8092    1.0039  6431.2     206.1
+    56000  1.11e-04    0.9707    1.0173  6461.7     206.1
+    56250  1.10e-04    1.0911    1.0219  6492.2     206.0
+    56500  1.08e-04    0.8914    1.0163  6522.8     206.0
+    56750  1.07e-04    0.9098    1.0092  6553.5     205.9
+    57000  1.06e-04    0.8164    1.0005  6584.1     205.8
+    57250  1.05e-04    0.9349    1.0084  6614.8     205.8
+    57500  1.04e-04    0.8041    1.0215  6645.3     205.7
+    57750  1.02e-04    0.8062    1.0076  6676.0     205.7
+    58000  1.01e-04    0.9632    1.0154  6706.5     205.6
+    58250  1.00e-04    0.8445    1.0095  6737.0     205.6
+    58500  9.88e-05    0.8629    1.0161  6767.4     205.5
+    58750  9.76e-05    0.8652    1.0125  6798.3     205.5
+    59000  9.64e-05    0.9447    1.0098  6829.0     205.4
+    59250  9.53e-05    0.9243    1.0106  6859.4     205.4
+    59500  9.41e-05    0.9166    1.0106  6890.4     205.3
+    59750  9.29e-05    0.9606    1.0134  6920.9     205.3
+    60000  9.18e-05    0.9187    1.0160  6951.1     205.2
+    60250  9.06e-05    0.8199    1.0014  6981.5     205.2
+    60500  8.95e-05    0.8697    1.0097  7012.3     205.1
+    60750  8.83e-05    0.8035    1.0011  7042.6     205.1
+    61000  8.72e-05    0.9383    1.0113  7073.4     205.1
+    61250  8.60e-05    0.8119    1.0162  7103.8     205.0
+    61500  8.49e-05    0.9129    1.0156  7134.5     205.0
+    61750  8.38e-05    0.9275    1.0070  7165.0     204.9
+    62000  8.27e-05    0.9063    1.0230  7195.3     204.9
+    62250  8.15e-05    1.0195    1.0108  7226.1     204.8
+    62500  8.04e-05    0.8939    1.0151  7256.5     204.8
+    62750  7.93e-05    0.9594    1.0134  7287.2     204.7
+    63000  7.83e-05    0.8177    1.0160  7317.4     204.7
+    63250  7.72e-05    0.8238    1.0198  7347.7     204.7
+    63500  7.61e-05    0.9644    1.0115  7378.1     204.6
+    63750  7.50e-05    0.8518    1.0186  7409.1     204.6
+    64000  7.40e-05    0.8792    1.0087  7437.8     204.6
+    64250  7.30e-05    0.8525    1.0183  7466.0     204.6
+    64500  7.20e-05    0.9477    1.0124  7493.8     204.7
+    64750  7.10e-05    0.9325    1.0108  7523.1     204.6
+    65000  7.00e-05    0.9340    1.0049  7552.1     204.6
+    65250  6.91e-05    0.8088    1.0094  7579.3     204.7
+    65500  6.81e-05    0.9278    1.0100  7608.1     204.7
+    65750  6.72e-05    0.9306    1.0009  7635.6     204.7
+    66000  6.63e-05    0.9357    1.0151  7663.2     204.8
+    66250  6.53e-05    0.9073    0.9988  7692.1     204.8
+    66500  6.44e-05    0.7830    1.0313  7719.6     204.8
+    66750  6.35e-05    0.8472    1.0081  7747.3     204.9
+    67000  6.26e-05    0.9563    1.0152  7774.8     204.9
+    67250  6.17e-05    0.8927    1.0189  7802.6     204.9
+    67500  6.08e-05    0.9154    1.0020  7830.5     205.0
+    67750  5.99e-05    0.8122    1.0124  7858.4     205.0
+    68000  5.90e-05    0.7545    1.0071  7886.7     205.0
+    68250  5.82e-05    0.8789    1.0191  7914.2     205.0
+    68500  5.73e-05    0.9056    1.0099  7941.8     205.1
+    68750  5.64e-05    0.8388    1.0008  7969.6     205.1
+    69000  5.56e-05    0.9195    1.0087  7997.1     205.2
+    69250  5.47e-05    0.9297    1.0104  8025.1     205.2
+    69500  5.39e-05    0.7728    1.0149  8052.4     205.2
+    69750  5.31e-05    0.8572    1.0073  8080.0     205.3
+    70000  5.22e-05    0.7944    1.0173  8108.3     205.3
+    70250  5.14e-05    0.8518    1.0186  8135.9     205.3
+    70500  5.06e-05    0.8641    1.0124  8163.3     205.3
+    70750  4.98e-05    0.8771    1.0193  8191.6     205.4
+    71000  4.89e-05    0.9193    1.0117  8220.9     205.4
+    71250  4.81e-05    0.8487    1.0060  8249.2     205.4
+    71500  4.73e-05    0.7925    1.0073  8278.3     205.4
+    71750  4.65e-05    0.8510    1.0086  8306.0     205.4
+    72000  4.57e-05    0.9250    1.0064  8334.4     205.4
+    72250  4.50e-05    0.8925    1.0234  8361.9     205.4
+    72500  4.42e-05    0.8901    1.0092  8390.0     205.5
+    72750  4.34e-05    0.8997    1.0092  8419.3     205.5
+    73000  4.26e-05    0.8207    1.0004  8448.0     205.5
+    73250  4.18e-05    0.9171    1.0136  8478.1     205.4
+    73500  4.11e-05    0.7322    1.0008  8506.9     205.4
+    73750  4.03e-05    0.8981    1.0017  8535.1     205.5
+    74000  3.96e-05    0.9082    1.0101  8563.8     205.5
+    74250  3.89e-05    0.9584    1.0082  8591.5     205.5
+    74500  3.82e-05    0.9564    1.0058  8618.8     205.5
+    74750  3.75e-05    0.7887    1.0237  8647.7     205.5
+    75000  3.68e-05    0.8683    1.0073  8676.8     205.5
+    75250  3.61e-05    0.9074    1.0143  8704.7     205.5
+    75500  3.54e-05    0.8489    1.0130  8732.6     205.6
+    75750  3.48e-05    0.8017    1.0242  8760.0     205.6
+    76000  3.41e-05    0.8839    1.0136  8787.6     205.6
+    76250  3.35e-05    0.9605    1.0044  8815.6     205.7
+    76500  3.29e-05    0.9671    1.0085  8843.5     205.7
+    76750  3.22e-05    0.9059    1.0080  8871.1     205.7
+    77000  3.16e-05    0.8315    1.0031  8899.3     205.7
+    77250  3.10e-05    0.9364    1.0090  8928.4     205.7
+    77500  3.04e-05    0.9674    1.0171  8956.2     205.8
+    77750  2.98e-05    0.8045    1.0108  8983.8     205.8
+    78000  2.92e-05    0.8881    1.0076  9012.3     205.8
+    78250  2.86e-05    0.9392    1.0083  9041.2     205.8
+    78500  2.80e-05    1.0783    1.0036  9068.6     205.8
+    78750  2.74e-05    0.8792    1.0069  9096.4     205.8
+    79000  2.69e-05    0.9200    1.0075  9124.0     205.9
+    79250  2.63e-05    0.9258    1.0121  9151.8     205.9
+    79500  2.58e-05    0.8676    1.0123  9178.8     205.9
+    79750  2.53e-05    0.9541    1.0146  9206.7     206.0
+    80000  2.48e-05    0.8202    1.0097  9234.6     206.0
+    80250  2.43e-05    0.8230    1.0101  9262.1     206.0
+    80500  2.38e-05    0.8206    1.0105  9290.3     206.0
+    80750  2.33e-05    0.9837    1.0128  9317.8     206.1
+    81000  2.28e-05    0.8553    1.0087  9346.2     206.1
+    81250  2.23e-05    0.8407    1.0061  9373.7     206.1
+    81500  2.18e-05    0.7946    1.0078  9401.1     206.1
+    81750  2.14e-05    0.8924    1.0084  9430.1     206.1
+    82000  2.09e-05    0.8181    1.0123  9457.5     206.2
+    82250  2.05e-05    0.7923    1.0091  9485.2     206.2
+    82500  2.00e-05    0.8532    1.0128  9512.7     206.2
+    82750  1.96e-05    0.8457    1.0105  9540.7     206.2
+    83000  1.92e-05    0.9448    1.0136  9568.1     206.3
+    83250  1.88e-05    0.8629    1.0041  9596.7     206.3
+    83500  1.84e-05    0.8276    1.0117  9625.3     206.3
+    83750  1.80e-05    0.9661    1.0103  9652.2     206.3
+    84000  1.76e-05    0.8406    1.0037  9679.7     206.3
+    84250  1.72e-05    0.8424    1.0113  9708.5     206.3
+    84500  1.69e-05    0.7933    1.0067  9735.8     206.4
+    84750  1.65e-05    0.8563    1.0146  9763.2     206.4
+    85000  1.62e-05    0.7320    1.0075  9790.6     206.4
+    85250  1.59e-05    0.9039    1.0062  9817.7     206.5
+    85500  1.56e-05    0.8252    1.0119  9845.5     206.5
+    85750  1.52e-05    0.8454    1.0081  9872.8     206.5
+    86000  1.49e-05    0.8874    1.0064  9901.5     206.5
+    86250  1.46e-05    0.8535    1.0054  9929.3     206.5
+    86500  1.43e-05    0.8993    1.0025  9958.3     206.5
+    86750  1.40e-05    0.8054    1.0104  9987.2     206.5
+    87000  1.38e-05    0.8190    1.0087 10014.1     206.6
+    87250  1.35e-05    0.8672    1.0102 10041.5     206.6
+    87500  1.33e-05    0.9122    1.0073 10069.4     206.6
+    87750  1.30e-05    0.9965    1.0102 10097.9     206.6
+    88000  1.28e-05    0.8592    1.0144 10126.5     206.6
+    88250  1.25e-05    0.8792    1.0115 10154.8     206.6
+    88500  1.23e-05    0.8386    1.0094 10184.7     206.6
+    88750  1.21e-05    0.9050    1.0134 10211.6     206.7
+    89000  1.19e-05    0.8220    1.0069 10239.0     206.7
+    89250  1.17e-05    0.8831    1.0093 10266.8     206.7
+    89500  1.16e-05    0.8757    1.0117 10295.9     206.7
+    89750  1.14e-05    0.8048    1.0117 10323.0     206.7
+    90000  1.12e-05    0.7367    1.0072 10352.1     206.7
+    90250  1.11e-05    0.8727    1.0099 10379.2     206.7
+    90500  1.09e-05    0.8656    1.0116 10407.0     206.8
+    90750  1.08e-05    0.7625    1.0084 10435.2     206.8
+    91000  1.07e-05    0.7930    1.0142 10464.1     206.8
+    91250  1.06e-05    0.8434    1.0119 10492.7     206.8
+    91500  1.05e-05    0.7283    1.0063 10521.6     206.8
+    91750  1.04e-05    0.8373    1.0092 10549.2     206.8
+    92000  1.03e-05    0.8382    1.0076 10577.9     206.8
+    92250  1.02e-05    0.8097    1.0068 10606.6     206.8
+    92500  1.02e-05    0.8771    1.0093 10634.8     206.8
+    92750  1.01e-05    0.8144    1.0059 10661.9     206.8
+    93000  1.01e-05    0.8273    1.0091 10689.4     206.9
+    93250  1.00e-05    0.8586    1.0114 10716.5     206.9
+    93500  1.00e-05    0.8477    1.0105 10745.4     206.9
+    93750  1.00e-05    0.8837    1.0115 10773.2     206.9
+  time budget 10800s reached at step 93994
+  best val 0.9678 at step 1
+  10800.1 wall-s for 2234917 audio-s of training -> 206.9 audio-s/s
+  val log-L1: 0.96775 -> 1.00943  (NO IMPROVEMENT)
+  -> listening-test model restored from step 1: val log-L1 0.96785 (--0.00009 vs init)
+  mask health (val): target mean 0.2404, predicted mean 0.3335, std 0.2750
+  -> mask varies -- not collapsed
+  best-val checkpoint -> k3w_best.pt (val 0.9678 @ step 1)
+
+[3/3] inference on the held-out track
+  held-out: excerpt_60_100.wav  40.0s
+  causal inference 0.32 wall-s -> RTF 0.008 on cuda
+  levels: mixture -9.3 dBFS   teacher_vocals -25.3 dBFS   student_vocals -23.8 dBFS   student_accompaniment -10.4 dBFS
+  SI-SDR(student, teacher vocals) = -2.33 dB
+  student vocals are +1.5 dB relative to the teacher -- a real signal
+
+wrote D:\WORKBUDDY\STEM\npu-stem\results\k3w_report.json
+wrote audio to D:\WORKBUDDY\STEM\npu-stem\results\k3w

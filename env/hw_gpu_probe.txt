@@ -1,0 +1,7 @@
+﻿=== GPU ===
+GameViewer Virtual Display Adapter | driver=15.6.5.199 | vram=0GB
+NVIDIA GeForce RTX 4070 Laptop GPU | driver=32.0.16.1664 | vram=4GB
+=== nvml dll ===
+C:\WINDOWS\System32\nvml.dll
+=== nvidia driver files ===
+nvidia-pcc.exe,nvidia-smi.exe

@@ -1,0 +1,167 @@
+{
+  "hardware": {
+    "device": "XC7Z020-1",
+    "n_dsp": 220,
+    "pl_freq_MHz": 200.0,
+    "bram_KB": 630.0,
+    "ddr_MBps": 1200.0,
+    "peak_gmac_s": 44.0,
+    "sustained_gmac_s": 22.0,
+    "sustained_efficiency": 0.5,
+    "latency_budget_ms": 100.0,
+    "compute_headroom_rtf": 0.5
+  },
+  "baselines": [],
+  "designs": [
+    {
+      "name": "causal-tiny",
+      "n_fft": 1024,
+      "hop": 256,
+      "n_bands": 64,
+      "frames_per_s": 172.27,
+      "enc": [
+        24,
+        48,
+        64,
+        96
+      ],
+      "params_M": 0.2977,
+      "weight_int8_KB": 290.8,
+      "gmac_per_audio_s": 0.5821,
+      "n_layers": 10,
+      "alg_latency_ms": 63.9,
+      "realistic_rtf_7020": 0.0265,
+      "activation_total_KB": 100.6,
+      "activation_max_buf_KB": 18.0,
+      "weight_stream_MBps_perframe": 51.3,
+      "weight_stream_MBps_perchunk": 12.8,
+      "gates": {
+        "causal_ok": true,
+        "compute_ok": true,
+        "memory_ok": true,
+        "bandwidth_ok": true
+      },
+      "verdict": "GO"
+    },
+    {
+      "name": "causal-recommended",
+      "n_fft": 1024,
+      "hop": 256,
+      "n_bands": 128,
+      "frames_per_s": 172.27,
+      "enc": [
+        32,
+        64,
+        96,
+        128
+      ],
+      "params_M": 0.5844,
+      "weight_int8_KB": 570.7,
+      "gmac_per_audio_s": 2.217,
+      "n_layers": 10,
+      "alg_latency_ms": 63.9,
+      "realistic_rtf_7020": 0.1008,
+      "activation_total_KB": 275.8,
+      "activation_max_buf_KB": 48.0,
+      "weight_stream_MBps_perframe": 100.7,
+      "weight_stream_MBps_perchunk": 25.2,
+      "gates": {
+        "causal_ok": true,
+        "compute_ok": true,
+        "memory_ok": true,
+        "bandwidth_ok": true
+      },
+      "verdict": "GO"
+    },
+    {
+      "name": "causal-wide",
+      "n_fft": 1024,
+      "hop": 256,
+      "n_bands": 256,
+      "frames_per_s": 172.27,
+      "enc": [
+        32,
+        64,
+        96,
+        128
+      ],
+      "params_M": 0.5844,
+      "weight_int8_KB": 570.7,
+      "gmac_per_audio_s": 4.434,
+      "n_layers": 10,
+      "alg_latency_ms": 63.9,
+      "realistic_rtf_7020": 0.2015,
+      "activation_total_KB": 551.5,
+      "activation_max_buf_KB": 96.0,
+      "weight_stream_MBps_perframe": 100.7,
+      "weight_stream_MBps_perchunk": 25.2,
+      "gates": {
+        "causal_ok": true,
+        "compute_ok": true,
+        "memory_ok": false,
+        "bandwidth_ok": true
+      },
+      "verdict": "NO-GO (memory_ok)"
+    },
+    {
+      "name": "causal-aggressive",
+      "n_fft": 1024,
+      "hop": 256,
+      "n_bands": 256,
+      "frames_per_s": 172.27,
+      "enc": [
+        48,
+        96,
+        128,
+        192
+      ],
+      "params_M": 1.1899,
+      "weight_int8_KB": 1162.0,
+      "gmac_per_audio_s": 9.2674,
+      "n_layers": 10,
+      "alg_latency_ms": 63.9,
+      "realistic_rtf_7020": 0.4212,
+      "activation_total_KB": 803.5,
+      "activation_max_buf_KB": 144.0,
+      "weight_stream_MBps_perframe": 205.0,
+      "weight_stream_MBps_perchunk": 51.2,
+      "gates": {
+        "causal_ok": true,
+        "compute_ok": true,
+        "memory_ok": false,
+        "bandwidth_ok": true
+      },
+      "verdict": "NO-GO (memory_ok)"
+    },
+    {
+      "name": "causal-2d-fullfreq",
+      "n_fft": 1024,
+      "hop": 256,
+      "n_bands": 513,
+      "frames_per_s": 172.27,
+      "enc": [
+        32,
+        64,
+        96,
+        128
+      ],
+      "params_M": 0.6212,
+      "weight_int8_KB": 606.7,
+      "gmac_per_audio_s": 17.6819,
+      "n_layers": 10,
+      "alg_latency_ms": 63.9,
+      "realistic_rtf_7020": 0.8037,
+      "activation_total_KB": 1612.2,
+      "activation_max_buf_KB": 288.0,
+      "weight_stream_MBps_perframe": 107.0,
+      "weight_stream_MBps_perchunk": 26.8,
+      "gates": {
+        "causal_ok": true,
+        "compute_ok": false,
+        "memory_ok": false,
+        "bandwidth_ok": true
+      },
+      "verdict": "NO-GO (compute_ok, memory_ok)"
+    }
+  ]
+}

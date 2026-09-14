@@ -1,0 +1,18 @@
+{
+  "track": "Jerro, Sophia Bel - Demons.mp3",
+  "lf_hz": 250.0,
+  "lf_bands": 44,
+  "floor_dB": -3.39,
+  "nolf": {
+    "vocal_si_sdr": 5.18,
+    "accomp_si_sdr": 10.15,
+    "sub120Hz_change_dB": -0.39,
+    "residual_vocal_vs_teacher_dB": -6.32
+  },
+  "lf": {
+    "vocal_si_sdr": 5.56,
+    "accomp_si_sdr": 10.34,
+    "sub120Hz_change_dB": -0.0,
+    "residual_vocal_vs_teacher_dB": -6.58
+  }
+}

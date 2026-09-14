@@ -1,0 +1,577 @@
+{
+  "schema": 1,
+  "target": "XC7Z020-1",
+  "checkpoint": "models/student_bott2_mir1k_candidate.pt",
+  "checkpoint_sha256": "cb16d333c372d9558ef563b9b4baa9b9f7f46f0ec72d5b71f9e26557a1abfb55",
+  "checkpoint_step": 2855,
+  "graph": {
+    "sample_rate_hz": 44100,
+    "n_fft": 1024,
+    "hop": 256,
+    "fft_bins": 513,
+    "bands": 128,
+    "band_layout": "legacy_log",
+    "chunk_frames": 16,
+    "chunk_audio_ms": 92.87981859410431,
+    "chunk_samples": 4096,
+    "low_frequency_protection_hz": 250.0,
+    "low_frequency_kill_bands": 44,
+    "mask_mode": "independent",
+    "output_formula": "accompaniment = delayed_mix - button_gain * vocals"
+  },
+  "quantization": {
+    "weights": "signed int8, symmetric, per output channel",
+    "activations": "signed int12, symmetric, per tensor",
+    "bias": "signed int32 in accumulator units",
+    "accumulator": "signed int32",
+    "mask": "uint8 after tanh and affine conversion",
+    "calibration_report": "results/quant_opt_bott2_mir1k_5m_model.json"
+  },
+  "totals": {
+    "parameters": 824900,
+    "macs_per_chunk": 123338752,
+    "gmac_per_audio_second": 1.3279392,
+    "estimated_compute_ms_at_22_gmac_s": 5.606306909090909,
+    "pe_array": {
+      "pout": 8,
+      "pin": 8,
+      "mac_lanes": 64,
+      "clock_hz": 200000000
+    },
+    "scheduled_cycles_pout8_pin8": 1986560,
+    "scheduled_ms_at_200mhz_ideal": 9.9328,
+    "scheduled_ms_at_50pct_control_efficiency": 19.8656,
+    "weights_blob_bytes": 824000,
+    "bias_blob_bytes": 3600,
+    "scales_blob_bytes": 7200,
+    "ddr_weight_bandwidth_mb_s_reload_each_chunk": 8.8716796875
+  },
+  "layers": [
+    {
+      "name": "enc0",
+      "input": [
+        2,
+        128,
+        16
+      ],
+      "output": [
+        32,
+        128,
+        16
+      ],
+      "op": "conv2d_causal",
+      "in_channels": 2,
+      "out_channels": 32,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 1,
+      "post_op": "leaky_relu_0.1",
+      "params": 608,
+      "macs_per_chunk": 1179648,
+      "scheduled_cycles_pout8_pin8": 73728,
+      "mac_lane_utilization": 0.25,
+      "input_activation_step_int12": 0.07046897899364925,
+      "output_activation_step_int12": 0.05372271617000488,
+      "weight_offset": 0,
+      "weight_bytes": 576,
+      "bias_offset": 0,
+      "bias_bytes": 128,
+      "scale_offset": 0,
+      "scale_bytes": 256,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.00439040781930089
+    },
+    {
+      "name": "enc1",
+      "input": [
+        32,
+        128,
+        16
+      ],
+      "output": [
+        64,
+        64,
+        8
+      ],
+      "op": "conv2d_causal",
+      "in_channels": 32,
+      "out_channels": 64,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 1,
+      "post_op": "leaky_relu_0.1",
+      "params": 18496,
+      "macs_per_chunk": 9437184,
+      "scheduled_cycles_pout8_pin8": 147456,
+      "mac_lane_utilization": 1.0,
+      "input_activation_step_int12": 0.05372271617000488,
+      "output_activation_step_int12": 0.0446866634098681,
+      "weight_offset": 576,
+      "weight_bytes": 18432,
+      "bias_offset": 128,
+      "bias_bytes": 256,
+      "scale_offset": 256,
+      "scale_bytes": 512,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.008233102969825268
+    },
+    {
+      "name": "enc2",
+      "input": [
+        64,
+        64,
+        8
+      ],
+      "output": [
+        96,
+        32,
+        4
+      ],
+      "op": "conv2d_causal",
+      "in_channels": 64,
+      "out_channels": 96,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 1,
+      "post_op": "leaky_relu_0.1",
+      "params": 55392,
+      "macs_per_chunk": 7077888,
+      "scheduled_cycles_pout8_pin8": 110592,
+      "mac_lane_utilization": 1.0,
+      "input_activation_step_int12": 0.0446866634098681,
+      "output_activation_step_int12": 0.024902002931118713,
+      "weight_offset": 19008,
+      "weight_bytes": 55296,
+      "bias_offset": 384,
+      "bias_bytes": 384,
+      "scale_offset": 768,
+      "scale_bytes": 768,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.008241919800639153
+    },
+    {
+      "name": "enc3",
+      "input": [
+        96,
+        32,
+        4
+      ],
+      "output": [
+        128,
+        16,
+        2
+      ],
+      "op": "conv2d_causal",
+      "in_channels": 96,
+      "out_channels": 128,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 1,
+      "post_op": "leaky_relu_0.1",
+      "params": 110720,
+      "macs_per_chunk": 3538944,
+      "scheduled_cycles_pout8_pin8": 55296,
+      "mac_lane_utilization": 1.0,
+      "input_activation_step_int12": 0.024902002931118713,
+      "output_activation_step_int12": 0.025177870053737176,
+      "weight_offset": 74304,
+      "weight_bytes": 110592,
+      "bias_offset": 768,
+      "bias_bytes": 512,
+      "scale_offset": 1536,
+      "scale_bytes": 1024,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.008222845382988453
+    },
+    {
+      "name": "bott",
+      "input": [
+        128,
+        16,
+        2
+      ],
+      "output": [
+        128,
+        16,
+        2
+      ],
+      "op": "conv2d_causal",
+      "in_channels": 128,
+      "out_channels": 128,
+      "kernel": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 0,
+      "post_op": "leaky_relu_0.1",
+      "params": 49280,
+      "macs_per_chunk": 1572864,
+      "scheduled_cycles_pout8_pin8": 24576,
+      "mac_lane_utilization": 1.0,
+      "input_activation_step_int12": 0.025177870053737176,
+      "output_activation_step_int12": 0.012061895456766,
+      "weight_offset": 184896,
+      "weight_bytes": 49152,
+      "bias_offset": 1280,
+      "bias_bytes": 512,
+      "scale_offset": 2560,
+      "scale_bytes": 1024,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.007713850121945143
+    },
+    {
+      "name": "bott_blocks.0.conv",
+      "input": [
+        128,
+        16,
+        2
+      ],
+      "output": [
+        128,
+        16,
+        2
+      ],
+      "residual": true,
+      "op": "conv2d_causal",
+      "in_channels": 128,
+      "out_channels": 128,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 1,
+      "post_op": "leaky_relu_0.1_then_residual_add",
+      "params": 147584,
+      "macs_per_chunk": 4718592,
+      "scheduled_cycles_pout8_pin8": 73728,
+      "mac_lane_utilization": 1.0,
+      "input_activation_step_int12": 0.012061895456766,
+      "output_activation_step_int12": 0.012140058622374206,
+      "weight_offset": 234048,
+      "weight_bytes": 147456,
+      "bias_offset": 1792,
+      "bias_bytes": 512,
+      "scale_offset": 3584,
+      "scale_bytes": 1024,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.012332895770668983
+    },
+    {
+      "name": "bott_blocks.1.conv",
+      "input": [
+        128,
+        16,
+        2
+      ],
+      "output": [
+        128,
+        16,
+        2
+      ],
+      "residual": true,
+      "op": "conv2d_causal",
+      "in_channels": 128,
+      "out_channels": 128,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 1,
+      "post_op": "leaky_relu_0.1_then_residual_add",
+      "params": 147584,
+      "macs_per_chunk": 4718592,
+      "scheduled_cycles_pout8_pin8": 73728,
+      "mac_lane_utilization": 1.0,
+      "input_activation_step_int12": 0.012140058622374206,
+      "output_activation_step_int12": 0.024902002931118713,
+      "weight_offset": 381504,
+      "weight_bytes": 147456,
+      "bias_offset": 2304,
+      "bias_bytes": 512,
+      "scale_offset": 4608,
+      "scale_bytes": 1024,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.011191586032509804
+    },
+    {
+      "name": "dec3",
+      "input": [
+        224,
+        32,
+        4
+      ],
+      "output": [
+        96,
+        32,
+        4
+      ],
+      "upsample": "bott_x2",
+      "skip": "enc2",
+      "op": "conv2d_causal",
+      "in_channels": 224,
+      "out_channels": 96,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 1,
+      "post_op": "leaky_relu_0.1",
+      "params": 193632,
+      "macs_per_chunk": 24772608,
+      "scheduled_cycles_pout8_pin8": 387072,
+      "mac_lane_utilization": 1.0,
+      "input_activation_step_int12": 0.024902002931118713,
+      "output_activation_step_int12": 0.0446866634098681,
+      "weight_offset": 528960,
+      "weight_bytes": 193536,
+      "bias_offset": 2816,
+      "bias_bytes": 384,
+      "scale_offset": 5632,
+      "scale_bytes": 768,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.01196808461099863
+    },
+    {
+      "name": "dec2",
+      "input": [
+        160,
+        64,
+        8
+      ],
+      "output": [
+        64,
+        64,
+        8
+      ],
+      "upsample": "dec3_x2",
+      "skip": "enc1",
+      "op": "conv2d_causal",
+      "in_channels": 160,
+      "out_channels": 64,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 1,
+      "post_op": "leaky_relu_0.1",
+      "params": 92224,
+      "macs_per_chunk": 47185920,
+      "scheduled_cycles_pout8_pin8": 737280,
+      "mac_lane_utilization": 1.0,
+      "input_activation_step_int12": 0.0446866634098681,
+      "output_activation_step_int12": 0.05372271617000488,
+      "weight_offset": 722496,
+      "weight_bytes": 92160,
+      "bias_offset": 3200,
+      "bias_bytes": 256,
+      "scale_offset": 6400,
+      "scale_bytes": 512,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.013919954188168049
+    },
+    {
+      "name": "dec1",
+      "input": [
+        96,
+        128,
+        16
+      ],
+      "output": [
+        32,
+        128,
+        16
+      ],
+      "upsample": "dec2_x2",
+      "skip": "enc0",
+      "op": "conv2d_causal",
+      "in_channels": 96,
+      "out_channels": 32,
+      "kernel": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 2,
+      "frequency_pad_each_side": 0,
+      "post_op": "leaky_relu_0.1",
+      "params": 9248,
+      "macs_per_chunk": 18874368,
+      "scheduled_cycles_pout8_pin8": 294912,
+      "mac_lane_utilization": 1.0,
+      "input_activation_step_int12": 0.05372271617000488,
+      "output_activation_step_int12": 0.028609477283829995,
+      "weight_offset": 814656,
+      "weight_bytes": 9216,
+      "bias_offset": 3456,
+      "bias_bytes": 128,
+      "scale_offset": 6912,
+      "scale_bytes": 256,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.014373051933944225
+    },
+    {
+      "name": "out",
+      "input": [
+        32,
+        128,
+        16
+      ],
+      "output": [
+        4,
+        128,
+        16
+      ],
+      "activation": "tanh",
+      "op": "conv2d_causal",
+      "in_channels": 32,
+      "out_channels": 4,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "dilation": [
+        1,
+        1
+      ],
+      "groups": 1,
+      "time_pad_left": 0,
+      "frequency_pad_each_side": 0,
+      "post_op": "tanh",
+      "params": 132,
+      "macs_per_chunk": 262144,
+      "scheduled_cycles_pout8_pin8": 8192,
+      "mac_lane_utilization": 0.5,
+      "input_activation_step_int12": 0.028609477283829995,
+      "output_activation_step_int12": 0.0004885197850512946,
+      "weight_offset": 823872,
+      "weight_bytes": 128,
+      "bias_offset": 3584,
+      "bias_bytes": 16,
+      "scale_offset": 7168,
+      "scale_bytes": 32,
+      "scale_layout": "float32 weight_step[Cout], float32 requant[Cout]",
+      "weight_layout": "OIHW int8",
+      "weight_relative_rmse": 0.005710388999432325
+    }
+  ]
+}

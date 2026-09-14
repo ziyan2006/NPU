@@ -1,0 +1,37 @@
+# ---- Python ----
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+envs/
+
+# ---- 编辑器 / 系统 ----
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# ---- 大件原始数据与中间缓存（体积大、可再生，不入库）----
+data/
+caches/
+*_cache/
+试听文件/
+demo/*.mp3
+*.partial
+*.part
+
+# ---- 训练中间产物（保留在 evidence/ 里的汇总 JSON 才是结论）----
+# 逐次运行的输出目录（含 t***_k*.pt 缓存碎片）
+results/*/
+results/*.pt
+results/*.json
+results/*.log
+logs/
+*.tmp
+
+# ---- 本地候选模型 ----
+# 已被 Git 追踪的发布基线不受此规则影响；新 checkpoint 先留在本地，
+# 确认成为发布权重后再用 git add -f 显式纳入。
+models/student_bott2*.pt
+models/htdemucs.th

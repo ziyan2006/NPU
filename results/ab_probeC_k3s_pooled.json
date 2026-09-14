@@ -1,0 +1,146 @@
+{
+  "protocol": "mean of 3 excerpts per track (frac 0.25/0.5/0.75)",
+  "a": "probeC_best",
+  "b": "k3s_model (900s on K=3 cache)",
+  "vocal_median_gain_dB": 0.21,
+  "vocal_mean_gain_dB": 0.16,
+  "vocal_improved": 13,
+  "n": 19,
+  "accomp_median_gain_dB": 0.08,
+  "accomp_improved": 13,
+  "per_track": [
+    {
+      "track": "Lee Uhf, Noise Souls - Leaving Everything Behind Us.mp3",
+      "k": 1,
+      "probeC": 3.32,
+      "k3s": 2.94,
+      "gain": -0.38
+    },
+    {
+      "track": "Sultan + Shepard, Nathan Nicholson - Naama.mp3",
+      "k": 1,
+      "probeC": 1.86,
+      "k3s": 1.6,
+      "gain": -0.26
+    },
+    {
+      "track": "BUNT., Mapei - TRIPPIN.mp3",
+      "k": 1,
+      "probeC": 2.69,
+      "k3s": 2.53,
+      "gain": -0.16
+    },
+    {
+      "track": "Jerro, Sophia Bel - Demons.mp3",
+      "k": 1,
+      "probeC": 5.28,
+      "k3s": 5.19,
+      "gain": -0.09
+    },
+    {
+      "track": "Luude, 1991 - All We Do Is Dance.mp3",
+      "k": 1,
+      "probeC": 4.8,
+      "k3s": 4.71,
+      "gain": -0.09
+    },
+    {
+      "track": "Tantrum Desire, Gracie van Brunt - Lift You Up.mp3",
+      "k": 1,
+      "probeC": 4.02,
+      "k3s": 3.97,
+      "gain": -0.05
+    },
+    {
+      "track": "Derivakat, Netrum - Lost in Space.mp3",
+      "k": 3,
+      "probeC": 1.8,
+      "k3s": 1.89,
+      "gain": 0.09
+    },
+    {
+      "track": "Feint, Hylia - Treading Water (feat. HYLIA).mp3",
+      "k": 3,
+      "probeC": 3.49,
+      "k3s": 3.6,
+      "gain": 0.11
+    },
+    {
+      "track": "Dimension - Devotion.mp3",
+      "k": 3,
+      "probeC": 5.4,
+      "k3s": 5.53,
+      "gain": 0.13
+    },
+    {
+      "track": "John Summit, Guz, Stevie Appleton - What A Life.mp3",
+      "k": 1,
+      "probeC": 0.52,
+      "k3s": 0.73,
+      "gain": 0.21
+    },
+    {
+      "track": "Oscar Yuan - Solo.mp3",
+      "k": 3,
+      "probeC": 5.53,
+      "k3s": 5.76,
+      "gain": 0.23
+    },
+    {
+      "track": "Metrik, ÆON_MODE - Awake.mp3",
+      "k": 1,
+      "probeC": 0.24,
+      "k3s": 0.48,
+      "gain": 0.24
+    },
+    {
+      "track": "Sullivan King - The Beginning.mp3",
+      "k": 2,
+      "probeC": -1.72,
+      "k3s": -1.46,
+      "gain": 0.27
+    },
+    {
+      "track": "Forester - I Can See You Everywhere.mp3",
+      "k": 1,
+      "probeC": -1.84,
+      "k3s": -1.54,
+      "gain": 0.3
+    },
+    {
+      "track": "Sub Focus, Culture Shock, Fragma - Miracle.mp3",
+      "k": 2,
+      "probeC": 4.79,
+      "k3s": 5.19,
+      "gain": 0.4
+    },
+    {
+      "track": "Wyclef Jean, Lunch Money Lewis, The Knocks - What Happened to Love (feat. Lunch Money Lewis and The Knocks).mp3",
+      "k": 3,
+      "probeC": 4.99,
+      "k3s": 5.41,
+      "gain": 0.41
+    },
+    {
+      "track": "EMBRZ, bailey - Arrow.mp3",
+      "k": 2,
+      "probeC": 1.51,
+      "k3s": 1.98,
+      "gain": 0.47
+    },
+    {
+      "track": "KNGHT, hiræth - You.mp3",
+      "k": 2,
+      "probeC": -0.26,
+      "k3s": 0.31,
+      "gain": 0.56
+    },
+    {
+      "track": "A.M.C, Suune, Phantom - Gas.mp3",
+      "k": 3,
+      "probeC": 2.48,
+      "k3s": 3.06,
+      "gain": 0.58
+    }
+  ]
+}

@@ -1,0 +1,562 @@
+{
+  "checkpoint": "k3s_model.pt",
+  "seg_s": 30.0,
+  "n": 24,
+  "mean_vocal_mask_below_700Hz": 0.27067,
+  "summary": {
+    "baseline a=1 lf=0": {
+      "temp": 1.0,
+      "lf_kill_band": 0,
+      "lf_kill_hz": 0.0,
+      "vocal_median_all": 1.468,
+      "vocal_median_scorable": 2.896,
+      "accomp_median_all": 12.179,
+      "accomp_median_scorable": 11.144,
+      "wins_vocal": 0,
+      "wins_accomp": 0,
+      "n_scorable": 14
+    },
+    "lf<150Hz": {
+      "temp": 1.0,
+      "lf_kill_band": 33,
+      "lf_kill_hz": 151.4,
+      "vocal_median_all": 1.579,
+      "vocal_median_scorable": 3.544,
+      "accomp_median_all": 12.416,
+      "accomp_median_scorable": 11.389,
+      "wins_vocal": 13,
+      "wins_accomp": 10,
+      "n_scorable": 14
+    },
+    "lf<250Hz": {
+      "temp": 1.0,
+      "lf_kill_band": 44,
+      "lf_kill_hz": 259.7,
+      "vocal_median_all": 1.021,
+      "vocal_median_scorable": 3.675,
+      "accomp_median_all": 12.493,
+      "accomp_median_scorable": 11.526,
+      "wins_vocal": 12,
+      "wins_accomp": 12,
+      "n_scorable": 14
+    },
+    "lf<350Hz": {
+      "temp": 1.0,
+      "lf_kill_band": 51,
+      "lf_kill_hz": 366.2,
+      "vocal_median_all": 0.422,
+      "vocal_median_scorable": 1.823,
+      "accomp_median_all": 12.112,
+      "accomp_median_scorable": 11.499,
+      "wins_vocal": 6,
+      "wins_accomp": 7,
+      "n_scorable": 14
+    }
+  },
+  "per_track": [
+    {
+      "track": "KNGHT, hiræth - You.mp3",
+      "scorable": true,
+      "floor_dB": -6.83,
+      "baseline a=1 lf=0": {
+        "voc": 0.171,
+        "acc": 12.15
+      },
+      "lf<150Hz": {
+        "voc": 0.416,
+        "acc": 12.156
+      },
+      "lf<250Hz": {
+        "voc": 0.768,
+        "acc": 12.458
+      },
+      "lf<350Hz": {
+        "voc": 0.212,
+        "acc": 12.262
+      }
+    },
+    {
+      "track": "A.M.C, Suune, Phantom - Gas.mp3",
+      "scorable": true,
+      "floor_dB": -5.41,
+      "baseline a=1 lf=0": {
+        "voc": 2.836,
+        "acc": 12.038
+      },
+      "lf<150Hz": {
+        "voc": 3.585,
+        "acc": 12.493
+      },
+      "lf<250Hz": {
+        "voc": 3.426,
+        "acc": 12.528
+      },
+      "lf<350Hz": {
+        "voc": 2.324,
+        "acc": 11.962
+      }
+    },
+    {
+      "track": "EMBRZ, bailey - Arrow.mp3",
+      "scorable": false,
+      "floor_dB": -10.29,
+      "baseline a=1 lf=0": {
+        "voc": -5.204,
+        "acc": 12.208
+      },
+      "lf<150Hz": {
+        "voc": -5.075,
+        "acc": 12.34
+      },
+      "lf<250Hz": {
+        "voc": -6.81,
+        "acc": 11.921
+      },
+      "lf<350Hz": {
+        "voc": -7.8,
+        "acc": 11.854
+      }
+    },
+    {
+      "track": "Forester - I Can See You Everywhere.mp3",
+      "scorable": true,
+      "floor_dB": -6.18,
+      "baseline a=1 lf=0": {
+        "voc": -1.149,
+        "acc": 10.42
+      },
+      "lf<150Hz": {
+        "voc": -0.957,
+        "acc": 10.36
+      },
+      "lf<250Hz": {
+        "voc": -0.588,
+        "acc": 10.712
+      },
+      "lf<350Hz": {
+        "voc": -0.472,
+        "acc": 10.87
+      }
+    },
+    {
+      "track": "Sultan + Shepard, Nathan Nicholson - Naama.mp3",
+      "scorable": false,
+      "floor_dB": -13.23,
+      "baseline a=1 lf=0": {
+        "voc": -4.113,
+        "acc": 16.192
+      },
+      "lf<150Hz": {
+        "voc": -3.091,
+        "acc": 16.244
+      },
+      "lf<250Hz": {
+        "voc": -3.905,
+        "acc": 16.569
+      },
+      "lf<350Hz": {
+        "voc": -2.989,
+        "acc": 17.234
+      }
+    },
+    {
+      "track": "John Summit, Guz, Stevie Appleton - What A Life.mp3",
+      "scorable": true,
+      "floor_dB": -4.97,
+      "baseline a=1 lf=0": {
+        "voc": 0.731,
+        "acc": 9.396
+      },
+      "lf<150Hz": {
+        "voc": 1.018,
+        "acc": 9.562
+      },
+      "lf<250Hz": {
+        "voc": 1.274,
+        "acc": 9.785
+      },
+      "lf<350Hz": {
+        "voc": 0.632,
+        "acc": 9.515
+      }
+    },
+    {
+      "track": "Skrillex, Majestic - DNB TING.mp3",
+      "scorable": false,
+      "floor_dB": -11.44,
+      "baseline a=1 lf=0": {
+        "voc": -4.402,
+        "acc": 13.225
+      },
+      "lf<150Hz": {
+        "voc": -3.305,
+        "acc": 13.495
+      },
+      "lf<250Hz": {
+        "voc": -2.87,
+        "acc": 13.938
+      },
+      "lf<350Hz": {
+        "voc": -1.991,
+        "acc": 14.995
+      }
+    },
+    {
+      "track": "Sub Focus, Culture Shock, Fragma - Miracle.mp3",
+      "scorable": false,
+      "floor_dB": -8.92,
+      "baseline a=1 lf=0": {
+        "voc": 2.315,
+        "acc": 15.306
+      },
+      "lf<150Hz": {
+        "voc": 3.347,
+        "acc": 15.414
+      },
+      "lf<250Hz": {
+        "voc": 3.821,
+        "acc": 15.839
+      },
+      "lf<350Hz": {
+        "voc": 4.79,
+        "acc": 16.717
+      }
+    },
+    {
+      "track": "Derivakat, Netrum - Lost in Space.mp3",
+      "scorable": true,
+      "floor_dB": -6.57,
+      "baseline a=1 lf=0": {
+        "voc": 2.725,
+        "acc": 12.603
+      },
+      "lf<150Hz": {
+        "voc": 3.468,
+        "acc": 13.071
+      },
+      "lf<250Hz": {
+        "voc": 2.843,
+        "acc": 12.668
+      },
+      "lf<350Hz": {
+        "voc": 1.17,
+        "acc": 11.671
+      }
+    },
+    {
+      "track": "Tantrum Desire, Gracie van Brunt - Lift You Up.mp3",
+      "scorable": false,
+      "floor_dB": -10.01,
+      "baseline a=1 lf=0": {
+        "voc": -1.735,
+        "acc": 14.513
+      },
+      "lf<150Hz": {
+        "voc": -0.585,
+        "acc": 14.958
+      },
+      "lf<250Hz": {
+        "voc": -0.092,
+        "acc": 15.312
+      },
+      "lf<350Hz": {
+        "voc": 0.12,
+        "acc": 15.474
+      }
+    },
+    {
+      "track": "Jerro, Sophia Bel - Demons.mp3",
+      "scorable": true,
+      "floor_dB": -3.37,
+      "baseline a=1 lf=0": {
+        "voc": 5.174,
+        "acc": 10.108
+      },
+      "lf<150Hz": {
+        "voc": 5.266,
+        "acc": 10.104
+      },
+      "lf<250Hz": {
+        "voc": 5.551,
+        "acc": 10.294
+      },
+      "lf<350Hz": {
+        "voc": 4.332,
+        "acc": 9.404
+      }
+    },
+    {
+      "track": "Wyclef Jean, Lunch Money Lewis, The Knocks - What Happened to Love (feat. Lunch Money Lewis and The Knocks).mp3",
+      "scorable": true,
+      "floor_dB": -3.85,
+      "baseline a=1 lf=0": {
+        "voc": 5.308,
+        "acc": 10.781
+      },
+      "lf<150Hz": {
+        "voc": 5.661,
+        "acc": 11.107
+      },
+      "lf<250Hz": {
+        "voc": 5.009,
+        "acc": 10.634
+      },
+      "lf<350Hz": {
+        "voc": 2.779,
+        "acc": 9.196
+      }
+    },
+    {
+      "track": "Metrik, ÆON_MODE - Awake.mp3",
+      "scorable": false,
+      "floor_dB": -10.45,
+      "baseline a=1 lf=0": {
+        "voc": -2.937,
+        "acc": 13.959
+      },
+      "lf<150Hz": {
+        "voc": -2.124,
+        "acc": 14.217
+      },
+      "lf<250Hz": {
+        "voc": -3.71,
+        "acc": 13.778
+      },
+      "lf<350Hz": {
+        "voc": -4.256,
+        "acc": 13.813
+      }
+    },
+    {
+      "track": "Grafix - We Take Control.mp3",
+      "scorable": false,
+      "floor_dB": -8.12,
+      "baseline a=1 lf=0": {
+        "voc": 2.206,
+        "acc": 14.842
+      },
+      "lf<150Hz": {
+        "voc": 3.108,
+        "acc": 15.356
+      },
+      "lf<250Hz": {
+        "voc": 3.275,
+        "acc": 15.515
+      },
+      "lf<350Hz": {
+        "voc": 2.951,
+        "acc": 15.399
+      }
+    },
+    {
+      "track": "BUNT., Mapei - TRIPPIN.mp3",
+      "scorable": true,
+      "floor_dB": -7.7,
+      "baseline a=1 lf=0": {
+        "voc": 2.579,
+        "acc": 13.546
+      },
+      "lf<150Hz": {
+        "voc": 3.503,
+        "acc": 13.92
+      },
+      "lf<250Hz": {
+        "voc": 3.924,
+        "acc": 14.23
+      },
+      "lf<350Hz": {
+        "voc": 1.322,
+        "acc": 12.635
+      }
+    },
+    {
+      "track": "Lee Uhf, Noise Souls - Leaving Everything Behind Us.mp3",
+      "scorable": true,
+      "floor_dB": -5.59,
+      "baseline a=1 lf=0": {
+        "voc": 2.957,
+        "acc": 10.139
+      },
+      "lf<150Hz": {
+        "voc": 2.141,
+        "acc": 9.514
+      },
+      "lf<250Hz": {
+        "voc": -5.363,
+        "acc": 6.336
+      },
+      "lf<350Hz": {
+        "voc": -10.468,
+        "acc": 5.593
+      }
+    },
+    {
+      "track": "OCULA - Clear.mp3",
+      "scorable": false,
+      "floor_dB": -13.27,
+      "baseline a=1 lf=0": {
+        "voc": -8.979,
+        "acc": 11.965
+      },
+      "lf<150Hz": {
+        "voc": -8.43,
+        "acc": 12.039
+      },
+      "lf<250Hz": {
+        "voc": -8.383,
+        "acc": 12.078
+      },
+      "lf<350Hz": {
+        "voc": -8.082,
+        "acc": 12.34
+      }
+    },
+    {
+      "track": "Feint - Empathy Box.mp3",
+      "scorable": false,
+      "floor_dB": -19.75,
+      "baseline a=1 lf=0": {
+        "voc": -16.589,
+        "acc": 15.593
+      },
+      "lf<150Hz": {
+        "voc": -15.997,
+        "acc": 15.649
+      },
+      "lf<250Hz": {
+        "voc": -15.906,
+        "acc": 15.716
+      },
+      "lf<350Hz": {
+        "voc": -15.821,
+        "acc": 15.797
+      }
+    },
+    {
+      "track": "Luude, 1991 - All We Do Is Dance.mp3",
+      "scorable": true,
+      "floor_dB": -3.83,
+      "baseline a=1 lf=0": {
+        "voc": 4.777,
+        "acc": 10.613
+      },
+      "lf<150Hz": {
+        "voc": 5.474,
+        "acc": 11.199
+      },
+      "lf<250Hz": {
+        "voc": 5.615,
+        "acc": 11.327
+      },
+      "lf<350Hz": {
+        "voc": 5.982,
+        "acc": 11.632
+      }
+    },
+    {
+      "track": "Oscar Yuan - Solo.mp3",
+      "scorable": true,
+      "floor_dB": -6.81,
+      "baseline a=1 lf=0": {
+        "voc": 5.55,
+        "acc": 15.017
+      },
+      "lf<150Hz": {
+        "voc": 6.53,
+        "acc": 15.452
+      },
+      "lf<250Hz": {
+        "voc": 6.972,
+        "acc": 15.807
+      },
+      "lf<350Hz": {
+        "voc": 6.202,
+        "acc": 15.202
+      }
+    },
+    {
+      "track": "Sullivan King - The Beginning.mp3",
+      "scorable": true,
+      "floor_dB": -7.91,
+      "baseline a=1 lf=0": {
+        "voc": -2.976,
+        "acc": 9.646
+      },
+      "lf<150Hz": {
+        "voc": -2.855,
+        "acc": 9.584
+      },
+      "lf<250Hz": {
+        "voc": -2.465,
+        "acc": 10.164
+      },
+      "lf<350Hz": {
+        "voc": -2.77,
+        "acc": 10.866
+      }
+    },
+    {
+      "track": "Sultan + Shepard - Neptune.mp3",
+      "scorable": false,
+      "floor_dB": -11.59,
+      "baseline a=1 lf=0": {
+        "voc": -10.615,
+        "acc": 6.301
+      },
+      "lf<150Hz": {
+        "voc": -10.614,
+        "acc": 6.297
+      },
+      "lf<250Hz": {
+        "voc": -8.679,
+        "acc": 9.093
+      },
+      "lf<350Hz": {
+        "voc": -8.209,
+        "acc": 9.578
+      }
+    },
+    {
+      "track": "Feint, Hylia - Treading Water (feat. HYLIA).mp3",
+      "scorable": true,
+      "floor_dB": -5.03,
+      "baseline a=1 lf=0": {
+        "voc": 3.656,
+        "acc": 11.507
+      },
+      "lf<150Hz": {
+        "voc": 3.862,
+        "acc": 11.579
+      },
+      "lf<250Hz": {
+        "voc": 4.028,
+        "acc": 11.725
+      },
+      "lf<350Hz": {
+        "voc": 3.49,
+        "acc": 11.366
+      }
+    },
+    {
+      "track": "Dimension - Devotion.mp3",
+      "scorable": true,
+      "floor_dB": -5.3,
+      "baseline a=1 lf=0": {
+        "voc": 4.85,
+        "acc": 13.678
+      },
+      "lf<150Hz": {
+        "voc": 5.362,
+        "acc": 13.789
+      },
+      "lf<250Hz": {
+        "voc": 5.832,
+        "acc": 14.209
+      },
+      "lf<350Hz": {
+        "voc": 5.264,
+        "acc": 13.775
+      }
+    }
+  ]
+}

@@ -1,0 +1,71 @@
+Listening set for v3 / v4 / probeC / k3s / the shipping configuration
+=====================================================================
+
+START HERE  (in this order)
+  1. Z_button_demo_SHIPPING_k3s_lf.mp3
+     The shipping configuration: k3s_model weights (trained for 900 s on
+     the 3-windows-per-track cache) + low-frequency protection below
+     250 Hz.  original -> 30 ms ramp -> accompaniment only -> back.
+     Everything below exists only to justify this one file.
+  2. Z_button_demo_k3s_nolf.mp3
+     Same weights, low-frequency protection OFF.  Compare the kick/bass
+     on the press against file 1: without protection the button subtracts
+     a constant ~26-31% of the sub-500 Hz energy no matter what the song
+     is doing (reports/08 section 10).
+  3. Z_button_demo_SHIPPING_probeC_lf.mp3 / Z_button_demo_probeC_nolf.mp3
+     The previous shipping pair (probeC weights).  Files 1 vs 3 are the
+     data-shape change; files 2 vs 4 are the low-frequency change.
+  4. Z_button_demo_v4_lf.mp3 / Z_button_demo_v4_nolf.mp3
+     The same pair for the older checkpoint (v4_best), i.e. what you get
+     before the loss fix.
+  5. Z_button_demo_v4.mp3 / Z_button_demo_v3.mp3
+     v4 vs v3, no post-processing.
+
+THE THREE CHANGES SINCE v4  (all three are in file 1)
+  * data shape: 3 non-overlapping 60 s windows per track instead of 1
+    (272 tracks -> 644 labelled excerpts).  At an equal 900 s budget this
+    is worth +0.21 dB median vocal SI-SDR over the 1-window model, and
+    every one of the 5 (position x checkpoint) measurements came out
+    positive; a role-swap control ruled out a harness bias.
+    NOTE: it does NOT show up in val log-L1, which got worse -- see below.
+  * loss: logl1+wmask (vocal term weighted by 1 + 2*target_mask).
+    Worth +0.15 dB median on 19 scorable holdout tracks.
+  * inference: the vocal mask is forced to 0 below 250 Hz.
+    Worth +0.68~0.78 dB vocal / +0.37~0.55 dB accompaniment, 12/12
+    tracks improved -- and it is free on the PL (one band-index
+    comparator, zero MAC).  Weight-independent: it holds on v4_best,
+    probeC_best and k3s_model alike, because it fixes an artifact of the
+    fixed filterbank, not of the weights.
+
+RULE THAT CHANGED
+  val log-L1 is no longer used to pick a model.  It is computed on the
+  single window that the screening step liked best, in 1.5 s crops; the
+  product plays 30 s excerpts from anywhere in the track.  The 3-window
+  model wins on the product metric and loses on val -- the two rulers
+  disagree for the first time in this project (reports/08 section 17).
+  Use the holdout A/B, or report both.
+
+A/B BY TRACK (vocal-bearing excerpts)
+  D_v3_* / D_v4_* : vocals / accompaniment / mixture, one track each, so
+  the residue and the music damage can be compared directly between the
+  two checkpoints.
+
+WHAT TO LISTEN FOR
+  1. how much vocal is left (residue) vs how much music was damaged
+     (over-subtraction);
+  2. bass and kick -- if they thin out, the button is unusable;
+  3. musical noise: watery / metallic residue.  This is the number-one
+     failure mode in continuous playback and offline metrics cannot see
+     it.  This is the strongest argument for spending the remaining
+     latency budget on mask smoothing rather than a bigger model;
+  4. clicks or dropouts at the switch, in the Z files.
+
+CAVEAT
+  The reference is HTDemucs, not ground truth, and HTDemucs' own output
+  is not reproducible across processes (~7% of mask bins move by more
+  than 0.05 between two identical runs), so any comparison across
+  different pseudo-label caches carries about 0.009 of val log-L1 that
+  is pure relabelling.  The 128-band mask architecture has its own
+  9.87 dB ceiling against a full-resolution oracle (reports/03).  And
+  the A/B harness has a ~0.2 dB run-to-run noise floor, so differences
+  below that need the 3-position protocol (reports/08 sections 13-14).

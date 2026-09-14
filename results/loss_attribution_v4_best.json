@@ -1,0 +1,198 @@
+{
+  "checkpoint": "v4_best.pt",
+  "step": 1500,
+  "total_val_logL1": 0.9524180889129639,
+  "vocal_term": 0.7427616119384766,
+  "accompaniment_term": 0.2096564620733261,
+  "vocal_error_below_band24": 0.16776828467845917,
+  "vocal_error_above_band24": 0.8754523992538452,
+  "silence_baseline": 7.107571125030518,
+  "by_mixture_magnitude": [
+    {
+      "lo": 0.0,
+      "hi": 0.01,
+      "frac_bins": 0.3962165117263794,
+      "vocal": 0.007241971790790558,
+      "accompaniment": 0.003923086449503899,
+      "loss_share": 0.004644788269222633
+    },
+    {
+      "lo": 0.01,
+      "hi": 0.1,
+      "frac_bins": 0.046846350034077965,
+      "vocal": 0.5658455491065979,
+      "accompaniment": 0.32422128319740295,
+      "loss_share": 0.043779491451781526
+    },
+    {
+      "lo": 0.1,
+      "hi": 1.0,
+      "frac_bins": 0.16672424475351968,
+      "vocal": 0.880850613117218,
+      "accompaniment": 0.38361814618110657,
+      "loss_share": 0.22134984391523066
+    },
+    {
+      "lo": 1.0,
+      "hi": 10.0,
+      "frac_bins": 0.28676140308380127,
+      "vocal": 1.3267040252685547,
+      "accompaniment": 0.31978538632392883,
+      "loss_share": 0.4957377605651044
+    },
+    {
+      "lo": 10.0,
+      "hi": null,
+      "frac_bins": 0.10345149040222168,
+      "vocal": 1.7986955642700195,
+      "accompaniment": 0.3601003885269165,
+      "loss_share": 0.23448804604531986
+    }
+  ],
+  "by_band": [
+    {
+      "band0": 0,
+      "top_hz": 1378.1,
+      "hz_per_band": 172.3,
+      "vocal": 0.1999,
+      "accompaniment": 0.0105,
+      "x_mean": 5.1202,
+      "energy_share": 0.081964
+    },
+    {
+      "band0": 8,
+      "top_hz": 2756.2,
+      "hz_per_band": 172.3,
+      "vocal": 0.0,
+      "accompaniment": 0.0,
+      "x_mean": 0.0,
+      "energy_share": 0.0
+    },
+    {
+      "band0": 16,
+      "top_hz": 4134.4,
+      "hz_per_band": 172.3,
+      "vocal": 0.3034,
+      "accompaniment": 0.008,
+      "x_mean": 4.8523,
+      "energy_share": 0.077676
+    },
+    {
+      "band0": 24,
+      "top_hz": 5512.5,
+      "hz_per_band": 172.3,
+      "vocal": 0.226,
+      "accompaniment": 0.0124,
+      "x_mean": 3.194,
+      "energy_share": 0.05113
+    },
+    {
+      "band0": 32,
+      "top_hz": 6890.6,
+      "hz_per_band": 172.3,
+      "vocal": 0.2291,
+      "accompaniment": 0.023,
+      "x_mean": 2.5045,
+      "energy_share": 0.040092
+    },
+    {
+      "band0": 40,
+      "top_hz": 8268.8,
+      "hz_per_band": 172.3,
+      "vocal": 0.7173,
+      "accompaniment": 0.1243,
+      "x_mean": 6.995,
+      "energy_share": 0.111976
+    },
+    {
+      "band0": 48,
+      "top_hz": 9646.9,
+      "hz_per_band": 172.3,
+      "vocal": 0.6367,
+      "accompaniment": 0.1304,
+      "x_mean": 5.7849,
+      "energy_share": 0.092605
+    },
+    {
+      "band0": 56,
+      "top_hz": 11025.0,
+      "hz_per_band": 172.3,
+      "vocal": 1.1504,
+      "accompaniment": 0.2755,
+      "x_mean": 8.7133,
+      "energy_share": 0.139482
+    },
+    {
+      "band0": 64,
+      "top_hz": 12403.1,
+      "hz_per_band": 172.3,
+      "vocal": 1.2728,
+      "accompaniment": 0.3494,
+      "x_mean": 7.3109,
+      "energy_share": 0.117033
+    },
+    {
+      "band0": 72,
+      "top_hz": 13781.2,
+      "hz_per_band": 172.3,
+      "vocal": 1.3522,
+      "accompaniment": 0.3728,
+      "x_mean": 5.683,
+      "energy_share": 0.090974
+    },
+    {
+      "band0": 80,
+      "top_hz": 15159.4,
+      "hz_per_band": 172.3,
+      "vocal": 1.2336,
+      "accompaniment": 0.3749,
+      "x_mean": 4.0014,
+      "energy_share": 0.064054
+    },
+    {
+      "band0": 88,
+      "top_hz": 16537.5,
+      "hz_per_band": 172.3,
+      "vocal": 1.1178,
+      "accompaniment": 0.3583,
+      "x_mean": 2.9131,
+      "energy_share": 0.046632
+    },
+    {
+      "band0": 96,
+      "top_hz": 17915.6,
+      "hz_per_band": 172.3,
+      "vocal": 0.9829,
+      "accompaniment": 0.3505,
+      "x_mean": 2.1162,
+      "energy_share": 0.033876
+    },
+    {
+      "band0": 104,
+      "top_hz": 19293.8,
+      "hz_per_band": 172.3,
+      "vocal": 0.892,
+      "accompaniment": 0.3351,
+      "x_mean": 1.5303,
+      "energy_share": 0.024497
+    },
+    {
+      "band0": 112,
+      "top_hz": 20671.9,
+      "hz_per_band": 172.3,
+      "vocal": 0.8174,
+      "accompaniment": 0.3481,
+      "x_mean": 1.149,
+      "energy_share": 0.018393
+    },
+    {
+      "band0": 120,
+      "top_hz": 22050.0,
+      "hz_per_band": 172.3,
+      "vocal": 0.7527,
+      "accompaniment": 0.2811,
+      "x_mean": 0.6007,
+      "energy_share": 0.009616
+    }
+  ]
+}

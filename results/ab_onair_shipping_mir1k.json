@@ -1,0 +1,140 @@
+{
+  "manifest": "D:\\WORKBUDDY\\STEM\\npu-stem-repo\\results\\onair_true_cache\\manifest.json",
+  "dataset": "onair",
+  "device": "cuda",
+  "lf_hz": 250.0,
+  "models": {
+    "shipping": {
+      "path": "D:\\WORKBUDDY\\STEM\\npu-stem-repo\\models\\student_k3s_model.pt",
+      "params": 529732,
+      "layout": "legacy_log",
+      "n_bands": 128,
+      "lf_kill_band": 44
+    },
+    "mir1k_final": {
+      "path": "D:\\WORKBUDDY\\STEM\\npu-stem-repo\\results\\opt_bott2_mir1k_5m_model.pt",
+      "params": 824900,
+      "layout": "legacy_log",
+      "n_bands": 128,
+      "lf_kill_band": 44
+    }
+  },
+  "holdout_tracks": [
+    "Ronin - OnAir Music"
+  ],
+  "segments": 6,
+  "scorable_vocal_segments": 6,
+  "summary": {
+    "shipping": {
+      "vocal_scorable": {
+        "n": 6,
+        "mean": -0.055,
+        "median": -0.096
+      },
+      "accompaniment_all": {
+        "n": 6,
+        "mean": 3.812,
+        "median": 5.021
+      }
+    },
+    "mir1k_final": {
+      "vocal_scorable": {
+        "n": 6,
+        "mean": 0.062,
+        "median": 0.118
+      },
+      "accompaniment_all": {
+        "n": 6,
+        "mean": 3.824,
+        "median": 5.023
+      }
+    }
+  },
+  "paired": {
+    "vocal_b_minus_a": {
+      "n": 6,
+      "mean": 0.118,
+      "median": 0.095
+    },
+    "accompaniment_b_minus_a": {
+      "n": 6,
+      "mean": 0.013,
+      "median": 0.021
+    }
+  },
+  "rows": [
+    {
+      "track": "Ronin - OnAir Music",
+      "segment": 0,
+      "start_s": 0.0,
+      "dur_s": 30.0,
+      "vocal_to_mix_db": -3.744,
+      "mixture_vocal_si_sdr": -4.045,
+      "shipping_vocal_si_sdr": -0.21,
+      "shipping_accompaniment_si_sdr": 4.071,
+      "mir1k_final_vocal_si_sdr": 0.139,
+      "mir1k_final_accompaniment_si_sdr": 4.274
+    },
+    {
+      "track": "Ronin - OnAir Music",
+      "segment": 1,
+      "start_s": 30.0,
+      "dur_s": 30.0,
+      "vocal_to_mix_db": -4.247,
+      "mixture_vocal_si_sdr": -4.19,
+      "shipping_vocal_si_sdr": 2.069,
+      "shipping_accompaniment_si_sdr": 6.318,
+      "mir1k_final_vocal_si_sdr": 2.108,
+      "mir1k_final_accompaniment_si_sdr": 6.335
+    },
+    {
+      "track": "Ronin - OnAir Music",
+      "segment": 2,
+      "start_s": 60.0,
+      "dur_s": 30.0,
+      "vocal_to_mix_db": -3.58,
+      "mixture_vocal_si_sdr": -2.793,
+      "shipping_vocal_si_sdr": 1.278,
+      "shipping_accompaniment_si_sdr": 4.635,
+      "mir1k_final_vocal_si_sdr": 1.282,
+      "mir1k_final_accompaniment_si_sdr": 4.614
+    },
+    {
+      "track": "Ronin - OnAir Music",
+      "segment": 3,
+      "start_s": 90.0,
+      "dur_s": 30.0,
+      "vocal_to_mix_db": -5.004,
+      "mixture_vocal_si_sdr": -5.761,
+      "shipping_vocal_si_sdr": -2.023,
+      "shipping_accompaniment_si_sdr": 5.407,
+      "mir1k_final_vocal_si_sdr": -1.913,
+      "mir1k_final_accompaniment_si_sdr": 5.432
+    },
+    {
+      "track": "Ronin - OnAir Music",
+      "segment": 4,
+      "start_s": 120.0,
+      "dur_s": 30.0,
+      "vocal_to_mix_db": -5.294,
+      "mixture_vocal_si_sdr": -5.892,
+      "shipping_vocal_si_sdr": -1.463,
+      "shipping_accompaniment_si_sdr": 6.02,
+      "mir1k_final_vocal_si_sdr": -1.339,
+      "mir1k_final_accompaniment_si_sdr": 6.059
+    },
+    {
+      "track": "Ronin - OnAir Music",
+      "segment": 5,
+      "start_s": 150.0,
+      "dur_s": 19.105,
+      "vocal_to_mix_db": -1.332,
+      "mixture_vocal_si_sdr": 1.846,
+      "shipping_vocal_si_sdr": 0.018,
+      "shipping_accompaniment_si_sdr": -3.581,
+      "mir1k_final_vocal_si_sdr": 0.097,
+      "mir1k_final_accompaniment_si_sdr": -3.769
+    }
+  ],
+  "audio_dir": "D:\\WORKBUDDY\\STEM\\npu-stem-repo\\试听文件\\onair_true_candidate"
+}

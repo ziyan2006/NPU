@@ -1,0 +1,69 @@
+# NPU v1 AXI4-Lite 控制接口草案
+
+文档版本：`0.1-draft`
+
+状态：寄存器语义提案，offset 尚未冻结
+
+所有寄存器为 32 bit、小端、4-byte 对齐。64-bit 值由 LO/HI 两个寄存器组成；软件写入地址时先写 HI/LO，最后写 `DOORBELL`，硬件只在 doorbell 时原子采样提交字段。
+
+## 1. 寄存器表
+
+| Offset | 名称 | 访问 | 含义 |
+|---:|---|---|---|
+| `0x000` | `IP_ID` | R | 固定 NPU magic/厂商标识 |
+| `0x004` | `VERSION` | R | RTL 主/次版本 |
+| `0x008` | `ISA_VERSION` | R | 支持的 ISA 主/次版本 |
+| `0x00c` | `CAPABILITY0` | R | dtype、算子、DMA capability 位图 |
+| `0x010` | `CAPABILITY1` | R | MAC lane、片上 bank 和实现参数 |
+| `0x014` | `CONTROL` | R/W | bit0 soft_reset；bit1 irq_global_enable |
+| `0x018` | `STATUS` | R | idle、busy、resetting、done、error |
+| `0x01c` | `IRQ_STATUS` | R/W1C | done、error、watchdog |
+| `0x020` | `IRQ_ENABLE` | R/W | 对应中断使能 |
+| `0x024` | `TASK_BASE_LO` | R/W | task header 物理地址低 32 bit |
+| `0x028` | `TASK_BASE_HI` | R/W | task header 物理地址高 32 bit |
+| `0x02c` | `TASK_BYTES` | R/W | task 可访问区总长度 |
+| `0x030` | `TASK_TAG` | R/W | 软件任务 tag |
+| `0x034` | `DOORBELL` | W | 写 1 提交，busy 时提交报错/忽略行为须冻结 |
+| `0x038` | `COMPLETED_TAG` | R | 最近完成或失败的任务 tag |
+| `0x03c` | `ERROR_CODE` | R | 首个 fatal error |
+| `0x040` | `ERROR_PC` | R | 出错命令 byte offset/PC |
+| `0x044` | `ERROR_INST_TAG` | R | 出错命令中的 tag |
+| `0x048` | `WATCHDOG_LIMIT` | R/W | 最大任务周期；0 表示仅调试时禁用 |
+| `0x04c` | `COMMANDS_RETIRED` | R | 最近任务完成命令数 |
+| `0x050/54` | `CYCLES_TOTAL_LO/HI` | R | 最近任务总周期 |
+| `0x058/5c` | `CYCLES_COMPUTE_LO/HI` | R | compute busy 周期 |
+| `0x060/64` | `CYCLES_RD_WAIT_LO/HI` | R | DDR read stall 周期 |
+| `0x068/6c` | `CYCLES_WR_WAIT_LO/HI` | R | DDR write stall 周期 |
+| `0x070/74` | `CYCLES_BANK_STALL_LO/HI` | R | scratchpad bank stall 周期 |
+| `0x078/7c` | `BYTES_READ_LO/HI` | R | 最近任务 DDR 读字节数 |
+| `0x080/84` | `BYTES_WRITTEN_LO/HI` | R | 最近任务 DDR 写字节数 |
+| `0x088` | `FIFO_HIGH_WATER0` | R | 命令/读数据 FIFO 高水位 |
+| `0x08c` | `FIFO_HIGH_WATER1` | R | 写数据/结果 FIFO 高水位 |
+| `0x090` | `ERROR_COUNT` | R | 复位以来失败任务计数 |
+
+## 2. 提交约束
+
+- 驱动只允许在 `STATUS.idle=1` 时提交；v1 不提供硬件任务队列；
+- `TASK_BASE` 必须 64-byte 对齐，`TASK_BYTES` 必须覆盖 header 声明的全部区段；
+- 驱动提交前完成 CPU cache clean，读取输出前完成 invalidate；具体 API 取决于 Linux/bare-metal；
+- `DOORBELL` 是提交的唯一生效点，写其它字段不启动任务；
+- 成功或失败均更新 `COMPLETED_TAG`，并在使能时产生 IRQ；
+- `ERROR_CODE/PC/INST_TAG` 锁存首错，直到 W1C 清错或 soft reset；
+- 64-bit 只读计数器需要 snapshot 语义，避免 LO/HI 跨越；具体采用“读 LO 锁存 HI”或显式 snapshot bit 在 P4 冻结。
+
+## 3. soft reset 语义
+
+`CONTROL.soft_reset` 写 1 后：
+
+1. 停止取新命令；
+2. 不再发出新的 AXI transaction；
+3. 已握手 transaction 合法结束，禁止产生区间外写；
+4. 清空 event、FIFO、scoreboard 和任务状态；
+5. `resetting` 清除、`idle` 置位；
+6. capability/version 寄存器保持可读。
+
+若 AXI 永久无响应，外部 PS reset 是最终恢复手段；内部 soft reset 不得违反 AXI 协议强行截断已握手事务。
+
+## 4. 与历史寄存器表的关系
+
+`02_register_map.md` 中的 `WEIGHT_BASE`、`INPUT_BASE`、`BUTTON_GAIN` 和 `LF_KILL_BANDS` 属于固定人声消除加速器。通用 NPU 将权重、输入、输出都放入 task/descriptor，音频按键与低频保护移到 NPU 外部，因此旧 offset 不承诺兼容。

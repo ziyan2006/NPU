@@ -1,0 +1,3252 @@
+{
+  "device": "cuda",
+  "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+  "tag": "v4",
+  "config": {
+    "tracks": 320,
+    "steps": 200000,
+    "batch": 16,
+    "crop": 256,
+    "lr": 0.0005,
+    "seg": 60.0,
+    "seed": 0,
+    "scan_s": 180.0,
+    "n_cand": 5,
+    "min_vocal_db": -40.0,
+    "lr_schedule": "cosine",
+    "min_lr": 1e-05,
+    "warmup_steps": 500
+  },
+  "n_train_tracks": 245,
+  "n_val_tracks": 27,
+  "holdout_tracks": [
+    "KNGHT, hiræth - You.mp3",
+    "A.M.C, Suune, Phantom - Gas.mp3",
+    "EMBRZ, bailey - Arrow.mp3",
+    "Forester - I Can See You Everywhere.mp3",
+    "Sultan + Shepard, Nathan Nicholson - Naama.mp3",
+    "John Summit, Guz, Stevie Appleton - What A Life.mp3",
+    "Skrillex, Majestic - DNB TING.mp3",
+    "Sub Focus, Culture Shock, Fragma - Miracle.mp3",
+    "Derivakat, Netrum - Lost in Space.mp3",
+    "Tantrum Desire, Gracie van Brunt - Lift You Up.mp3",
+    "Jerro, Sophia Bel - Demons.mp3",
+    "Wyclef Jean, Lunch Money Lewis, The Knocks - What Happened to Love (feat. Lunch Money Lewis and The Knocks).mp3",
+    "Metrik, ÆON_MODE - Awake.mp3",
+    "Grafix - We Take Control.mp3",
+    "BUNT., Mapei - TRIPPIN.mp3",
+    "Lee Uhf, Noise Souls - Leaving Everything Behind Us.mp3",
+    "OCULA - Clear.mp3",
+    "Feint - Empathy Box.mp3",
+    "Luude, 1991 - All We Do Is Dance.mp3",
+    "Oscar Yuan - Solo.mp3",
+    "Sullivan King - The Beginning.mp3",
+    "Sultan + Shepard - Neptune.mp3",
+    "Feint, Hylia - Treading Water (feat. HYLIA).mp3",
+    "Dimension - Devotion.mp3"
+  ],
+  "warm_start_from": "D:/WORKBUDDY/STEM/npu-stem/results/v3_model.pt",
+  "steps_done": 88948,
+  "time_budget_s": 9000.0,
+  "used_best_checkpoint": true,
+  "best_val_logL1": 0.96187,
+  "best_val_step": 1500,
+  "stage_a_tracks": [
+    {
+      "idx": 0,
+      "file": "Culture Shock, Grafix - Make It Pump.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.73,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 1,
+      "file": "James Woods - Everywhere Music (Original Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -13.2,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 2,
+      "file": "Lane 8, Arctic Lake - Say The Word.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.71,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 3,
+      "file": "Duce, terro - Too Close.mp3",
+      "dur": 60.0,
+      "vocal_db": -14.05,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 4,
+      "file": "Fred V, Hybrid Minds, Lottie Jones - Faded Blue.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.61,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 5,
+      "file": "Dimension - Bass Thump.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.05,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 6,
+      "file": "Sub Focus, bbyclose, Kanine - On & On (Kanine Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.93,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 7,
+      "file": "Strike - U Sure Do.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.3,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 8,
+      "file": "Jerro - Reason Why.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.05,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 9,
+      "file": "Darude - Sandstorm.mp3",
+      "dur": 60.0,
+      "vocal_db": -36.89,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 10,
+      "file": "Culture Shock - Get Physical.mp3",
+      "dur": 60.0,
+      "vocal_db": -17.88,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 11,
+      "file": "Feint, Andromedik, Cammie Robinson - I'll Be There.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.48,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 12,
+      "file": "Flite - Tragedy, Humanity.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.87,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 13,
+      "file": "Marsh - Gjipe.mp3",
+      "dur": 60.0,
+      "vocal_db": -16.89,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 14,
+      "file": "John Summit, The Chainsmokers, Ilsey - ALL THE TIME.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.73,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 15,
+      "file": "ÆON_MODE - Laserbeam (ÆON_MODE Remix VIP).mp3",
+      "dur": 60.0,
+      "vocal_db": -9.09,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 16,
+      "file": "Lane 8, Sultan + Shepard - Quiet Rush.mp3",
+      "dur": 60.0,
+      "vocal_db": -30.58,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 17,
+      "file": "PRAANA, Freddie Elmberg - When I Need You (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -7.76,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 18,
+      "file": "Le Youth - Waves (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -10.85,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 19,
+      "file": "Friction - Ultrafunk.mp3",
+      "dur": 60.0,
+      "vocal_db": -13.04,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 20,
+      "file": "Marie Vaunt, Dimension, Subsonic - That Acid (Dimension & Subsonic Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -11.43,
+      "offset_s": 86.54
+    },
+    {
+      "idx": 21,
+      "file": "Sonny Fodera, Paul Woolford, Ella Henderson - Like I Used To.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.41,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 22,
+      "file": "Jerro - Pantheon.mp3",
+      "dur": 60.0,
+      "vocal_db": -22.82,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 23,
+      "file": "Jauz, Netsky, The Prototypes - Higher (The Prototypes Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -8.28,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 24,
+      "file": "Basement Jaxx - Good Luck (Circadian Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -7.02,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 25,
+      "file": "Bumpÿ, JAMES.C - Kind of Love (feat. Melissa Lamm).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.17,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 26,
+      "file": "Shallou, Queen D - It's You.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.71,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 27,
+      "file": "Sub Focus, Katy B - Push The Tempo.mp3",
+      "dur": 60.0,
+      "vocal_db": -4.33,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 28,
+      "file": "Quinn Karter, Natalie Major - Living in a Dream (feat. Natalie Major) [Feint Remix].mp3",
+      "dur": 60.0,
+      "vocal_db": -6.15,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 29,
+      "file": "Wilkinson - Take You Higher.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.66,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 30,
+      "file": "Kanine - Bloodstream.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.07,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 31,
+      "file": "MK - Take My Chance.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.91,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 32,
+      "file": "Lane 8, Kasbo, BJOERN - World Is Mine.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.34,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 33,
+      "file": "Ray Volpe, Blanke - Laserbeam (ÆON_MODE Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -9.35,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 34,
+      "file": "1991, Alex Hosking - Jungle.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.07,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 35,
+      "file": "The Midnight - The Right Way.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.37,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 36,
+      "file": "Sless, Loboski - I Like It.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.02,
+      "offset_s": 89.48
+    },
+    {
+      "idx": 37,
+      "file": "Culture Shock - Panorama.mp3",
+      "dur": 60.0,
+      "vocal_db": -19.2,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 38,
+      "file": "Feint - Mirror signal.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.86,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 39,
+      "file": "Metrik - Fatso (VIP).mp3",
+      "dur": 60.0,
+      "vocal_db": -17.2,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 40,
+      "file": "Feint, Leah Rye - Starseed.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.3,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 41,
+      "file": "Culture Shock - DiscoTheque.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.26,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 42,
+      "file": "Kanine, SOTA, Mila Falls - Touchdown.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.58,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 43,
+      "file": "Culture Shock - Troglodyte.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.83,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 44,
+      "file": "Circadian - Body Work VIP.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.79,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 45,
+      "file": "Metrik - Route 174.mp3",
+      "dur": 60.0,
+      "vocal_db": -18.5,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 46,
+      "file": "Tinlicker, Julia Church - Slipstream (feat. Julia Church).mp3",
+      "dur": 60.0,
+      "vocal_db": -6.33,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 47,
+      "file": "Luxe Agoris, Kryoman, Samuel Miller - The Infinite Abyss.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.57,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 48,
+      "file": "PRAANA, ready ready wait - Falling Off (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -8.68,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 49,
+      "file": "Grafix - Final Cut.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.25,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 50,
+      "file": "Sub Focus, Fireboy DML, iRah - Original Don.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.09,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 51,
+      "file": "Florence + The Machine - Dog Days Are Over.mp3",
+      "dur": 60.0,
+      "vocal_db": -4.59,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 52,
+      "file": "Agressor Bunx, MaxNRG - Coming Back.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.72,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 53,
+      "file": "Marshmello, Space Laces - Rave Repeater.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.46,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 54,
+      "file": "K Motionz - Generator.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.53,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 55,
+      "file": "Nina Sung, GILLIAD, Oliverse - Rendezvous.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.27,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 56,
+      "file": "Feint, MUZZ, Koven - Worth The Lie.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.73,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 57,
+      "file": "ORACLE, Nina Carr - Golden.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.18,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 58,
+      "file": "Tantrum Desire - Unleashed.mp3",
+      "dur": 60.0,
+      "vocal_db": -16.61,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 59,
+      "file": "Dimension, Grafix - Offender (Dimension & Grafix Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -12.15,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 60,
+      "file": "Delta Heavy, Grafix - Nocturnal.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.66,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 61,
+      "file": "Sultan + Shepard, The Kite String Tangle - Memories.mp3",
+      "dur": 60.0,
+      "vocal_db": -4.49,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 62,
+      "file": "Document One - Spin Doctor.mp3",
+      "dur": 60.0,
+      "vocal_db": -12.26,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 63,
+      "file": "Shallou, Sultan + Shepard - Pacifica (Sultan + Shepard Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -4.11,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 64,
+      "file": "Biscits - Crush.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.65,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 65,
+      "file": "ÆON_MODE - Stop, Go.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.84,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 66,
+      "file": "Delta Heavy, Hayley May - Get Down Tonight.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.02,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 67,
+      "file": "Feint - Outer Reaches (Instrumental).mp3",
+      "dur": 60.0,
+      "vocal_db": -21.65,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 68,
+      "file": "Feint, Laura Brehm - We Won't Be Alone.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.77,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 69,
+      "file": "Sub Focus, Wilkinson, Tom Cane - Illuminate (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -9.87,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 70,
+      "file": "Duce, Yasmin Jane, Jeans - Begin Again.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.2,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 71,
+      "file": "Basstripper - Ready For It.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.6,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 72,
+      "file": "Mau P - On Again.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.48,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 73,
+      "file": "rshand, Donner - Sky Dreamer.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.9,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 74,
+      "file": "PRAANA - Mojave (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.78,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 75,
+      "file": "Jerro, FARLEY - In Your Eyes.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.58,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 76,
+      "file": "Culture Shock - Empire.mp3",
+      "dur": 60.0,
+      "vocal_db": -14.57,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 77,
+      "file": "Tantrum Desire - Killerz.mp3",
+      "dur": 60.0,
+      "vocal_db": -21.18,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 78,
+      "file": "Sultan + Shepard - Cloud Lifter (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -17.78,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 79,
+      "file": "Jerro - Presence.mp3",
+      "dur": 60.0,
+      "vocal_db": -26.21,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 80,
+      "file": "Lexurus - Close To You.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.94,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 81,
+      "file": "TONI SIZER, CATMOONK - Turn The Lights Off (CHIQUE Remix Edit).mp3",
+      "dur": 60.0,
+      "vocal_db": -8.43,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 82,
+      "file": "LAR, Fagin, Marg Pappas - Shadow Of A Doubt.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.0,
+      "offset_s": 84.0
+    },
+    {
+      "idx": 83,
+      "file": "Perlo - Call Me a Fool.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.32,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 84,
+      "file": "ÆON_MODE, Blanke - dashstar_ (ÆON_MODE ÆDIT).mp3",
+      "dur": 60.0,
+      "vocal_db": -12.11,
+      "offset_s": 36.35
+    },
+    {
+      "idx": 85,
+      "file": "Porter Robinson, Darren Styles, Gammer - Sad Machine (Darren Styles & Gammer Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -8.37,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 86,
+      "file": "Sub Focus, AR_CO - Vibration (One More Time).mp3",
+      "dur": 60.0,
+      "vocal_db": -4.66,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 87,
+      "file": "Jack Willard, Lovlee - Wanna Know (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -10.24,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 88,
+      "file": "Dossa & Locuzzed - Funkyfied.mp3",
+      "dur": 60.0,
+      "vocal_db": -22.84,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 89,
+      "file": "Sultan + Shepard, Nathan Nicholson - Under The Surface (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.75,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 90,
+      "file": "Sub Focus, SOTA - Elevate (SOTA Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.26,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 91,
+      "file": "Mary J. Blige - Family Affair.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.5,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 92,
+      "file": "Dabin, TRØVES - Lights.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.68,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 93,
+      "file": "Mazare, RIENK - Kingslayer.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.66,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 94,
+      "file": "Rameses B - Tokyo Drift.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.73,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 95,
+      "file": "Sultan + Shepard, Prinze George - Centuries.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.81,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 96,
+      "file": "Dimension - DJ Turn It Up.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.58,
+      "offset_s": 88.45
+    },
+    {
+      "idx": 97,
+      "file": "Delta Heavy, ÆON_MODE, Nu-La - Glow.mp3",
+      "dur": 60.0,
+      "vocal_db": -4.81,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 98,
+      "file": "Robyn, Jamie xx - Dopamine (Jamie xx Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -6.66,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 99,
+      "file": "Mykool - Signal.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.77,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 100,
+      "file": "Feint, Laura Brehm - Defiant.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.65,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 101,
+      "file": "Feint, Josh Rubin - Let Me Go.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.45,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 102,
+      "file": "Tinlicker - Fractal.mp3",
+      "dur": 60.0,
+      "vocal_db": -18.77,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 103,
+      "file": "Culture Shock - Breathe.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.57,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 104,
+      "file": "Dan Dakota, Blooom - Yot Klub (Blooom Rework).mp3",
+      "dur": 60.0,
+      "vocal_db": -11.8,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 105,
+      "file": "Artino, JESSEE, Sam Welch - Bring The Rain.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.62,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 106,
+      "file": "Calvin Harris, Clementine Douglas - Blessings.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.34,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 107,
+      "file": "Wilkinson - Come Down.mp3",
+      "dur": 60.0,
+      "vocal_db": -4.57,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 108,
+      "file": "Culture Shock - i like the way you kiss me (Culture Shock's D&B Flip).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.18,
+      "offset_s": 50.03
+    },
+    {
+      "idx": 109,
+      "file": "Culture Shock - Rise (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -10.43,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 110,
+      "file": "Awind, SADRECORDS - You Wanna Love Tonight (For My 2 Years).mp3",
+      "dur": 60.0,
+      "vocal_db": -8.1,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 111,
+      "file": "Dimension, Karen Harding - Guardian Angel.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.23,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 112,
+      "file": "Subsonic, Ekko & Sidetrack - Pressure.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.54,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 113,
+      "file": "Sub Focus - Wildfire.mp3",
+      "dur": 60.0,
+      "vocal_db": -2.95,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 114,
+      "file": "Culture Shock - Feel Again.mp3",
+      "dur": 60.0,
+      "vocal_db": -4.3,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 115,
+      "file": "PRAANA, Ed Graves - Sanctuary (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -4.37,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 116,
+      "file": "Kideko, Shells - Touch.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.92,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 117,
+      "file": "Culture Shock - U & I.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.48,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 118,
+      "file": "Jerro, Le Youth, Lizzy Land - Forever x Lost (Jerro Mashup).mp3",
+      "dur": 60.0,
+      "vocal_db": -6.73,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 119,
+      "file": "Le Youth, Jerro, Lizzy Land - Lost.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.12,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 120,
+      "file": "Pendulum, Armin van Buuren, Rob Swire - Sound of You.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.61,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 121,
+      "file": "Tantrum Desire - Step.mp3",
+      "dur": 60.0,
+      "vocal_db": -16.02,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 122,
+      "file": "Coben, Puppet - Killing Giants (Coben Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -12.27,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 123,
+      "file": "Tinlicker, Julia Church - Glasshouse (feat. Julia Church).mp3",
+      "dur": 60.0,
+      "vocal_db": -6.09,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 124,
+      "file": "Dimension - DJ Turn It Up (Ben Nicky Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -9.58,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 125,
+      "file": "Armin van Buuren, Dimension - Lose This Feeling (Dimension Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -4.91,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 126,
+      "file": "Tantrum Desire, Sophie Grace - Moonlight.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.49,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 127,
+      "file": "KNEECAP, Sub Focus - No Comment.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.43,
+      "offset_s": 64.14
+    },
+    {
+      "idx": 128,
+      "file": "Eliminate, I Set My Friends on Fire - I'M ALREADY A WASTE (Poison Oak).mp3",
+      "dur": 60.0,
+      "vocal_db": -6.73,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 129,
+      "file": "Lexurus, Diede - Live The Lie.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.12,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 130,
+      "file": "Chicane, Bryan Adams, Grafix - Don't Give Up (Grafix Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -6.27,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 131,
+      "file": "Grafix - CTRL.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.91,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 132,
+      "file": "Feint, Veela - Vagrant.mp3",
+      "dur": 60.0,
+      "vocal_db": -4.96,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 133,
+      "file": "Sultan + Shepard, Lane 8 - The Little Mushroom That Got Away.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.13,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 134,
+      "file": "Gryffin, Julia Church - Spin Me Slowly (feat. Julia Church).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.72,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 135,
+      "file": "Space Laces - Dominate VIP.mp3",
+      "dur": 60.0,
+      "vocal_db": -14.37,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 136,
+      "file": "BUNT., Graham - Maybe.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.53,
+      "offset_s": 82.6
+    },
+    {
+      "idx": 137,
+      "file": "Feint - Flicker.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.12,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 138,
+      "file": "Fly By Midnight, Rachel Grae - Different Lives.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.13,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 139,
+      "file": "Lane 8, Art School Girlfriend - The Deep.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.91,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 140,
+      "file": "Metrik - Immortal.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.87,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 141,
+      "file": "1991 - Chant.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.21,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 142,
+      "file": "Culture Shock - The Time Is Now.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.38,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 143,
+      "file": "Feint, Laura Brehm - Words.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.34,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 144,
+      "file": "Delta Heavy - Ascend.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.84,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 145,
+      "file": "Archaellum, Annastacia Boudwin - Go Nowhere (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -12.1,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 146,
+      "file": "1991, Rova - Hijack.mp3",
+      "dur": 60.0,
+      "vocal_db": -12.09,
+      "offset_s": 23.98
+    },
+    {
+      "idx": 147,
+      "file": "Hannah Laing, Marlon Hoffstadt, Caroline Roxy, 1991 - Stomp Your Feet (1991 Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -8.99,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 148,
+      "file": "Lane 8, Channy Leaneagh, Sultan + Shepard - Survive (Sultan + Shepard Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -7.53,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 149,
+      "file": "Sultan + Shepard - Butter.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.09,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 150,
+      "file": "The Prodigy - Voodoo People.mp3",
+      "dur": 60.0,
+      "vocal_db": -12.72,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 151,
+      "file": "Lane 8 - Little Voices.mp3",
+      "dur": 60.0,
+      "vocal_db": -18.34,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 152,
+      "file": "PRAANA - Zilker Gardens Echo (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.28,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 153,
+      "file": "Tourist - Run.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.27,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 154,
+      "file": "Sub Focus - Rock It (Wilkinson Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -14.7,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 155,
+      "file": "Sultan + Shepard, Tishmal - Back Through You.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.57,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 156,
+      "file": "Rhea Silvia - Say Goodbye (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -20.74,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 157,
+      "file": "Grafix - Don't Slow Down.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.84,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 158,
+      "file": "Feed Me, Grafix - One Click Headshot (Grafix Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -8.77,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 159,
+      "file": "Shallou - Habitat.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.79,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 160,
+      "file": "Culture Shock - There For You.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.62,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 161,
+      "file": "Maiah Manser, What So Not, Synergy - With a Smile (What So Not & Synergy's 'Dreamer' Dub).mp3",
+      "dur": 60.0,
+      "vocal_db": -7.9,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 162,
+      "file": "Andromedik, John Summit, HAYLA, Cassian - Shiver (Cassian Remix) [Andromedik Edit].mp3",
+      "dur": 60.0,
+      "vocal_db": -4.89,
+      "offset_s": 25.0
+    },
+    {
+      "idx": 163,
+      "file": "Tris - still holding on.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.24,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 164,
+      "file": "Lane 8, Arctic Lake - The Choice.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.8,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 165,
+      "file": "Jerro, The Kite String Tangle - Mess It Up.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.94,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 166,
+      "file": "Feint - Hideaway.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.59,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 167,
+      "file": "Friction, Jonny L - Back To Your Roots 2021.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.82,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 168,
+      "file": "Scro, whyislavndr - i don’t wanna write sad songs anymore.mp3",
+      "dur": 60.0,
+      "vocal_db": -4.84,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 169,
+      "file": "Chase & Status, J Hus, IRAH - Disgruntled (feat. J Hus & IRAH).mp3",
+      "dur": 60.0,
+      "vocal_db": -6.55,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 170,
+      "file": "Metrik - Simulation.mp3",
+      "dur": 60.0,
+      "vocal_db": -19.69,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 171,
+      "file": "Tinlicker, Tom Smith - This Life (feat. Tom Smith) [Extended Version].mp3",
+      "dur": 60.0,
+      "vocal_db": -6.42,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 172,
+      "file": "ÆON_MODE - RUN.mp3",
+      "dur": 60.0,
+      "vocal_db": -16.55,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 173,
+      "file": "Bicep - Glue.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.52,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 174,
+      "file": "Sultan + Shepard - Pikachew.mp3",
+      "dur": 60.0,
+      "vocal_db": -15.91,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 175,
+      "file": "Culture Shock - Get To Me.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.97,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 176,
+      "file": "1991 - Get A Good Feeling.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.45,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 177,
+      "file": "Sub Focus - Off The Ground.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.0,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 178,
+      "file": "Sub Focus - Solar System.mp3",
+      "dur": 60.0,
+      "vocal_db": -12.29,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 179,
+      "file": "Koven - Chase The Sun (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -7.82,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 180,
+      "file": "DaBaby - POP DAT THANG.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.77,
+      "offset_s": 39.13
+    },
+    {
+      "idx": 181,
+      "file": "Lane 8 - Sunday Song.mp3",
+      "dur": 60.0,
+      "vocal_db": -12.25,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 182,
+      "file": "Fred again.., Baby Keem - leavemealone.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.67,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 183,
+      "file": "Shojin - OIIA OIIA (Spinning Car).mp3",
+      "dur": 60.0,
+      "vocal_db": -10.73,
+      "offset_s": 16.36
+    },
+    {
+      "idx": 184,
+      "file": "Don Diablo, Steve Aoki, Lush & Simon - What We Started (Don Diablo's VIP Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -8.01,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 185,
+      "file": "Jerro - Forever (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -13.49,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 186,
+      "file": "Jerro, Lizzy Land - Need Somebody.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.62,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 187,
+      "file": "Pirapus - ENERGY (I Feel).mp3",
+      "dur": 60.0,
+      "vocal_db": -10.79,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 188,
+      "file": "Trivecta, MitiS, Dia Frampton - Weightless (feat. Dia Frampton).mp3",
+      "dur": 60.0,
+      "vocal_db": -7.72,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 189,
+      "file": "Tantrum Desire - Deep.mp3",
+      "dur": 60.0,
+      "vocal_db": -16.46,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 190,
+      "file": "IMANU, Rhode - Of Two Minds.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.54,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 191,
+      "file": "Delta Heavy - Ecstasy.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.81,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 192,
+      "file": "Andromedik, Lauren L'aimant - Air.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.7,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 193,
+      "file": "Fred V - Really Happy Aliens.mp3",
+      "dur": 60.0,
+      "vocal_db": -16.42,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 194,
+      "file": "Blanke, ÆON_MODE - Another Planet.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.43,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 195,
+      "file": "Koven - Say What You Want.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.61,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 196,
+      "file": "Modera, Phoebe Tsen - Lotus Flower (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -10.71,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 197,
+      "file": "Lane 8, RBBTS, OCULA - Visions (OCULA Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -9.1,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 198,
+      "file": "Duce, Plaha, maybealice - All The Way Down.mp3",
+      "dur": 60.0,
+      "vocal_db": -13.31,
+      "offset_s": 61.23
+    },
+    {
+      "idx": 199,
+      "file": "Delta Heavy - Substance.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.84,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 200,
+      "file": "Andromedik, Kanine - Ascension.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.62,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 201,
+      "file": "Sultan + Shepard, Le Youth, Julia Church - Making Time x Cycles.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.01,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 202,
+      "file": "Sultan + Shepard - All Access.mp3",
+      "dur": 60.0,
+      "vocal_db": -16.39,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 203,
+      "file": "Rockwell - Somebody's Watching Me.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.57,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 204,
+      "file": "PRETTY YOUNG - Out Of The Blue.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.98,
+      "offset_s": 54.42
+    },
+    {
+      "idx": 205,
+      "file": "A.M.C - I See You.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.07,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 206,
+      "file": "OCULA - Tephra (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -26.0,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 207,
+      "file": "Le Youth, MYRNE, Bertie Scott - golden.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.05,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 208,
+      "file": "Feint - Hope I Did Okay.mp3",
+      "dur": 60.0,
+      "vocal_db": -32.22,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 209,
+      "file": "Marlon Hoffstadt, Dimension, DJ Daddy Trance - It's That Time (Dimension Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.56,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 210,
+      "file": "Pendulum - Voodoo People.mp3",
+      "dur": 60.0,
+      "vocal_db": -23.37,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 211,
+      "file": "ISOxo, Fussy - STARsound (pt2).mp3",
+      "dur": 60.0,
+      "vocal_db": -4.93,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 212,
+      "file": "Maduk, Feint, Diamond Eyes - Colours (feat. Diamond Eyes) (Feint Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.84,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 213,
+      "file": "Lane 8 - No Captain.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.06,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 214,
+      "file": "SOTA, A.M.C - Machete (A.M.C Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -10.71,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 215,
+      "file": "Culture Shock, Sarah De Warren - All The Things She Said (Culture Shock Version).mp3",
+      "dur": 60.0,
+      "vocal_db": -6.56,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 216,
+      "file": "Flowidus, Loboski - Lock It.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.6,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 217,
+      "file": "Leo Stannard, Kidnap - Moments.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.41,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 218,
+      "file": "Koven, A.M.C - Hooked.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.08,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 219,
+      "file": "Kanine - Feel The Vibration.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.52,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 220,
+      "file": "Chaney - Need You (Higher) (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -4.78,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 221,
+      "file": "Le Youth - About Us.mp3",
+      "dur": 60.0,
+      "vocal_db": -12.68,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 222,
+      "file": "Grafix - Body Language.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.75,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 223,
+      "file": "Nora En Pure - Diving with Whales.mp3",
+      "dur": 60.0,
+      "vocal_db": -22.63,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 224,
+      "file": "ÆON_MODE, ANY - Fireflies.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.28,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 225,
+      "file": "Funk LeBlanc, Holland Greco - Listen 4 My Love.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.5,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 226,
+      "file": "Wilkinson, Becky Hill - Afterglow.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.7,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 227,
+      "file": "Feint - Farcall.mp3",
+      "dur": 60.0,
+      "vocal_db": -21.61,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 228,
+      "file": "Circadian, Nu-La - ReBirth.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.83,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 229,
+      "file": "Ben Böhmer, Panama - Weightless.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.76,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 230,
+      "file": "Pirapus - BODY DROP (Won't Stop).mp3",
+      "dur": 60.0,
+      "vocal_db": -9.48,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 231,
+      "file": "Boyinaband, Feint, Veela - Time Bomb.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.38,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 232,
+      "file": "John Summit, Absolutely - DON'T BELIEVE IT.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.22,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 233,
+      "file": "Jerro - Lake Nivu.mp3",
+      "dur": 60.0,
+      "vocal_db": -18.09,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 234,
+      "file": "Louis Millne - Sweet Escape.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.94,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 235,
+      "file": "Tinlicker, Julia Church - Glasshouse (feat. Julia Church) [Extended Version].mp3",
+      "dur": 60.0,
+      "vocal_db": -5.1,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 236,
+      "file": "Sub Focus - Fine Day.mp3",
+      "dur": 60.0,
+      "vocal_db": -3.39,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 237,
+      "file": "Kanine - Power.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.91,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 238,
+      "file": "Subsonic - Genesis.mp3",
+      "dur": 60.0,
+      "vocal_db": -12.26,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 239,
+      "file": "Flowidus, Loboski - Amplify.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.44,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 240,
+      "file": "Adam F - Circles (Original Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -15.68,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 241,
+      "file": "Sultan + Shepard, Nathan Nicholson - Under The Surface.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.35,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 242,
+      "file": "Kanine - Get Down.mp3",
+      "dur": 60.0,
+      "vocal_db": -19.11,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 243,
+      "file": "Ben Böhmer - After Earth (Orginal Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -32.8,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 244,
+      "file": "Maduk, Dualistic, Cammie Robinson - Watching Over You.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.79,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 245,
+      "file": "EMBRZ - Letting Go.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.38,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 246,
+      "file": "Lexurus, Gomey - The Distance.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.44,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 247,
+      "file": "family affair.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.12,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 248,
+      "file": "Jerro, Sultan + Shepard, The Temper Trap - Trois x Sweet Disposition (Jerro Mashup).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.32,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 249,
+      "file": "Jerro - Forever.mp3",
+      "dur": 60.0,
+      "vocal_db": -13.25,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 250,
+      "file": "Kasbo, Frida Sundemo - This Is It.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.8,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 251,
+      "file": "Jack Ü - Get Free _ Cinema VIP.mp3",
+      "dur": 60.0,
+      "vocal_db": -4.58,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 252,
+      "file": "Synergy - Spiral.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.15,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 253,
+      "file": "Courtney Storm - West Coast.mp3",
+      "dur": 60.0,
+      "vocal_db": -15.17,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 254,
+      "file": "1991, Pirapus - Full Send (Pirapus Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -11.93,
+      "offset_s": 60.0
+    },
+    {
+      "idx": 255,
+      "file": "Sub Focus - Airplane (Culture Shock Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -8.68,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 256,
+      "file": "A.M.C, Turno - Ice Cold VIP.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.83,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 257,
+      "file": "Malaa (Alter Ego), ÆON_MODE, Malaa - Gave Birth.mp3",
+      "dur": 60.0,
+      "vocal_db": -6.74,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 258,
+      "file": "CRi, Nicky Elisabeth - This Is Our Life.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.74,
+      "offset_s": 120.0
+    },
+    {
+      "idx": 259,
+      "file": "Ellie Goulding - Hanging On (Sigma Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -9.29,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 260,
+      "file": "cypress, ORACLE, MØØNE - go, for now.mp3",
+      "dur": 60.0,
+      "vocal_db": -8.29,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 261,
+      "file": "Lane 8, Sultan + Shepard, sadHAPPY - Disappear.mp3",
+      "dur": 60.0,
+      "vocal_db": -7.76,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 262,
+      "file": "Colyn, Sultan + Shepard - 1973.mp3",
+      "dur": 60.0,
+      "vocal_db": -10.41,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 263,
+      "file": "Synergy - Mirage.mp3",
+      "dur": 60.0,
+      "vocal_db": -11.25,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 264,
+      "file": "Pola & Bryson, Hugh Hardie - Lifted.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.63,
+      "offset_s": 30.0
+    },
+    {
+      "idx": 265,
+      "file": "Fox Stevenson - Still Here.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.06,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 266,
+      "file": "Zedd, VALORANT, Foxes - Clarity (BUNT. Remix).mp3",
+      "dur": 60.0,
+      "vocal_db": -2.72,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 267,
+      "file": "Eliminate - Weeble Wobble VIP.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.72,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 268,
+      "file": "Sultan + Shepard, Shallou - Raye (Extended Mix).mp3",
+      "dur": 60.0,
+      "vocal_db": -5.45,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 269,
+      "file": "Feint, V O E - The Light.mp3",
+      "dur": 60.0,
+      "vocal_db": -5.65,
+      "offset_s": 90.0
+    },
+    {
+      "idx": 270,
+      "file": "BrEaCh - Jack (Hoax Rework).mp3",
+      "dur": 60.0,
+      "vocal_db": -12.07,
+      "offset_s": 0.0
+    },
+    {
+      "idx": 271,
+      "file": "Fred again.., Jozzy - ten.mp3",
+      "dur": 60.0,
+      "vocal_db": -9.79,
+      "offset_s": 60.0
+    }
+  ],
+  "stage_a_timing": {
+    "decode_s": 154.8746814999722,
+    "teacher_s": 3105.7745086999894,
+    "spectral_s": 50.03438600001027,
+    "entries": 272,
+    "sifted_out": 2,
+    "vocal_db_min": -36.9,
+    "vocal_db_p25": -10.9,
+    "vocal_db_median": -8.4,
+    "vocal_db_max": -2.7,
+    "frac_above_-12dB": 0.798,
+    "frac_above_-18dB": 0.923
+  },
+  "stage_a_audio_s": 16320.0,
+  "stage_a_wall_s": 3338.1,
+  "stage_a_audio_s_per_wall_s": 4.89,
+  "unique_audio_min": 272.0,
+  "model_params": 529732,
+  "objective": "log-magnitude L1 on the reconstructed 2 stems",
+  "mask_target": "soft mask |V| / (|V| + |A|)",
+  "val_logL1_initial": 0.99998,
+  "val_logL1_final": 0.96187,
+  "val_logL1_drop": 0.03812,
+  "learned": true,
+  "mask_health": {
+    "target_mask_mean": 0.24,
+    "pred_mask_mean": 0.3018,
+    "pred_mask_std": 0.2756,
+    "pred_pred_gt_0.5_frac": 0.2087,
+    "target_gt_0.5_frac": 0.223
+  },
+  "loss_curve": [
+    {
+      "step": 1,
+      "lr": 1e-06,
+      "train_logL1": 1.20075,
+      "val_logL1": 0.99987,
+      "wall_s": 0.0
+    },
+    {
+      "step": 500,
+      "lr": 0.0005,
+      "train_logL1": 1.09819,
+      "val_logL1": 1.0099,
+      "wall_s": 49.9
+    },
+    {
+      "step": 1000,
+      "lr": 0.0004999,
+      "train_logL1": 0.92149,
+      "val_logL1": 0.9856,
+      "wall_s": 96.5
+    },
+    {
+      "step": 1500,
+      "lr": 0.0004997,
+      "train_logL1": 0.96812,
+      "val_logL1": 0.96187,
+      "wall_s": 139.6
+    },
+    {
+      "step": 2000,
+      "lr": 0.0004995,
+      "train_logL1": 0.96394,
+      "val_logL1": 1.00094,
+      "wall_s": 186.3
+    },
+    {
+      "step": 2500,
+      "lr": 0.0004992,
+      "train_logL1": 0.86115,
+      "val_logL1": 0.99647,
+      "wall_s": 235.0
+    },
+    {
+      "step": 3000,
+      "lr": 0.0004988,
+      "train_logL1": 0.86619,
+      "val_logL1": 0.96383,
+      "wall_s": 286.3
+    },
+    {
+      "step": 3500,
+      "lr": 0.0004983,
+      "train_logL1": 0.92262,
+      "val_logL1": 0.99069,
+      "wall_s": 338.5
+    },
+    {
+      "step": 4000,
+      "lr": 0.0004977,
+      "train_logL1": 0.97326,
+      "val_logL1": 1.05136,
+      "wall_s": 392.0
+    },
+    {
+      "step": 4500,
+      "lr": 0.000497,
+      "train_logL1": 1.03699,
+      "val_logL1": 1.02658,
+      "wall_s": 445.1
+    },
+    {
+      "step": 5000,
+      "lr": 0.0004963,
+      "train_logL1": 0.96524,
+      "val_logL1": 1.00881,
+      "wall_s": 497.0
+    },
+    {
+      "step": 5500,
+      "lr": 0.0004955,
+      "train_logL1": 1.03869,
+      "val_logL1": 1.02814,
+      "wall_s": 552.8
+    },
+    {
+      "step": 6000,
+      "lr": 0.0004945,
+      "train_logL1": 0.88132,
+      "val_logL1": 0.99422,
+      "wall_s": 606.8
+    },
+    {
+      "step": 6500,
+      "lr": 0.0004935,
+      "train_logL1": 0.94032,
+      "val_logL1": 0.99421,
+      "wall_s": 659.7
+    },
+    {
+      "step": 7000,
+      "lr": 0.0004926,
+      "train_logL1": 0.96329,
+      "val_logL1": 1.01274,
+      "wall_s": 706.9
+    },
+    {
+      "step": 7500,
+      "lr": 0.0004916,
+      "train_logL1": 0.81388,
+      "val_logL1": 0.98496,
+      "wall_s": 751.2
+    },
+    {
+      "step": 8000,
+      "lr": 0.0004905,
+      "train_logL1": 1.01096,
+      "val_logL1": 1.00383,
+      "wall_s": 800.0
+    },
+    {
+      "step": 8500,
+      "lr": 0.0004892,
+      "train_logL1": 0.87872,
+      "val_logL1": 0.99758,
+      "wall_s": 853.3
+    },
+    {
+      "step": 9000,
+      "lr": 0.0004879,
+      "train_logL1": 0.98539,
+      "val_logL1": 1.02402,
+      "wall_s": 904.9
+    },
+    {
+      "step": 9500,
+      "lr": 0.0004865,
+      "train_logL1": 0.84942,
+      "val_logL1": 1.0175,
+      "wall_s": 955.8
+    },
+    {
+      "step": 10000,
+      "lr": 0.000485,
+      "train_logL1": 0.83777,
+      "val_logL1": 1.01036,
+      "wall_s": 1007.9
+    },
+    {
+      "step": 10500,
+      "lr": 0.0004833,
+      "train_logL1": 0.97241,
+      "val_logL1": 1.0307,
+      "wall_s": 1062.8
+    },
+    {
+      "step": 11000,
+      "lr": 0.0004815,
+      "train_logL1": 0.81288,
+      "val_logL1": 0.98813,
+      "wall_s": 1119.9
+    },
+    {
+      "step": 11500,
+      "lr": 0.0004797,
+      "train_logL1": 0.79071,
+      "val_logL1": 1.0154,
+      "wall_s": 1174.1
+    },
+    {
+      "step": 12000,
+      "lr": 0.0004782,
+      "train_logL1": 0.9839,
+      "val_logL1": 1.03332,
+      "wall_s": 1218.7
+    },
+    {
+      "step": 12500,
+      "lr": 0.0004766,
+      "train_logL1": 0.95924,
+      "val_logL1": 1.04198,
+      "wall_s": 1263.0
+    },
+    {
+      "step": 13000,
+      "lr": 0.0004749,
+      "train_logL1": 0.96347,
+      "val_logL1": 1.07551,
+      "wall_s": 1309.0
+    },
+    {
+      "step": 13500,
+      "lr": 0.0004732,
+      "train_logL1": 0.94199,
+      "val_logL1": 1.01361,
+      "wall_s": 1352.1
+    },
+    {
+      "step": 14000,
+      "lr": 0.0004716,
+      "train_logL1": 0.8862,
+      "val_logL1": 1.02061,
+      "wall_s": 1393.9
+    },
+    {
+      "step": 14500,
+      "lr": 0.0004696,
+      "train_logL1": 0.88239,
+      "val_logL1": 1.03051,
+      "wall_s": 1441.4
+    },
+    {
+      "step": 15000,
+      "lr": 0.0004676,
+      "train_logL1": 0.84736,
+      "val_logL1": 1.01671,
+      "wall_s": 1489.9
+    },
+    {
+      "step": 15500,
+      "lr": 0.0004655,
+      "train_logL1": 0.89539,
+      "val_logL1": 1.03948,
+      "wall_s": 1539.6
+    },
+    {
+      "step": 16000,
+      "lr": 0.0004631,
+      "train_logL1": 0.93012,
+      "val_logL1": 1.0151,
+      "wall_s": 1593.1
+    },
+    {
+      "step": 16500,
+      "lr": 0.0004606,
+      "train_logL1": 0.9078,
+      "val_logL1": 1.01852,
+      "wall_s": 1646.2
+    },
+    {
+      "step": 17000,
+      "lr": 0.0004582,
+      "train_logL1": 0.89586,
+      "val_logL1": 1.00284,
+      "wall_s": 1698.2
+    },
+    {
+      "step": 17500,
+      "lr": 0.0004556,
+      "train_logL1": 0.83834,
+      "val_logL1": 1.0457,
+      "wall_s": 1752.1
+    },
+    {
+      "step": 18000,
+      "lr": 0.0004528,
+      "train_logL1": 0.94598,
+      "val_logL1": 1.01429,
+      "wall_s": 1807.3
+    },
+    {
+      "step": 18500,
+      "lr": 0.0004502,
+      "train_logL1": 0.89675,
+      "val_logL1": 1.0193,
+      "wall_s": 1859.4
+    },
+    {
+      "step": 19000,
+      "lr": 0.0004475,
+      "train_logL1": 0.91419,
+      "val_logL1": 1.02548,
+      "wall_s": 1911.4
+    },
+    {
+      "step": 19500,
+      "lr": 0.000445,
+      "train_logL1": 0.90299,
+      "val_logL1": 1.01078,
+      "wall_s": 1957.3
+    },
+    {
+      "step": 20000,
+      "lr": 0.0004425,
+      "train_logL1": 0.86521,
+      "val_logL1": 1.01797,
+      "wall_s": 2003.6
+    },
+    {
+      "step": 20500,
+      "lr": 0.0004401,
+      "train_logL1": 0.85445,
+      "val_logL1": 1.00627,
+      "wall_s": 2046.9
+    },
+    {
+      "step": 21000,
+      "lr": 0.0004376,
+      "train_logL1": 0.83864,
+      "val_logL1": 1.03526,
+      "wall_s": 2090.6
+    },
+    {
+      "step": 21500,
+      "lr": 0.0004347,
+      "train_logL1": 0.9259,
+      "val_logL1": 1.0363,
+      "wall_s": 2141.5
+    },
+    {
+      "step": 22000,
+      "lr": 0.0004321,
+      "train_logL1": 0.82358,
+      "val_logL1": 1.03328,
+      "wall_s": 2185.8
+    },
+    {
+      "step": 22500,
+      "lr": 0.0004294,
+      "train_logL1": 0.94408,
+      "val_logL1": 1.04324,
+      "wall_s": 2231.2
+    },
+    {
+      "step": 23000,
+      "lr": 0.0004263,
+      "train_logL1": 0.91551,
+      "val_logL1": 1.04394,
+      "wall_s": 2281.7
+    },
+    {
+      "step": 23500,
+      "lr": 0.0004232,
+      "train_logL1": 0.85061,
+      "val_logL1": 1.03346,
+      "wall_s": 2332.4
+    },
+    {
+      "step": 24000,
+      "lr": 0.0004199,
+      "train_logL1": 0.86511,
+      "val_logL1": 1.04658,
+      "wall_s": 2384.1
+    },
+    {
+      "step": 24500,
+      "lr": 0.0004168,
+      "train_logL1": 0.79248,
+      "val_logL1": 1.0051,
+      "wall_s": 2432.8
+    },
+    {
+      "step": 25000,
+      "lr": 0.0004134,
+      "train_logL1": 0.86941,
+      "val_logL1": 1.00774,
+      "wall_s": 2485.7
+    },
+    {
+      "step": 25500,
+      "lr": 0.00041,
+      "train_logL1": 0.91186,
+      "val_logL1": 1.02135,
+      "wall_s": 2537.5
+    },
+    {
+      "step": 26000,
+      "lr": 0.0004066,
+      "train_logL1": 0.85173,
+      "val_logL1": 1.02468,
+      "wall_s": 2589.1
+    },
+    {
+      "step": 26500,
+      "lr": 0.0004031,
+      "train_logL1": 0.92274,
+      "val_logL1": 1.03108,
+      "wall_s": 2639.9
+    },
+    {
+      "step": 27000,
+      "lr": 0.0003998,
+      "train_logL1": 0.86272,
+      "val_logL1": 1.04564,
+      "wall_s": 2688.3
+    },
+    {
+      "step": 27500,
+      "lr": 0.0003961,
+      "train_logL1": 0.92067,
+      "val_logL1": 1.03025,
+      "wall_s": 2742.0
+    },
+    {
+      "step": 28000,
+      "lr": 0.0003925,
+      "train_logL1": 0.86431,
+      "val_logL1": 1.00856,
+      "wall_s": 2793.4
+    },
+    {
+      "step": 28500,
+      "lr": 0.0003889,
+      "train_logL1": 0.81323,
+      "val_logL1": 1.02513,
+      "wall_s": 2843.1
+    },
+    {
+      "step": 29000,
+      "lr": 0.0003851,
+      "train_logL1": 0.889,
+      "val_logL1": 1.03949,
+      "wall_s": 2896.8
+    },
+    {
+      "step": 29500,
+      "lr": 0.000381,
+      "train_logL1": 0.84335,
+      "val_logL1": 1.04619,
+      "wall_s": 2952.7
+    },
+    {
+      "step": 30000,
+      "lr": 0.0003767,
+      "train_logL1": 0.97331,
+      "val_logL1": 1.06031,
+      "wall_s": 3010.8
+    },
+    {
+      "step": 30500,
+      "lr": 0.0003724,
+      "train_logL1": 0.88657,
+      "val_logL1": 1.04031,
+      "wall_s": 3067.7
+    },
+    {
+      "step": 31000,
+      "lr": 0.0003683,
+      "train_logL1": 0.80517,
+      "val_logL1": 1.05169,
+      "wall_s": 3122.1
+    },
+    {
+      "step": 31500,
+      "lr": 0.0003641,
+      "train_logL1": 0.85017,
+      "val_logL1": 1.03101,
+      "wall_s": 3177.3
+    },
+    {
+      "step": 32000,
+      "lr": 0.0003597,
+      "train_logL1": 0.86064,
+      "val_logL1": 1.03038,
+      "wall_s": 3235.3
+    },
+    {
+      "step": 32500,
+      "lr": 0.0003551,
+      "train_logL1": 0.84116,
+      "val_logL1": 1.04797,
+      "wall_s": 3294.2
+    },
+    {
+      "step": 33000,
+      "lr": 0.0003508,
+      "train_logL1": 0.73792,
+      "val_logL1": 1.04961,
+      "wall_s": 3349.6
+    },
+    {
+      "step": 33500,
+      "lr": 0.0003465,
+      "train_logL1": 0.83472,
+      "val_logL1": 1.031,
+      "wall_s": 3403.6
+    },
+    {
+      "step": 34000,
+      "lr": 0.0003425,
+      "train_logL1": 0.83261,
+      "val_logL1": 1.04885,
+      "wall_s": 3454.1
+    },
+    {
+      "step": 34500,
+      "lr": 0.0003384,
+      "train_logL1": 0.95538,
+      "val_logL1": 1.04921,
+      "wall_s": 3504.7
+    },
+    {
+      "step": 35000,
+      "lr": 0.0003343,
+      "train_logL1": 0.80122,
+      "val_logL1": 1.01104,
+      "wall_s": 3555.7
+    },
+    {
+      "step": 35500,
+      "lr": 0.0003301,
+      "train_logL1": 0.77141,
+      "val_logL1": 1.03792,
+      "wall_s": 3607.1
+    },
+    {
+      "step": 36000,
+      "lr": 0.0003262,
+      "train_logL1": 0.7729,
+      "val_logL1": 1.05107,
+      "wall_s": 3655.7
+    },
+    {
+      "step": 36500,
+      "lr": 0.000322,
+      "train_logL1": 0.79866,
+      "val_logL1": 1.03394,
+      "wall_s": 3706.6
+    },
+    {
+      "step": 37000,
+      "lr": 0.0003177,
+      "train_logL1": 0.79125,
+      "val_logL1": 1.03564,
+      "wall_s": 3758.6
+    },
+    {
+      "step": 37500,
+      "lr": 0.0003136,
+      "train_logL1": 0.80896,
+      "val_logL1": 1.07268,
+      "wall_s": 3808.4
+    },
+    {
+      "step": 38000,
+      "lr": 0.0003094,
+      "train_logL1": 0.92614,
+      "val_logL1": 1.04181,
+      "wall_s": 3858.3
+    },
+    {
+      "step": 38500,
+      "lr": 0.0003052,
+      "train_logL1": 0.82201,
+      "val_logL1": 1.01351,
+      "wall_s": 3908.3
+    },
+    {
+      "step": 39000,
+      "lr": 0.0003011,
+      "train_logL1": 0.87206,
+      "val_logL1": 1.04041,
+      "wall_s": 3958.0
+    },
+    {
+      "step": 39500,
+      "lr": 0.0002969,
+      "train_logL1": 0.76122,
+      "val_logL1": 1.05289,
+      "wall_s": 4008.2
+    },
+    {
+      "step": 40000,
+      "lr": 0.0002925,
+      "train_logL1": 0.91351,
+      "val_logL1": 1.05283,
+      "wall_s": 4059.7
+    },
+    {
+      "step": 40500,
+      "lr": 0.0002883,
+      "train_logL1": 0.8075,
+      "val_logL1": 1.03008,
+      "wall_s": 4109.9
+    },
+    {
+      "step": 41000,
+      "lr": 0.0002842,
+      "train_logL1": 0.7828,
+      "val_logL1": 1.05196,
+      "wall_s": 4158.3
+    },
+    {
+      "step": 41500,
+      "lr": 0.0002798,
+      "train_logL1": 0.78325,
+      "val_logL1": 1.03181,
+      "wall_s": 4209.1
+    },
+    {
+      "step": 42000,
+      "lr": 0.0002756,
+      "train_logL1": 0.74292,
+      "val_logL1": 1.042,
+      "wall_s": 4258.7
+    },
+    {
+      "step": 42500,
+      "lr": 0.0002713,
+      "train_logL1": 0.84906,
+      "val_logL1": 1.034,
+      "wall_s": 4308.9
+    },
+    {
+      "step": 43000,
+      "lr": 0.0002671,
+      "train_logL1": 0.70103,
+      "val_logL1": 1.04341,
+      "wall_s": 4358.9
+    },
+    {
+      "step": 43500,
+      "lr": 0.0002628,
+      "train_logL1": 0.75732,
+      "val_logL1": 1.02102,
+      "wall_s": 4409.2
+    },
+    {
+      "step": 44000,
+      "lr": 0.0002585,
+      "train_logL1": 0.71348,
+      "val_logL1": 1.03986,
+      "wall_s": 4459.2
+    },
+    {
+      "step": 44500,
+      "lr": 0.0002541,
+      "train_logL1": 0.82421,
+      "val_logL1": 1.02136,
+      "wall_s": 4510.3
+    },
+    {
+      "step": 45000,
+      "lr": 0.0002498,
+      "train_logL1": 0.79889,
+      "val_logL1": 1.02874,
+      "wall_s": 4560.3
+    },
+    {
+      "step": 45500,
+      "lr": 0.0002456,
+      "train_logL1": 0.78992,
+      "val_logL1": 1.05712,
+      "wall_s": 4609.5
+    },
+    {
+      "step": 46000,
+      "lr": 0.0002413,
+      "train_logL1": 0.72711,
+      "val_logL1": 1.03666,
+      "wall_s": 4660.3
+    },
+    {
+      "step": 46500,
+      "lr": 0.0002369,
+      "train_logL1": 0.79948,
+      "val_logL1": 1.03631,
+      "wall_s": 4712.1
+    },
+    {
+      "step": 47000,
+      "lr": 0.0002326,
+      "train_logL1": 0.78988,
+      "val_logL1": 1.03805,
+      "wall_s": 4762.9
+    },
+    {
+      "step": 47500,
+      "lr": 0.0002283,
+      "train_logL1": 0.74261,
+      "val_logL1": 1.02879,
+      "wall_s": 4813.3
+    },
+    {
+      "step": 48000,
+      "lr": 0.0002239,
+      "train_logL1": 0.77193,
+      "val_logL1": 1.03198,
+      "wall_s": 4864.3
+    },
+    {
+      "step": 48500,
+      "lr": 0.0002196,
+      "train_logL1": 0.75879,
+      "val_logL1": 1.032,
+      "wall_s": 4915.0
+    },
+    {
+      "step": 49000,
+      "lr": 0.0002153,
+      "train_logL1": 0.78439,
+      "val_logL1": 1.03331,
+      "wall_s": 4966.4
+    },
+    {
+      "step": 49500,
+      "lr": 0.0002109,
+      "train_logL1": 0.86402,
+      "val_logL1": 1.04549,
+      "wall_s": 5018.2
+    },
+    {
+      "step": 50000,
+      "lr": 0.0002066,
+      "train_logL1": 0.79113,
+      "val_logL1": 1.03815,
+      "wall_s": 5069.2
+    },
+    {
+      "step": 50500,
+      "lr": 0.0002025,
+      "train_logL1": 0.81901,
+      "val_logL1": 1.03121,
+      "wall_s": 5118.6
+    },
+    {
+      "step": 51000,
+      "lr": 0.0001982,
+      "train_logL1": 0.81123,
+      "val_logL1": 1.04949,
+      "wall_s": 5170.0
+    },
+    {
+      "step": 51500,
+      "lr": 0.000194,
+      "train_logL1": 0.73814,
+      "val_logL1": 1.03741,
+      "wall_s": 5220.9
+    },
+    {
+      "step": 52000,
+      "lr": 0.0001898,
+      "train_logL1": 0.73553,
+      "val_logL1": 1.03834,
+      "wall_s": 5271.3
+    },
+    {
+      "step": 52500,
+      "lr": 0.0001855,
+      "train_logL1": 0.77173,
+      "val_logL1": 1.04591,
+      "wall_s": 5324.0
+    },
+    {
+      "step": 53000,
+      "lr": 0.0001813,
+      "train_logL1": 0.84891,
+      "val_logL1": 1.05055,
+      "wall_s": 5375.3
+    },
+    {
+      "step": 53500,
+      "lr": 0.0001773,
+      "train_logL1": 0.85146,
+      "val_logL1": 1.04481,
+      "wall_s": 5424.5
+    },
+    {
+      "step": 54000,
+      "lr": 0.0001734,
+      "train_logL1": 0.78923,
+      "val_logL1": 1.03383,
+      "wall_s": 5473.1
+    },
+    {
+      "step": 54500,
+      "lr": 0.0001693,
+      "train_logL1": 0.78639,
+      "val_logL1": 1.06661,
+      "wall_s": 5523.6
+    },
+    {
+      "step": 55000,
+      "lr": 0.0001653,
+      "train_logL1": 0.84266,
+      "val_logL1": 1.04575,
+      "wall_s": 5573.3
+    },
+    {
+      "step": 55500,
+      "lr": 0.0001612,
+      "train_logL1": 0.79162,
+      "val_logL1": 1.03528,
+      "wall_s": 5625.4
+    },
+    {
+      "step": 56000,
+      "lr": 0.0001572,
+      "train_logL1": 0.81972,
+      "val_logL1": 1.04059,
+      "wall_s": 5676.1
+    },
+    {
+      "step": 56500,
+      "lr": 0.0001533,
+      "train_logL1": 0.78087,
+      "val_logL1": 1.03071,
+      "wall_s": 5725.9
+    },
+    {
+      "step": 57000,
+      "lr": 0.0001495,
+      "train_logL1": 0.80437,
+      "val_logL1": 1.05395,
+      "wall_s": 5776.0
+    },
+    {
+      "step": 57500,
+      "lr": 0.0001455,
+      "train_logL1": 0.76785,
+      "val_logL1": 1.02753,
+      "wall_s": 5827.0
+    },
+    {
+      "step": 58000,
+      "lr": 0.0001416,
+      "train_logL1": 0.7971,
+      "val_logL1": 1.04652,
+      "wall_s": 5879.1
+    },
+    {
+      "step": 58500,
+      "lr": 0.0001377,
+      "train_logL1": 0.79854,
+      "val_logL1": 1.0467,
+      "wall_s": 5929.7
+    },
+    {
+      "step": 59000,
+      "lr": 0.000134,
+      "train_logL1": 0.7905,
+      "val_logL1": 1.03133,
+      "wall_s": 5979.9
+    },
+    {
+      "step": 59500,
+      "lr": 0.0001301,
+      "train_logL1": 0.84298,
+      "val_logL1": 1.02828,
+      "wall_s": 6032.6
+    },
+    {
+      "step": 60000,
+      "lr": 0.0001263,
+      "train_logL1": 0.75506,
+      "val_logL1": 1.04488,
+      "wall_s": 6084.2
+    },
+    {
+      "step": 60500,
+      "lr": 0.0001226,
+      "train_logL1": 0.73288,
+      "val_logL1": 1.03096,
+      "wall_s": 6135.4
+    },
+    {
+      "step": 61000,
+      "lr": 0.0001191,
+      "train_logL1": 0.83379,
+      "val_logL1": 1.04998,
+      "wall_s": 6184.3
+    },
+    {
+      "step": 61500,
+      "lr": 0.0001155,
+      "train_logL1": 0.66622,
+      "val_logL1": 1.03881,
+      "wall_s": 6235.2
+    },
+    {
+      "step": 62000,
+      "lr": 0.0001121,
+      "train_logL1": 0.70595,
+      "val_logL1": 1.0282,
+      "wall_s": 6284.3
+    },
+    {
+      "step": 62500,
+      "lr": 0.0001086,
+      "train_logL1": 0.75451,
+      "val_logL1": 1.05354,
+      "wall_s": 6335.1
+    },
+    {
+      "step": 63000,
+      "lr": 0.0001051,
+      "train_logL1": 0.81308,
+      "val_logL1": 1.03085,
+      "wall_s": 6385.7
+    },
+    {
+      "step": 63500,
+      "lr": 0.0001016,
+      "train_logL1": 0.74993,
+      "val_logL1": 1.03324,
+      "wall_s": 6437.9
+    },
+    {
+      "step": 64000,
+      "lr": 9.83e-05,
+      "train_logL1": 0.78909,
+      "val_logL1": 1.04382,
+      "wall_s": 6488.7
+    },
+    {
+      "step": 64500,
+      "lr": 9.49e-05,
+      "train_logL1": 0.75601,
+      "val_logL1": 1.04865,
+      "wall_s": 6539.5
+    },
+    {
+      "step": 65000,
+      "lr": 9.18e-05,
+      "train_logL1": 0.7866,
+      "val_logL1": 1.03756,
+      "wall_s": 6589.1
+    },
+    {
+      "step": 65500,
+      "lr": 8.85e-05,
+      "train_logL1": 0.74357,
+      "val_logL1": 1.0347,
+      "wall_s": 6641.1
+    },
+    {
+      "step": 66000,
+      "lr": 8.54e-05,
+      "train_logL1": 0.74349,
+      "val_logL1": 1.03887,
+      "wall_s": 6689.9
+    },
+    {
+      "step": 66500,
+      "lr": 8.23e-05,
+      "train_logL1": 0.78722,
+      "val_logL1": 1.03609,
+      "wall_s": 6741.7
+    },
+    {
+      "step": 67000,
+      "lr": 7.92e-05,
+      "train_logL1": 0.6985,
+      "val_logL1": 1.02179,
+      "wall_s": 6792.3
+    },
+    {
+      "step": 67500,
+      "lr": 7.62e-05,
+      "train_logL1": 0.72982,
+      "val_logL1": 1.03261,
+      "wall_s": 6843.3
+    },
+    {
+      "step": 68000,
+      "lr": 7.33e-05,
+      "train_logL1": 0.79537,
+      "val_logL1": 1.04151,
+      "wall_s": 6892.8
+    },
+    {
+      "step": 68500,
+      "lr": 7.05e-05,
+      "train_logL1": 0.73035,
+      "val_logL1": 1.04237,
+      "wall_s": 6943.4
+    },
+    {
+      "step": 69000,
+      "lr": 6.77e-05,
+      "train_logL1": 0.83235,
+      "val_logL1": 1.03057,
+      "wall_s": 6993.7
+    },
+    {
+      "step": 69500,
+      "lr": 6.5e-05,
+      "train_logL1": 0.70337,
+      "val_logL1": 1.04275,
+      "wall_s": 7042.9
+    },
+    {
+      "step": 70000,
+      "lr": 6.23e-05,
+      "train_logL1": 0.72039,
+      "val_logL1": 1.02566,
+      "wall_s": 7092.3
+    },
+    {
+      "step": 70500,
+      "lr": 5.98e-05,
+      "train_logL1": 0.78289,
+      "val_logL1": 1.04282,
+      "wall_s": 7141.8
+    },
+    {
+      "step": 71000,
+      "lr": 5.71e-05,
+      "train_logL1": 0.7969,
+      "val_logL1": 1.03431,
+      "wall_s": 7193.1
+    },
+    {
+      "step": 71500,
+      "lr": 5.46e-05,
+      "train_logL1": 0.74103,
+      "val_logL1": 1.03512,
+      "wall_s": 7244.0
+    },
+    {
+      "step": 72000,
+      "lr": 5.21e-05,
+      "train_logL1": 0.72029,
+      "val_logL1": 1.03487,
+      "wall_s": 7294.8
+    },
+    {
+      "step": 72500,
+      "lr": 4.98e-05,
+      "train_logL1": 0.75557,
+      "val_logL1": 1.04107,
+      "wall_s": 7343.5
+    },
+    {
+      "step": 73000,
+      "lr": 4.76e-05,
+      "train_logL1": 0.6824,
+      "val_logL1": 1.03098,
+      "wall_s": 7392.6
+    },
+    {
+      "step": 73500,
+      "lr": 4.54e-05,
+      "train_logL1": 0.902,
+      "val_logL1": 1.0423,
+      "wall_s": 7441.8
+    },
+    {
+      "step": 74000,
+      "lr": 4.32e-05,
+      "train_logL1": 0.71657,
+      "val_logL1": 1.03208,
+      "wall_s": 7491.5
+    },
+    {
+      "step": 74500,
+      "lr": 4.11e-05,
+      "train_logL1": 0.72746,
+      "val_logL1": 1.03175,
+      "wall_s": 7540.8
+    },
+    {
+      "step": 75000,
+      "lr": 3.9e-05,
+      "train_logL1": 0.67595,
+      "val_logL1": 1.03733,
+      "wall_s": 7591.4
+    },
+    {
+      "step": 75500,
+      "lr": 3.7e-05,
+      "train_logL1": 0.77166,
+      "val_logL1": 1.03525,
+      "wall_s": 7642.8
+    },
+    {
+      "step": 76000,
+      "lr": 3.5e-05,
+      "train_logL1": 0.80606,
+      "val_logL1": 1.03057,
+      "wall_s": 7694.1
+    },
+    {
+      "step": 76500,
+      "lr": 3.31e-05,
+      "train_logL1": 0.77059,
+      "val_logL1": 1.03218,
+      "wall_s": 7745.6
+    },
+    {
+      "step": 77000,
+      "lr": 3.14e-05,
+      "train_logL1": 0.79494,
+      "val_logL1": 1.03247,
+      "wall_s": 7794.6
+    },
+    {
+      "step": 77500,
+      "lr": 2.97e-05,
+      "train_logL1": 0.72101,
+      "val_logL1": 1.03708,
+      "wall_s": 7844.2
+    },
+    {
+      "step": 78000,
+      "lr": 2.8e-05,
+      "train_logL1": 0.70956,
+      "val_logL1": 1.03486,
+      "wall_s": 7894.4
+    },
+    {
+      "step": 78500,
+      "lr": 2.64e-05,
+      "train_logL1": 0.71224,
+      "val_logL1": 1.03049,
+      "wall_s": 7944.8
+    },
+    {
+      "step": 79000,
+      "lr": 2.5e-05,
+      "train_logL1": 0.76123,
+      "val_logL1": 1.0431,
+      "wall_s": 7994.0
+    },
+    {
+      "step": 79500,
+      "lr": 2.35e-05,
+      "train_logL1": 0.73874,
+      "val_logL1": 1.02825,
+      "wall_s": 8045.1
+    },
+    {
+      "step": 80000,
+      "lr": 2.22e-05,
+      "train_logL1": 0.7337,
+      "val_logL1": 1.03864,
+      "wall_s": 8093.7
+    },
+    {
+      "step": 80500,
+      "lr": 2.08e-05,
+      "train_logL1": 0.79888,
+      "val_logL1": 1.03511,
+      "wall_s": 8145.0
+    },
+    {
+      "step": 81000,
+      "lr": 1.96e-05,
+      "train_logL1": 0.7937,
+      "val_logL1": 1.04289,
+      "wall_s": 8197.2
+    },
+    {
+      "step": 81500,
+      "lr": 1.84e-05,
+      "train_logL1": 0.74451,
+      "val_logL1": 1.03949,
+      "wall_s": 8248.7
+    },
+    {
+      "step": 82000,
+      "lr": 1.73e-05,
+      "train_logL1": 0.70641,
+      "val_logL1": 1.03383,
+      "wall_s": 8300.2
+    },
+    {
+      "step": 82500,
+      "lr": 1.63e-05,
+      "train_logL1": 0.76512,
+      "val_logL1": 1.03829,
+      "wall_s": 8349.3
+    },
+    {
+      "step": 83000,
+      "lr": 1.54e-05,
+      "train_logL1": 0.79433,
+      "val_logL1": 1.03537,
+      "wall_s": 8399.9
+    },
+    {
+      "step": 83500,
+      "lr": 1.45e-05,
+      "train_logL1": 0.72926,
+      "val_logL1": 1.03705,
+      "wall_s": 8450.8
+    },
+    {
+      "step": 84000,
+      "lr": 1.37e-05,
+      "train_logL1": 0.77236,
+      "val_logL1": 1.0374,
+      "wall_s": 8503.0
+    },
+    {
+      "step": 84500,
+      "lr": 1.3e-05,
+      "train_logL1": 0.6835,
+      "val_logL1": 1.03542,
+      "wall_s": 8553.8
+    },
+    {
+      "step": 85000,
+      "lr": 1.23e-05,
+      "train_logL1": 0.79215,
+      "val_logL1": 1.04012,
+      "wall_s": 8604.7
+    },
+    {
+      "step": 85500,
+      "lr": 1.18e-05,
+      "train_logL1": 0.76749,
+      "val_logL1": 1.04047,
+      "wall_s": 8655.8
+    },
+    {
+      "step": 86000,
+      "lr": 1.13e-05,
+      "train_logL1": 0.82518,
+      "val_logL1": 1.04239,
+      "wall_s": 8705.0
+    },
+    {
+      "step": 86500,
+      "lr": 1.09e-05,
+      "train_logL1": 0.75068,
+      "val_logL1": 1.03221,
+      "wall_s": 8754.0
+    },
+    {
+      "step": 87000,
+      "lr": 1.06e-05,
+      "train_logL1": 0.83475,
+      "val_logL1": 1.03574,
+      "wall_s": 8804.7
+    },
+    {
+      "step": 87500,
+      "lr": 1.03e-05,
+      "train_logL1": 0.77459,
+      "val_logL1": 1.04166,
+      "wall_s": 8853.5
+    },
+    {
+      "step": 88000,
+      "lr": 1.01e-05,
+      "train_logL1": 0.70519,
+      "val_logL1": 1.03453,
+      "wall_s": 8903.6
+    },
+    {
+      "step": 88500,
+      "lr": 1e-05,
+      "train_logL1": 0.71407,
+      "val_logL1": 1.03658,
+      "wall_s": 8954.8
+    }
+  ],
+  "train_wall_s": 9000.1,
+  "metrics": {
+    "levels_dBFS": {
+      "mixture": -9.31,
+      "teacher_vocals": -25.29,
+      "student_vocals": -23.91,
+      "student_accompaniment": -10.39
+    },
+    "student_vs_teacher_vocals_si_sdr_dB": -2.58,
+    "mixture_vs_student_vocals_si_sdr_dB": -0.58,
+    "inference_rtf_cuda": 0.0066
+  },
+  "audio_dir": "D:\\WORKBUDDY\\STEM\\npu-stem\\results\\v4"
+}

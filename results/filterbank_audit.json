@@ -1,0 +1,500 @@
+{
+  "n_tracks": 8,
+  "seg_s": 20.0,
+  "summary": {
+    "log32 (historic)": {
+      "proj": 10.09,
+      "soft": 9.53,
+      "dead_bands": 6
+    },
+    "log64 (historic)": {
+      "proj": 11.759,
+      "soft": 10.957,
+      "dead_bands": 18
+    },
+    "log96 (historic)": {
+      "proj": 12.485,
+      "soft": 11.554,
+      "dead_bands": 32
+    },
+    "log128 (current)": {
+      "proj": 12.064,
+      "soft": 11.193,
+      "dead_bands": 49
+    },
+    "log192 (historic)": {
+      "proj": 12.881,
+      "soft": 11.831,
+      "dead_bands": 86
+    },
+    "log256 (historic)": {
+      "proj": 13.157,
+      "soft": 12.082,
+      "dead_bands": 126
+    },
+    "uniform128 0-22k": {
+      "proj": 6.739,
+      "soft": 6.324,
+      "dead_bands": 0
+    },
+    "uniform128 0-16k": {
+      "proj": 8.928,
+      "soft": 8.285,
+      "dead_bands": 0
+    },
+    "mel128 snapped": {
+      "proj": -10.372,
+      "soft": -10.384,
+      "dead_bands": 54
+    },
+    "mel128 snapped 30-16k": {
+      "proj": -11.661,
+      "soft": -11.674,
+      "dead_bands": 64
+    },
+    "log128 snapped 30-16k": {
+      "proj": -14.79,
+      "soft": -14.808,
+      "dead_bands": 101
+    },
+    "log128 snapped 30-22k": {
+      "proj": -14.419,
+      "soft": -14.439,
+      "dead_bands": 95
+    }
+  },
+  "per_track": [
+    {
+      "track": "KNGHT, hiræth - You.mp3",
+      "si_sdr_mixture_vs_teacher_vocals": -21.33,
+      "layouts": {
+        "log32 (historic)": {
+          "proj": 7.502,
+          "soft": 7.026
+        },
+        "log64 (historic)": {
+          "proj": 10.818,
+          "soft": 9.91
+        },
+        "log96 (historic)": {
+          "proj": 11.399,
+          "soft": 10.426
+        },
+        "log128 (current)": {
+          "proj": 11.085,
+          "soft": 10.224
+        },
+        "log192 (historic)": {
+          "proj": 11.433,
+          "soft": 10.28
+        },
+        "log256 (historic)": {
+          "proj": 12.209,
+          "soft": 11.037
+        },
+        "uniform128 0-22k": {
+          "proj": 6.822,
+          "soft": 6.577
+        },
+        "uniform128 0-16k": {
+          "proj": 8.001,
+          "soft": 7.61
+        },
+        "mel128 snapped": {
+          "proj": -11.883,
+          "soft": -11.899
+        },
+        "mel128 snapped 30-16k": {
+          "proj": -12.451,
+          "soft": -12.465
+        },
+        "log128 snapped 30-16k": {
+          "proj": -17.142,
+          "soft": -17.152
+        },
+        "log128 snapped 30-22k": {
+          "proj": -16.618,
+          "soft": -16.632
+        }
+      }
+    },
+    {
+      "track": "A.M.C, Suune, Phantom - Gas.mp3",
+      "si_sdr_mixture_vs_teacher_vocals": -19.37,
+      "layouts": {
+        "log32 (historic)": {
+          "proj": 14.214,
+          "soft": 13.655
+        },
+        "log64 (historic)": {
+          "proj": 13.992,
+          "soft": 13.443
+        },
+        "log96 (historic)": {
+          "proj": 14.051,
+          "soft": 13.462
+        },
+        "log128 (current)": {
+          "proj": 12.653,
+          "soft": 12.181
+        },
+        "log192 (historic)": {
+          "proj": 14.529,
+          "soft": 13.905
+        },
+        "log256 (historic)": {
+          "proj": 13.595,
+          "soft": 13.043
+        },
+        "uniform128 0-22k": {
+          "proj": 9.518,
+          "soft": 9.015
+        },
+        "uniform128 0-16k": {
+          "proj": 12.182,
+          "soft": 11.426
+        },
+        "mel128 snapped": {
+          "proj": -2.695,
+          "soft": -2.702
+        },
+        "mel128 snapped 30-16k": {
+          "proj": -3.426,
+          "soft": -3.433
+        },
+        "log128 snapped 30-16k": {
+          "proj": -5.767,
+          "soft": -5.773
+        },
+        "log128 snapped 30-22k": {
+          "proj": -5.524,
+          "soft": -5.531
+        }
+      }
+    },
+    {
+      "track": "EMBRZ, bailey - Arrow.mp3",
+      "si_sdr_mixture_vs_teacher_vocals": -25.4,
+      "layouts": {
+        "log32 (historic)": {
+          "proj": 8.948,
+          "soft": 8.407
+        },
+        "log64 (historic)": {
+          "proj": 10.047,
+          "soft": 9.125
+        },
+        "log96 (historic)": {
+          "proj": 11.458,
+          "soft": 10.308
+        },
+        "log128 (current)": {
+          "proj": 12.016,
+          "soft": 10.738
+        },
+        "log192 (historic)": {
+          "proj": 12.914,
+          "soft": 11.495
+        },
+        "log256 (historic)": {
+          "proj": 12.863,
+          "soft": 11.554
+        },
+        "uniform128 0-22k": {
+          "proj": 1.348,
+          "soft": 1.55
+        },
+        "uniform128 0-16k": {
+          "proj": 5.806,
+          "soft": 5.532
+        },
+        "mel128 snapped": {
+          "proj": -16.426,
+          "soft": -16.434
+        },
+        "mel128 snapped 30-16k": {
+          "proj": -16.677,
+          "soft": -16.685
+        },
+        "log128 snapped 30-16k": {
+          "proj": -17.274,
+          "soft": -17.279
+        },
+        "log128 snapped 30-22k": {
+          "proj": -17.199,
+          "soft": -17.205
+        }
+      }
+    },
+    {
+      "track": "Forester - I Can See You Everywhere.mp3",
+      "si_sdr_mixture_vs_teacher_vocals": -20.53,
+      "layouts": {
+        "log32 (historic)": {
+          "proj": 9.987,
+          "soft": 9.497
+        },
+        "log64 (historic)": {
+          "proj": 11.31,
+          "soft": 10.595
+        },
+        "log96 (historic)": {
+          "proj": 11.594,
+          "soft": 10.794
+        },
+        "log128 (current)": {
+          "proj": 11.379,
+          "soft": 10.579
+        },
+        "log192 (historic)": {
+          "proj": 13.194,
+          "soft": 12.079
+        },
+        "log256 (historic)": {
+          "proj": 13.435,
+          "soft": 12.315
+        },
+        "uniform128 0-22k": {
+          "proj": 6.042,
+          "soft": 5.688
+        },
+        "uniform128 0-16k": {
+          "proj": 7.331,
+          "soft": 6.874
+        },
+        "mel128 snapped": {
+          "proj": -13.375,
+          "soft": -13.379
+        },
+        "mel128 snapped 30-16k": {
+          "proj": -16.428,
+          "soft": -16.433
+        },
+        "log128 snapped 30-16k": {
+          "proj": -19.055,
+          "soft": -19.061
+        },
+        "log128 snapped 30-22k": {
+          "proj": -18.832,
+          "soft": -18.839
+        }
+      }
+    },
+    {
+      "track": "Sultan + Shepard, Nathan Nicholson - Naama.mp3",
+      "si_sdr_mixture_vs_teacher_vocals": -23.5,
+      "layouts": {
+        "log32 (historic)": {
+          "proj": 11.309,
+          "soft": 10.725
+        },
+        "log64 (historic)": {
+          "proj": 13.882,
+          "soft": 13.058
+        },
+        "log96 (historic)": {
+          "proj": 15.313,
+          "soft": 14.377
+        },
+        "log128 (current)": {
+          "proj": 13.487,
+          "soft": 12.981
+        },
+        "log192 (historic)": {
+          "proj": 12.331,
+          "soft": 11.817
+        },
+        "log256 (historic)": {
+          "proj": 15.105,
+          "soft": 14.129
+        },
+        "uniform128 0-22k": {
+          "proj": 10.378,
+          "soft": 9.785
+        },
+        "uniform128 0-16k": {
+          "proj": 12.697,
+          "soft": 11.933
+        },
+        "mel128 snapped": {
+          "proj": -14.911,
+          "soft": -14.921
+        },
+        "mel128 snapped 30-16k": {
+          "proj": -16.093,
+          "soft": -16.103
+        },
+        "log128 snapped 30-16k": {
+          "proj": -18.933,
+          "soft": -18.94
+        },
+        "log128 snapped 30-22k": {
+          "proj": -18.72,
+          "soft": -18.729
+        }
+      }
+    },
+    {
+      "track": "John Summit, Guz, Stevie Appleton - What A Life.mp3",
+      "si_sdr_mixture_vs_teacher_vocals": -25.57,
+      "layouts": {
+        "log32 (historic)": {
+          "proj": 7.448,
+          "soft": 6.78
+        },
+        "log64 (historic)": {
+          "proj": 8.769,
+          "soft": 7.786
+        },
+        "log96 (historic)": {
+          "proj": 9.582,
+          "soft": 8.399
+        },
+        "log128 (current)": {
+          "proj": 9.834,
+          "soft": 8.528
+        },
+        "log192 (historic)": {
+          "proj": 10.971,
+          "soft": 9.421
+        },
+        "log256 (historic)": {
+          "proj": 11.082,
+          "soft": 9.619
+        },
+        "uniform128 0-22k": {
+          "proj": 2.649,
+          "soft": 2.377
+        },
+        "uniform128 0-16k": {
+          "proj": 3.509,
+          "soft": 3.025
+        },
+        "mel128 snapped": {
+          "proj": -7.744,
+          "soft": -7.754
+        },
+        "mel128 snapped 30-16k": {
+          "proj": -8.436,
+          "soft": -8.444
+        },
+        "log128 snapped 30-16k": {
+          "proj": -11.572,
+          "soft": -11.579
+        },
+        "log128 snapped 30-22k": {
+          "proj": -10.717,
+          "soft": -10.724
+        }
+      }
+    },
+    {
+      "track": "Skrillex, Majestic - DNB TING.mp3",
+      "si_sdr_mixture_vs_teacher_vocals": -21.29,
+      "layouts": {
+        "log32 (historic)": {
+          "proj": 11.423,
+          "soft": 10.551
+        },
+        "log64 (historic)": {
+          "proj": 13.404,
+          "soft": 12.375
+        },
+        "log96 (historic)": {
+          "proj": 13.183,
+          "soft": 12.097
+        },
+        "log128 (current)": {
+          "proj": 13.197,
+          "soft": 12.131
+        },
+        "log192 (historic)": {
+          "proj": 13.968,
+          "soft": 12.747
+        },
+        "log256 (historic)": {
+          "proj": 13.441,
+          "soft": 12.295
+        },
+        "uniform128 0-22k": {
+          "proj": 7.797,
+          "soft": 6.753
+        },
+        "uniform128 0-16k": {
+          "proj": 9.478,
+          "soft": 8.341
+        },
+        "mel128 snapped": {
+          "proj": -9.373,
+          "soft": -9.401
+        },
+        "mel128 snapped 30-16k": {
+          "proj": -12.764,
+          "soft": -12.805
+        },
+        "log128 snapped 30-16k": {
+          "proj": -19.275,
+          "soft": -19.374
+        },
+        "log128 snapped 30-22k": {
+          "proj": -18.808,
+          "soft": -18.905
+        }
+      }
+    },
+    {
+      "track": "Sub Focus, Culture Shock, Fragma - Miracle.mp3",
+      "si_sdr_mixture_vs_teacher_vocals": -19.27,
+      "layouts": {
+        "log32 (historic)": {
+          "proj": 9.885,
+          "soft": 9.601
+        },
+        "log64 (historic)": {
+          "proj": 11.85,
+          "soft": 11.362
+        },
+        "log96 (historic)": {
+          "proj": 13.297,
+          "soft": 12.571
+        },
+        "log128 (current)": {
+          "proj": 12.86,
+          "soft": 12.18
+        },
+        "log192 (historic)": {
+          "proj": 13.712,
+          "soft": 12.9
+        },
+        "log256 (historic)": {
+          "proj": 13.522,
+          "soft": 12.663
+        },
+        "uniform128 0-22k": {
+          "proj": 9.358,
+          "soft": 8.85
+        },
+        "uniform128 0-16k": {
+          "proj": 12.422,
+          "soft": 11.536
+        },
+        "mel128 snapped": {
+          "proj": -6.569,
+          "soft": -6.583
+        },
+        "mel128 snapped 30-16k": {
+          "proj": -7.016,
+          "soft": -7.026
+        },
+        "log128 snapped 30-16k": {
+          "proj": -9.299,
+          "soft": -9.308
+        },
+        "log128 snapped 30-22k": {
+          "proj": -8.937,
+          "soft": -8.945
+        }
+      }
+    }
+  ]
+}

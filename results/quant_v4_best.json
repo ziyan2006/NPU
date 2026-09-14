@@ -1,0 +1,452 @@
+{
+  "checkpoint": "v4_best.pt",
+  "checkpoint_step": 1500,
+  "device": "cuda",
+  "input_frontend": {
+    "mode": "linear",
+    "scale": 1.0
+  },
+  "calibration": {
+    "cache": "v4_cache",
+    "crops": 96,
+    "crop_frames": 256
+  },
+  "weight_quant": {
+    "enc0": {
+      "w_absmax": 0.4423583447933197,
+      "step": 0.003483136650174856,
+      "rel_rmse": 0.004319560248404741,
+      "taps_per_output": 18,
+      "acc_bits": 20
+    },
+    "enc1": {
+      "w_absmax": 0.4657234251499176,
+      "step": 0.0036671136040240526,
+      "rel_rmse": 0.008214695379137993,
+      "taps_per_output": 288,
+      "acc_bits": 24
+    },
+    "enc2": {
+      "w_absmax": 0.41327813267707825,
+      "step": 0.0032541584223508835,
+      "rel_rmse": 0.008212053216993809,
+      "taps_per_output": 576,
+      "acc_bits": 25
+    },
+    "enc3": {
+      "w_absmax": 0.4808882176876068,
+      "step": 0.0037865214981138706,
+      "rel_rmse": 0.008157940581440926,
+      "taps_per_output": 864,
+      "acc_bits": 25
+    },
+    "bott": {
+      "w_absmax": 0.5359445214271545,
+      "step": 0.004220035392791033,
+      "rel_rmse": 0.0077546569518744946,
+      "taps_per_output": 384,
+      "acc_bits": 24
+    },
+    "dec3": {
+      "w_absmax": 0.7516366839408875,
+      "step": 0.005918398965150118,
+      "rel_rmse": 0.011894918978214264,
+      "taps_per_output": 2016,
+      "acc_bits": 26
+    },
+    "dec2": {
+      "w_absmax": 1.258125901222229,
+      "step": 0.00990650337189436,
+      "rel_rmse": 0.013777604326605797,
+      "taps_per_output": 1440,
+      "acc_bits": 26
+    },
+    "dec1": {
+      "w_absmax": 1.1785988807678223,
+      "step": 0.009280306287109852,
+      "rel_rmse": 0.013847586698830128,
+      "taps_per_output": 288,
+      "acc_bits": 24
+    },
+    "out": {
+      "w_absmax": 0.25483301281929016,
+      "step": 0.0020065591670572758,
+      "rel_rmse": 0.0053305733017623425,
+      "taps_per_output": 32,
+      "acc_bits": 20
+    }
+  },
+  "weight_bits": 8,
+  "activation_bits_swept": [
+    8,
+    10,
+    12,
+    16
+  ],
+  "accumulator_bits_needed": 26,
+  "accumulator_ok_int32": true,
+  "activation_calibration": [
+    {
+      "layer": "enc0",
+      "in_channels": 2,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "span_per_tensor": 252.0054,
+      "span_p999": 130.0981,
+      "span_per_channel_max": 252.0054,
+      "channel_spread": 1.0,
+      "step_per_tensor": 1.984295,
+      "step_per_channel_max": 1.984295
+    },
+    {
+      "layer": "enc1",
+      "in_channels": 32,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "span_per_tensor": 203.5068,
+      "span_p999": 34.518,
+      "span_per_channel_max": 203.5068,
+      "channel_spread": 3.29,
+      "step_per_tensor": 1.602416,
+      "step_per_channel_max": 1.602416
+    },
+    {
+      "layer": "enc2",
+      "in_channels": 64,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "span_per_tensor": 151.3931,
+      "span_p999": 20.8983,
+      "span_per_channel_max": 151.3931,
+      "channel_spread": 4.19,
+      "step_per_tensor": 1.192072,
+      "step_per_channel_max": 1.192072
+    },
+    {
+      "layer": "enc3",
+      "in_channels": 96,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        2,
+        2
+      ],
+      "span_per_tensor": 100.8339,
+      "span_p999": 24.3875,
+      "span_per_channel_max": 100.8339,
+      "channel_spread": 2.96,
+      "step_per_tensor": 0.793967,
+      "step_per_channel_max": 0.793967
+    },
+    {
+      "layer": "bott",
+      "in_channels": 128,
+      "kernel": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "span_per_tensor": 102.2018,
+      "span_p999": 29.9741,
+      "span_per_channel_max": 102.2018,
+      "channel_spread": 3.39,
+      "step_per_tensor": 0.804739,
+      "step_per_channel_max": 0.804739
+    },
+    {
+      "layer": "dec3",
+      "in_channels": 224,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "span_per_tensor": 100.8339,
+      "span_p999": 20.4928,
+      "span_per_channel_max": 100.8339,
+      "channel_spread": 4.01,
+      "step_per_tensor": 0.793967,
+      "step_per_channel_max": 0.793967
+    },
+    {
+      "layer": "dec2",
+      "in_channels": 160,
+      "kernel": [
+        3,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "span_per_tensor": 151.3931,
+      "span_p999": 28.9024,
+      "span_per_channel_max": 151.3931,
+      "channel_spread": 3.92,
+      "step_per_tensor": 1.192072,
+      "step_per_channel_max": 1.192072
+    },
+    {
+      "layer": "dec1",
+      "in_channels": 96,
+      "kernel": [
+        1,
+        3
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "span_per_tensor": 203.5068,
+      "span_p999": 30.9112,
+      "span_per_channel_max": 203.5068,
+      "channel_spread": 3.91,
+      "step_per_tensor": 1.602416,
+      "step_per_channel_max": 1.602416
+    },
+    {
+      "layer": "out",
+      "in_channels": 32,
+      "kernel": [
+        1,
+        1
+      ],
+      "stride": [
+        1,
+        1
+      ],
+      "span_per_tensor": 106.716,
+      "span_p999": 17.8798,
+      "span_per_channel_max": 106.716,
+      "channel_spread": 3.36,
+      "step_per_tensor": 0.840284,
+      "step_per_channel_max": 0.840284
+    }
+  ],
+  "front_end": {
+    "input_span": 252.005402,
+    "input_step": 1.9842945008765993,
+    "median_bin_in_LSB": 0.171,
+    "bins_rounding_to_zero_pct": 59.353,
+    "input_energy_retained_pct": 100.128,
+    "abs_percentiles_50_90_99_999": [
+      0.3402,
+      10.84,
+      47.4,
+      130.1
+    ],
+    "front_end_candidates": {
+      "linear": {
+        "snr_dB": 29.32,
+        "bins_to_zero_pct": 52.73,
+        "peak_in_LSB": 255.0
+      },
+      "log1p(x/med)": {
+        "snr_dB": 42.36,
+        "bins_to_zero_pct": 38.37,
+        "peak_in_LSB": 255.0
+      },
+      "sqrt(x)": {
+        "snr_dB": 43.92,
+        "bins_to_zero_pct": 38.28,
+        "peak_in_LSB": 255.0
+      },
+      "x^0.3": {
+        "snr_dB": 43.72,
+        "bins_to_zero_pct": 38.28,
+        "peak_in_LSB": 255.0
+      }
+    }
+  },
+  "variants": [
+    "float",
+    "mask8",
+    "w8",
+    "w8_tensor",
+    "a8",
+    "a10",
+    "a12",
+    "a16",
+    "a8_p999",
+    "a8_ch",
+    "a8_noin",
+    "deploy8",
+    "deploy10",
+    "deploy12",
+    "deploy16",
+    "deploy_ch",
+    "deploy_noin"
+  ],
+  "per_track": [
+    {
+      "track": "KNGHT, hiræth - You.mp3",
+      "mixture_dBFS": -9.61,
+      "float_vocal_dBFS": -20.71,
+      "mask8_vs_float_dB": 54.44,
+      "w8_vs_float_dB": 38.9,
+      "w8_tensor_vs_float_dB": 32.83,
+      "a8_vs_float_dB": 10.06,
+      "a10_vs_float_dB": 18.54,
+      "a12_vs_float_dB": 30.75,
+      "a16_vs_float_dB": 52.35,
+      "a8_p999_vs_float_dB": 15.67,
+      "a8_ch_vs_float_dB": 14.68,
+      "a8_noin_vs_float_dB": 10.34,
+      "deploy8_vs_float_dB": 10.05,
+      "deploy10_vs_float_dB": 18.44,
+      "deploy12_vs_float_dB": 30.22,
+      "deploy16_vs_float_dB": 38.8,
+      "deploy_ch_vs_float_dB": 14.67,
+      "deploy_noin_vs_float_dB": 10.4
+    },
+    {
+      "track": "A.M.C, Suune, Phantom - Gas.mp3",
+      "mixture_dBFS": -4.67,
+      "float_vocal_dBFS": -13.72,
+      "mask8_vs_float_dB": 57.13,
+      "w8_vs_float_dB": 38.3,
+      "w8_tensor_vs_float_dB": 32.34,
+      "a8_vs_float_dB": 11.39,
+      "a10_vs_float_dB": 23.39,
+      "a12_vs_float_dB": 33.48,
+      "a16_vs_float_dB": 35.63,
+      "a8_p999_vs_float_dB": 14.64,
+      "a8_ch_vs_float_dB": 18.83,
+      "a8_noin_vs_float_dB": 11.54,
+      "deploy8_vs_float_dB": 11.47,
+      "deploy10_vs_float_dB": 23.37,
+      "deploy12_vs_float_dB": 31.77,
+      "deploy16_vs_float_dB": 33.77,
+      "deploy_ch_vs_float_dB": 18.8,
+      "deploy_noin_vs_float_dB": 11.55
+    },
+    {
+      "track": "EMBRZ, bailey - Arrow.mp3",
+      "mixture_dBFS": -9.15,
+      "float_vocal_dBFS": -24.92,
+      "mask8_vs_float_dB": 52.66,
+      "w8_vs_float_dB": 34.71,
+      "w8_tensor_vs_float_dB": 29.44,
+      "a8_vs_float_dB": 8.45,
+      "a10_vs_float_dB": 16.64,
+      "a12_vs_float_dB": 30.59,
+      "a16_vs_float_dB": 51.16,
+      "a8_p999_vs_float_dB": 13.12,
+      "a8_ch_vs_float_dB": 13.81,
+      "a8_noin_vs_float_dB": 8.15,
+      "deploy8_vs_float_dB": 8.62,
+      "deploy10_vs_float_dB": 16.55,
+      "deploy12_vs_float_dB": 28.77,
+      "deploy16_vs_float_dB": 34.84,
+      "deploy_ch_vs_float_dB": 13.78,
+      "deploy_noin_vs_float_dB": 8.21
+    },
+    {
+      "track": "Forester - I Can See You Everywhere.mp3",
+      "mixture_dBFS": -9.88,
+      "float_vocal_dBFS": -19.43,
+      "mask8_vs_float_dB": 57.34,
+      "w8_vs_float_dB": 38.85,
+      "w8_tensor_vs_float_dB": 33.37,
+      "a8_vs_float_dB": 13.33,
+      "a10_vs_float_dB": 21.84,
+      "a12_vs_float_dB": 34.31,
+      "a16_vs_float_dB": 55.41,
+      "a8_p999_vs_float_dB": 17.89,
+      "a8_ch_vs_float_dB": 20.05,
+      "a8_noin_vs_float_dB": 13.25,
+      "deploy8_vs_float_dB": 13.4,
+      "deploy10_vs_float_dB": 21.64,
+      "deploy12_vs_float_dB": 32.76,
+      "deploy16_vs_float_dB": 38.84,
+      "deploy_ch_vs_float_dB": 19.88,
+      "deploy_noin_vs_float_dB": 13.23
+    },
+    {
+      "track": "Sultan + Shepard, Nathan Nicholson - Naama.mp3",
+      "mixture_dBFS": -8.48,
+      "float_vocal_dBFS": -23.26,
+      "mask8_vs_float_dB": 53.96,
+      "w8_vs_float_dB": 36.14,
+      "w8_tensor_vs_float_dB": 32.16,
+      "a8_vs_float_dB": 7.3,
+      "a10_vs_float_dB": 15.93,
+      "a12_vs_float_dB": 30.06,
+      "a16_vs_float_dB": 51.65,
+      "a8_p999_vs_float_dB": 13.37,
+      "a8_ch_vs_float_dB": 14.51,
+      "a8_noin_vs_float_dB": 6.93,
+      "deploy8_vs_float_dB": 7.23,
+      "deploy10_vs_float_dB": 15.89,
+      "deploy12_vs_float_dB": 28.94,
+      "deploy16_vs_float_dB": 36.18,
+      "deploy_ch_vs_float_dB": 14.41,
+      "deploy_noin_vs_float_dB": 6.85
+    },
+    {
+      "track": "John Summit, Guz, Stevie Appleton - What A Life.mp3",
+      "mixture_dBFS": -11.65,
+      "float_vocal_dBFS": -21.04,
+      "mask8_vs_float_dB": 57.22,
+      "w8_vs_float_dB": 37.77,
+      "w8_tensor_vs_float_dB": 32.8,
+      "a8_vs_float_dB": 7.27,
+      "a10_vs_float_dB": 12.51,
+      "a12_vs_float_dB": 28.65,
+      "a16_vs_float_dB": 53.35,
+      "a8_p999_vs_float_dB": 14.85,
+      "a8_ch_vs_float_dB": 12.11,
+      "a8_noin_vs_float_dB": 6.72,
+      "deploy8_vs_float_dB": 7.37,
+      "deploy10_vs_float_dB": 12.48,
+      "deploy12_vs_float_dB": 27.84,
+      "deploy16_vs_float_dB": 37.67,
+      "deploy_ch_vs_float_dB": 12.01,
+      "deploy_noin_vs_float_dB": 6.76
+    }
+  ],
+  "median_penalty_dB_vs_float": {
+    "mask8": 55.78,
+    "w8": 38.03,
+    "w8_tensor": 32.57,
+    "a8": 9.25,
+    "a10": 17.59,
+    "a12": 30.67,
+    "a16": 52.0,
+    "a8_p999": 14.75,
+    "a8_ch": 14.59,
+    "a8_noin": 9.25,
+    "deploy8": 9.34,
+    "deploy10": 17.5,
+    "deploy12": 29.58,
+    "deploy16": 36.92,
+    "deploy_ch": 14.54,
+    "deploy_noin": 9.3
+  }
+}

@@ -1,0 +1,4 @@
+﻿CPU=Intel(R) Core(TM) i7-14700HX cores=20 threads=28
+GPU=GameViewer Virtual Display Adapter vram=0GB driver=15.6.5.199
+GPU=NVIDIA GeForce RTX 4070 Laptop GPU vram=4GB driver=32.0.16.1664
+RAM=31.8GB model=83DG

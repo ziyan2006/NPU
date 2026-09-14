@@ -1,0 +1,18 @@
+# 统一换行符，避免 Windows 上出现 CRLF 噪音 diff
+* text=auto eol=lf
+
+*.py   text eol=lf
+*.md   text eol=lf
+*.json text eol=lf
+*.txt  text eol=lf
+*.yml  text eol=lf
+
+# 二进制文件——不要做任何换行符转换
+*.pt   binary
+*.pth  binary
+*.th   binary
+*.wav  binary
+*.mp3  binary
+*.flac binary
+*.png  binary
+*.jpg  binary

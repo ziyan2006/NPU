@@ -1,0 +1,116 @@
+{
+  "device": "cuda",
+  "segment_s": 30.0,
+  "models": {
+    "v1": {
+      "checkpoint": "student_smoke.pt",
+      "trained_steps": null,
+      "best_val_logL1": null
+    },
+    "v2": {
+      "checkpoint": "v2_model.pt",
+      "trained_steps": 15813,
+      "best_val_logL1": 1.1239888072013855
+    }
+  },
+  "scorable_header": "mix~T = SI-SDR(mixture, teacher vocals); voc = teacher vocal level in dBFS; an excerpt is scorable only if the teacher's vocal is audible AND is a real component of the mixture (mix~T > -8 dB), otherwise SI-SDR against it measures noise",
+  "caveat": "validation is against the HTDemucs teacher, not ground truth; the 128-band mask architecture has its own 9.87 dB ceiling vs a full-resolution oracle (reports/03).  The two runs' log-L1 numbers are NOT comparable -- they used different val sets.",
+  "all_excerpts": {
+    "n_tracks": 8,
+    "v1_si_sdr_median_dB": -3.38,
+    "v2_si_sdr_median_dB": -5.44,
+    "median_gain_dB": 0.55,
+    "mean_gain_dB": 0.25,
+    "tracks_improved": 5
+  },
+  "scorable_excerpts": {
+    "n_tracks": 3,
+    "v1_si_sdr_median_dB": 0.47,
+    "v2_si_sdr_median_dB": 3.74,
+    "median_gain_dB": 0.85,
+    "mean_gain_dB": 1.57,
+    "tracks_improved": 3
+  },
+  "per_track": [
+    {
+      "track": "Lane 8, Sultan + Shepard - Quiet Rush.mp3",
+      "mixture_vs_teacher_si_sdr_dB": -22.86,
+      "teacher_vocal_dBFS": -41.19,
+      "mixture_dBFS": -11.85,
+      "vocal_present": false,
+      "v1_si_sdr": -23.93,
+      "v2_si_sdr": -22.79,
+      "gain_dB": 1.14
+    },
+    {
+      "track": "Fred V - Really Happy Aliens.mp3",
+      "mixture_vs_teacher_si_sdr_dB": -10.76,
+      "teacher_vocal_dBFS": -26.84,
+      "mixture_dBFS": -10.15,
+      "vocal_present": false,
+      "v1_si_sdr": -9.09,
+      "v2_si_sdr": -8.58,
+      "gain_dB": 0.5
+    },
+    {
+      "track": "ÆON_MODE, ANY - Fireflies.mp3",
+      "mixture_vs_teacher_si_sdr_dB": -5.82,
+      "teacher_vocal_dBFS": -15.21,
+      "mixture_dBFS": -6.49,
+      "vocal_present": true,
+      "v1_si_sdr": -1.21,
+      "v2_si_sdr": -0.36,
+      "gain_dB": 0.85
+    },
+    {
+      "track": "Jerro, Le Youth, Lizzy Land - Forever x Lost (Jerro Mashup).mp3",
+      "mixture_vs_teacher_si_sdr_dB": -3.23,
+      "teacher_vocal_dBFS": -21.4,
+      "mixture_dBFS": -14.82,
+      "vocal_present": true,
+      "v1_si_sdr": 0.47,
+      "v2_si_sdr": 3.74,
+      "gain_dB": 3.27
+    },
+    {
+      "track": "ÆON_MODE - RUN.mp3",
+      "mixture_vs_teacher_si_sdr_dB": -17.07,
+      "teacher_vocal_dBFS": -23.58,
+      "mixture_dBFS": -4.98,
+      "vocal_present": false,
+      "v1_si_sdr": -10.6,
+      "v2_si_sdr": -10.8,
+      "gain_dB": -0.2
+    },
+    {
+      "track": "Robyn, Jamie xx - Dopamine (Jamie xx Remix).mp3",
+      "mixture_vs_teacher_si_sdr_dB": -11.3,
+      "teacher_vocal_dBFS": -21.72,
+      "mixture_dBFS": -8.47,
+      "vocal_present": false,
+      "v1_si_sdr": -1.68,
+      "v2_si_sdr": -2.88,
+      "gain_dB": -1.2
+    },
+    {
+      "track": "Tris - still holding on.mp3",
+      "mixture_vs_teacher_si_sdr_dB": -1.33,
+      "teacher_vocal_dBFS": -15.5,
+      "mixture_dBFS": -11.01,
+      "vocal_present": true,
+      "v1_si_sdr": 5.18,
+      "v2_si_sdr": 5.77,
+      "gain_dB": 0.59
+    },
+    {
+      "track": "Synergy - Mirage.mp3",
+      "mixture_vs_teacher_si_sdr_dB": -9.5,
+      "teacher_vocal_dBFS": -22.71,
+      "mixture_dBFS": -9.73,
+      "vocal_present": false,
+      "v1_si_sdr": -5.07,
+      "v2_si_sdr": -8.0,
+      "gain_dB": -2.93
+    }
+  ]
+}

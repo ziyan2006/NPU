@@ -1,0 +1,183 @@
+{
+  "protocol": "mean positions per track, then paired cohort median",
+  "inputs": [
+    {
+      "file": "ab_bott2_base_temporal_f025.json",
+      "frac": 0.25,
+      "a": "bott2_base",
+      "b": "temporal_f025"
+    },
+    {
+      "file": "ab_bott2_base_temporal_f050.json",
+      "frac": 0.5,
+      "a": "bott2_base",
+      "b": "temporal_f050"
+    },
+    {
+      "file": "ab_bott2_base_temporal_f075.json",
+      "frac": 0.75,
+      "a": "bott2_base",
+      "b": "temporal_f075"
+    }
+  ],
+  "vocal": {
+    "n_tracks": 20,
+    "median_gain_dB": 0.097,
+    "mean_gain_dB": 0.092,
+    "tracks_improved": 13
+  },
+  "accompaniment_on_vocal_tracks": {
+    "n_tracks": 20,
+    "median_gain_dB": 0.08,
+    "mean_gain_dB": 0.077,
+    "tracks_improved": 13
+  },
+  "idle": {
+    "n_tracks": 24,
+    "median_gain_dB": 0.29,
+    "mean_gain_dB": 0.229,
+    "tracks_improved": 15
+  },
+  "per_track": [
+    {
+      "track": "A.M.C, Suune, Phantom - Gas.mp3",
+      "positions": 3,
+      "vocal_gain_dB": 0.153,
+      "accomp_gain_dB": 0.127,
+      "idle_gain_dB": -0.047
+    },
+    {
+      "track": "BUNT., Mapei - TRIPPIN.mp3",
+      "positions": 1,
+      "vocal_gain_dB": 0.27,
+      "accomp_gain_dB": 0.22,
+      "idle_gain_dB": -0.75
+    },
+    {
+      "track": "Derivakat, Netrum - Lost in Space.mp3",
+      "positions": 3,
+      "vocal_gain_dB": 0.093,
+      "accomp_gain_dB": -0.05,
+      "idle_gain_dB": -0.177
+    },
+    {
+      "track": "Dimension - Devotion.mp3",
+      "positions": 3,
+      "vocal_gain_dB": -0.03,
+      "accomp_gain_dB": -0.06,
+      "idle_gain_dB": -0.147
+    },
+    {
+      "track": "EMBRZ, bailey - Arrow.mp3",
+      "positions": 2,
+      "vocal_gain_dB": -0.19,
+      "accomp_gain_dB": -0.095,
+      "idle_gain_dB": 0.763
+    },
+    {
+      "track": "Feint, Hylia - Treading Water (feat. HYLIA).mp3",
+      "positions": 3,
+      "vocal_gain_dB": 0.017,
+      "accomp_gain_dB": 0.033,
+      "idle_gain_dB": 0.157
+    },
+    {
+      "track": "Forester - I Can See You Everywhere.mp3",
+      "positions": 1,
+      "vocal_gain_dB": 0.26,
+      "accomp_gain_dB": 0.15,
+      "idle_gain_dB": -0.3
+    },
+    {
+      "track": "Grafix - We Take Control.mp3",
+      "positions": 1,
+      "vocal_gain_dB": 0.38,
+      "accomp_gain_dB": 0.26,
+      "idle_gain_dB": 0.443
+    },
+    {
+      "track": "Jerro, Sophia Bel - Demons.mp3",
+      "positions": 1,
+      "vocal_gain_dB": 0.05,
+      "accomp_gain_dB": 0.03,
+      "idle_gain_dB": 0.74
+    },
+    {
+      "track": "John Summit, Guz, Stevie Appleton - What A Life.mp3",
+      "positions": 1,
+      "vocal_gain_dB": -0.47,
+      "accomp_gain_dB": -0.34,
+      "idle_gain_dB": 1.18
+    },
+    {
+      "track": "KNGHT, hiræth - You.mp3",
+      "positions": 2,
+      "vocal_gain_dB": 0.29,
+      "accomp_gain_dB": 0.18,
+      "idle_gain_dB": 0.677
+    },
+    {
+      "track": "Lee Uhf, Noise Souls - Leaving Everything Behind Us.mp3",
+      "positions": 1,
+      "vocal_gain_dB": -0.12,
+      "accomp_gain_dB": -0.03,
+      "idle_gain_dB": 0.647
+    },
+    {
+      "track": "Luude, 1991 - All We Do Is Dance.mp3",
+      "positions": 1,
+      "vocal_gain_dB": 0.42,
+      "accomp_gain_dB": 0.36,
+      "idle_gain_dB": 0.437
+    },
+    {
+      "track": "Metrik, ÆON_MODE - Awake.mp3",
+      "positions": 1,
+      "vocal_gain_dB": 0.1,
+      "accomp_gain_dB": 0.03,
+      "idle_gain_dB": -0.18
+    },
+    {
+      "track": "Oscar Yuan - Solo.mp3",
+      "positions": 3,
+      "vocal_gain_dB": 0.24,
+      "accomp_gain_dB": 0.247,
+      "idle_gain_dB": -0.57
+    },
+    {
+      "track": "Sub Focus, Culture Shock, Fragma - Miracle.mp3",
+      "positions": 2,
+      "vocal_gain_dB": -0.085,
+      "accomp_gain_dB": -0.135,
+      "idle_gain_dB": -0.363
+    },
+    {
+      "track": "Sullivan King - The Beginning.mp3",
+      "positions": 2,
+      "vocal_gain_dB": -0.035,
+      "accomp_gain_dB": 0.18,
+      "idle_gain_dB": 0.457
+    },
+    {
+      "track": "Sultan + Shepard, Nathan Nicholson - Naama.mp3",
+      "positions": 1,
+      "vocal_gain_dB": -0.05,
+      "accomp_gain_dB": -0.1,
+      "idle_gain_dB": 0.233
+    },
+    {
+      "track": "Tantrum Desire, Gracie van Brunt - Lift You Up.mp3",
+      "positions": 1,
+      "vocal_gain_dB": 0.19,
+      "accomp_gain_dB": 0.22,
+      "idle_gain_dB": 0.303
+    },
+    {
+      "track": "Wyclef Jean, Lunch Money Lewis, The Knocks - What Happened to Love (feat. Lunch Money Lewis and The Knocks).mp3",
+      "positions": 3,
+      "vocal_gain_dB": 0.357,
+      "accomp_gain_dB": 0.307,
+      "idle_gain_dB": -0.907
+    }
+  ]
+}
