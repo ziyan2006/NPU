@@ -100,12 +100,12 @@
   "bank_capacity": {
     "A0": {
       "capacity": 65536,
-      "maximum_used": 49152,
+      "maximum_used": 57600,
       "pass": true
     },
     "A1": {
       "capacity": 65536,
-      "maximum_used": 49152,
+      "maximum_used": 57600,
       "pass": true
     },
     "W0": {
@@ -146,116 +146,116 @@
     "compute": 1986560,
     "vector": 1024,
     "upsample_including_ddr": 93696,
-    "dma_read": 369224,
-    "dma_write": 71936,
+    "dma_read": 365432,
+    "dma_write": 69632,
     "command": 7476,
-    "no_overlap": 2529916,
-    "hidden_by_overlap": 383068,
+    "no_overlap": 2523820,
+    "hidden_by_overlap": 377716,
     "bank_reuse_stall": 0,
-    "total": 2146848,
+    "total": 2146104,
     "budget": 4000000,
     "budget_pass": true,
-    "milliseconds_at_200mhz": 10.734240000000002,
-    "milliseconds_at_100mhz": 21.468480000000003
+    "milliseconds_at_200mhz": 10.73052,
+    "milliseconds_at_100mhz": 21.46104
   },
   "layer_cycles": [
     {
       "name": "enc0",
       "start": 0,
-      "end": 75068,
-      "cycles": 75068,
+      "end": 74612,
+      "cycles": 74612,
       "upsample_cycles": 0,
       "tile_count": 32
     },
     {
       "name": "enc1",
-      "start": 75068,
-      "end": 228228,
+      "start": 74612,
+      "end": 227772,
       "cycles": 153160,
       "upsample_cycles": 0,
       "tile_count": 32
     },
     {
       "name": "enc2",
-      "start": 228228,
-      "end": 343964,
+      "start": 227772,
+      "end": 343508,
       "cycles": 115736,
       "upsample_cycles": 0,
       "tile_count": 24
     },
     {
       "name": "enc3",
-      "start": 343964,
-      "end": 402960,
+      "start": 343508,
+      "end": 402504,
       "cycles": 58996,
       "upsample_cycles": 0,
       "tile_count": 16
     },
     {
       "name": "bott",
-      "start": 402960,
-      "end": 429252,
+      "start": 402504,
+      "end": 428796,
       "cycles": 26292,
       "upsample_cycles": 0,
       "tile_count": 16
     },
     {
       "name": "bott_blocks.0.conv",
-      "start": 429252,
-      "end": 506090,
+      "start": 428796,
+      "end": 505634,
       "cycles": 76838,
       "upsample_cycles": 0,
       "tile_count": 16
     },
     {
       "name": "bott_blocks.1.conv",
-      "start": 506090,
-      "end": 582928,
+      "start": 505634,
+      "end": 582472,
       "cycles": 76838,
       "upsample_cycles": 0,
       "tile_count": 16
     },
     {
       "name": "dec3",
-      "start": 582928,
-      "end": 984564,
+      "start": 582472,
+      "end": 984108,
       "cycles": 401636,
       "upsample_cycles": 7808,
       "tile_count": 24
     },
     {
       "name": "dec2",
-      "start": 984564,
-      "end": 1753368,
+      "start": 984108,
+      "end": 1752912,
       "cycles": 768804,
       "upsample_cycles": 23424,
       "tile_count": 32
     },
     {
       "name": "dec1",
-      "start": 1753368,
-      "end": 2118620,
+      "start": 1752912,
+      "end": 2118164,
       "cycles": 365252,
       "upsample_cycles": 62464,
       "tile_count": 32
     },
     {
       "name": "out",
-      "start": 2118620,
-      "end": 2139372,
-      "cycles": 20752,
+      "start": 2118164,
+      "end": 2138628,
+      "cycles": 20464,
       "upsample_cycles": 0,
       "tile_count": 8
     }
   ],
   "memory": {
-    "scheduled_ddr_bytes": 3555648,
+    "scheduled_ddr_bytes": 3512000,
     "upsample_ddr_bytes": 491520,
     "activation_input_reuse": "one load per spatial tile"
   },
   "assumptions": [
     "DMA read and write channels may overlap; transfers within one direction serialize.",
-    "Zero padding is synthesized by the address generator and consumes no DMA bytes.",
+    "The DMA engine clears the local activation tile, then copies only logical channels; zero padding consumes no DDR bytes.",
     "Weights, bias, and quant parameters share the selected W bank.",
     "Layer boundaries wait for all output stores; inter-layer overlap is not modeled.",
     "Upsample is conservatively modeled as vector cycles plus DDR read and write cycles."
@@ -263,7 +263,7 @@
   "files": {
     "tile_commands.bin": {
       "bytes": 29904,
-      "sha256": "1971619f79c346bb879ec74636c3cb04a22acd3b437530a35b98d050c21b66a9"
+      "sha256": "330236927150a6a75fb2cf6aed4998352d29048ffa047750dc158956a5df0e83"
     },
     "tile_operator_desc.bin": {
       "bytes": 15872,

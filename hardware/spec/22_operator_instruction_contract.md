@@ -66,6 +66,8 @@ vector_quant_base= align64(conv_quant_base + conv_quant_bytes)  # residual only
 
 DDR 地址和长度从描述符计算：weight 按 `tile_origin_cout/8` 选择 O8I8 block，bias 从 `base_offset + tile_origin_cout*4` 开始，卷积 quant 从 `param_offset + tile_origin_cout*16` 开始；residual quant 只有一个 16-byte 参数记录。RTL 必须使用与编译器相同的 64-byte 对齐公式并做 W-bank 容量检查。
 
+在 `DMA_LOAD` 上下文中，`imm[10]` 是 `DMA_VECTOR_QUANT`：0 表示卷积 per-channel quant，1 表示 residual/vector scalar quant。该位在 `CONV2D` 上下文中仍表示 accumulator bank。编译器必须显式设置，RTL 不允许用 `param_count==1` 猜测用途。
+
 ### `WAIT (0x01)`
 
 阻塞 command processor，直到 `(event_state & imm[7:0]) == imm[7:0]`。`WAIT` 不清 event；下一次以同一 event 发起异步命令时清除旧值。watchdog 负责检测永不完成的等待。
@@ -103,7 +105,7 @@ dst        = saturate_INT12(src0 + residual_q)
 
 ### `DMA_STORE (0x11)`
 
-把 O bank 中由 `op_desc` 指定的输出 tile 写回 `dst_td`。`imm[11]` 选择 O bank，`imm[7:0]` 指定 store-done event。尾通道和 2D stride必须生成正确 byte strobe，不得覆盖逻辑 Tensor 之外的用户数据。
+把 O bank 中由 `op_desc` 指定的输出 tile 写回 `dst_td`。`imm[11]` 选择 O bank，`imm[7:0]` 指定 store-done event。O bank 可包含 `align8(tile_cout)` 个物理 lane，但 DDR 每像素只写 `tile_cout` 个逻辑通道；尾 beat 必须生成正确 byte strobe，不得覆盖 padded lane 或逻辑 Tensor 之外的数据。
 
 ### `END (0x03)`
 

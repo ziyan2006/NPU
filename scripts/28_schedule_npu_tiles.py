@@ -93,7 +93,7 @@ class CommandBuilder:
         return index
 
 
-def input_region(operator: dict[str, Any], tile_h0: int,
+def input_region(operator: dict[str, Any], tile_h0: int, tile_w0: int,
                  tile_h: int, tile_w: int,
                  source: dict[str, Any]) -> dict[str, int]:
     _, hin, win = map(int, source["shape_chw"])
@@ -101,8 +101,8 @@ def input_region(operator: dict[str, Any], tile_h0: int,
     raw_h1 = ((tile_h0 + tile_h - 1) * int(operator["stride_h"])
               - int(operator["pad_top"])
               + int(operator["dilation_h"]) * (int(operator["kh"]) - 1) + 1)
-    raw_w0 = -int(operator["pad_left"])
-    raw_w1 = ((tile_w - 1) * int(operator["stride_w"])
+    raw_w0 = tile_w0 * int(operator["stride_w"]) - int(operator["pad_left"])
+    raw_w1 = ((tile_w0 + tile_w - 1) * int(operator["stride_w"])
               - int(operator["pad_left"])
               + int(operator["dilation_w"]) * (int(operator["kw"]) - 1) + 1)
     h0, h1 = max(raw_h0, 0), min(raw_h1, hin)
@@ -116,6 +116,8 @@ def input_region(operator: dict[str, Any], tile_h0: int,
         "pad_bottom": max(raw_h1 - hin, 0),
         "pad_left": max(-raw_w0, 0),
         "pad_right": max(raw_w1 - win, 0),
+        "local_h": raw_h1 - raw_h0,
+        "local_w": raw_w1 - raw_w0,
     }
 
 
@@ -156,14 +158,17 @@ def make_tiles(program: dict[str, Any], manifest: dict[str, Any],
 
         for h0 in range(0, hout, tile_h_max):
             th = min(tile_h_max, hout - h0)
-            region = input_region(operator, h0, th, wout, source)
+            region = input_region(operator, h0, 0, th, wout, source)
+            activation_bank_footprint = (
+                region["local_h"] * region["local_w"]
+                * align_up(cin, 8) * ACTIVATION_BYTES)
             input_parts = []
             if source["layout"] == "SEGMENTED":
                 for segment_index, segment in enumerate(source["segments"]):
                     part_td = int(segment["tensor"])
                     channels = int(segment["channels"])
                     byte_count = (region["h_count"] * region["w_count"]
-                                  * align_up(channels, 8) * ACTIVATION_BYTES)
+                                  * channels * ACTIVATION_BYTES)
                     input_parts.append({
                         "segment": segment_index,
                         "tensor": part_td,
@@ -178,7 +183,7 @@ def make_tiles(program: dict[str, Any], manifest: dict[str, Any],
                     "dst_channel": 0,
                     "channels": cin,
                     "bytes": (region["h_count"] * region["w_count"]
-                              * align_up(cin, 8) * ACTIVATION_BYTES),
+                              * cin * ACTIVATION_BYTES),
                 })
 
             for c0 in range(0, cout, tile_cout_max):
@@ -247,12 +252,14 @@ def make_tiles(program: dict[str, Any], manifest: dict[str, Any],
                     },
                     "bytes": {
                         "input": sum(part["bytes"] for part in input_parts),
+                        "activation_bank_footprint": activation_bank_footprint,
                         "weight": weight_bytes,
                         "bias": bias_bytes,
                         "quant": quant_bytes,
                         "vector_quant": vector_quant_bytes,
                         "weight_bank_footprint": weight_bank_footprint,
                         "output": output_bytes,
+                        "output_store": th * wout * tc * ACTIVATION_BYTES,
                         "accumulator": accumulator_bytes,
                     },
                     "weight_bank_layout": {
@@ -316,7 +323,8 @@ def add_weight_loads(builder: CommandBuilder, tile: dict[str, Any]) -> list[int]
         commands.append(builder.add(
             Opcode.DMA_LOAD, dst_td=NONE_INDEX, src0_td=NONE_INDEX,
             quant_desc=tile["vector_quant_desc"],
-            imm=encode_control_imm(event=EVENT[f"W{wid}_READY"], weight=wid),
+            imm=encode_control_imm(event=EVENT[f"W{wid}_READY"], weight=wid,
+                                   dma_vector_quant=True),
             **common))
     return commands
 
@@ -504,7 +512,8 @@ def simulate(program: dict[str, Any], manifest: dict[str, Any],
             ])
 
             store_start = max(write_free, vector_end)
-            store_end = store_start + dma_cycles([tile["bytes"]["output"]])
+            store_end = store_start + dma_cycles(
+                [tile["bytes"]["output_store"]])
             accesses.append({
                 "bank": f"O{oid}", "mode": "read", "kind": "dma_store",
                 "start": store_start, "end": store_end,
@@ -617,7 +626,8 @@ def compile_schedule(program_dir: Path, source_dir: Path | None,
     for tile in tiles:
         if tile["loads_input"]:
             bank = tile["banks"]["activation"]
-            max_usage[bank] = max(max_usage[bank], tile["bytes"]["input"])
+            max_usage[bank] = max(
+                max_usage[bank], tile["bytes"]["activation_bank_footprint"])
         for kind, bank_kind in (("weight", "weight"),
                                 ("accumulator", "accumulator"),
                                 ("output", "output")):
@@ -675,7 +685,7 @@ def compile_schedule(program_dir: Path, source_dir: Path | None,
         ((tile["bytes"]["input"] if tile["loads_input"] else 0)
          + tile["bytes"]["weight"] + tile["bytes"]["bias"]
          + tile["bytes"]["quant"] + tile["bytes"]["vector_quant"]
-         + tile["bytes"]["output"])
+         + tile["bytes"]["output_store"])
         for tile in tiles
     )
     # The simulator already models upsample DDR.  Recompute its byte count from
@@ -715,7 +725,7 @@ def compile_schedule(program_dir: Path, source_dir: Path | None,
         },
         "assumptions": [
             "DMA read and write channels may overlap; transfers within one direction serialize.",
-            "Zero padding is synthesized by the address generator and consumes no DMA bytes.",
+            "The DMA engine clears the local activation tile, then copies only logical channels; zero padding consumes no DDR bytes.",
             "Weights, bias, and quant parameters share the selected W bank.",
             "Layer boundaries wait for all output stores; inter-layer overlap is not modeled.",
             "Upsample is conservatively modeled as vector cycles plus DDR read and write cycles.",

@@ -48,7 +48,9 @@ assert analysis["bank_conflict_count"] == 0
 assert analysis["cycles"]["compute"] == 1_986_560
 assert analysis["cycles"]["total"] < analysis["cycles"]["budget"]
 assert analysis["cycles"]["hidden_by_overlap"] > 0
-assert analysis["memory"]["scheduled_ddr_bytes"] == 3_555_648
+assert analysis["memory"]["scheduled_ddr_bytes"] == 3_512_000
+assert analysis["bank_capacity"]["A0"]["maximum_used"] == 57_600
+assert analysis["bank_capacity"]["A1"]["maximum_used"] == 57_600
 
 commands_blob = (PROGRAM / "tile_commands.bin").read_bytes()
 commands = [Command.unpack(commands_blob[offset:offset + COMMAND_STRUCT.size])
@@ -69,6 +71,15 @@ for tile in schedule["tiles"]:
                        for index in tile["weight_load_commands"]]
         assert tile["quant_desc"] in quant_loads
         assert tile["vector_quant_desc"] in quant_loads
+        vector_load = next(commands[index]
+                           for index in tile["weight_load_commands"]
+                           if commands[index].quant_desc
+                           == tile["vector_quant_desc"])
+        assert vector_load.imm & (1 << 10)
+
+for tile in schedule["tiles"]:
+    assert tile["bytes"]["activation_bank_footprint"] <= 64 * 1024
+    assert tile["bytes"]["output_store"] <= tile["bytes"]["output"]
 
 descriptor_blob = (PROGRAM / "tile_operator_desc.bin").read_bytes()
 assert len(descriptor_blob) == analysis["counts"]["operator_descriptors"] * 64

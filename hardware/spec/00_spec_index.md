@@ -42,7 +42,7 @@
 | P1 需求基线 | 带编号的功能、性能、接口、资源要求 | 每个 P0 要求有验证方法 | **进行中** |
 | P2 工作负载分析 | 算子覆盖、张量尺寸、MAC/带宽/生命周期 | 当前模型和第二模型均可映射 | 部分完成 |
 | P3 架构/ISA 探索 | 数据流、存储层次、ISA、周期模型 | 性能和 BRAM 预算闭合 | **进行中，网络 A 已有 tile 证据** |
-| P4 微架构规格 | 模块接口、流水线、时序、异常行为 | RTL 接口和逐周期行为可实现 | **已开始：Command Processor 原型** |
+| P4 微架构规格 | 模块接口、流水线、时序、异常行为 | RTL 接口和逐周期行为可实现 | **进行中：Command Processor、Descriptor Cache、DMA AGU** |
 | P5 可执行参考 | 图编译器、位精确模拟器、测试向量 | 所有 P0 指令有 golden | 未开始 |
 | P6 RTL/HLS 实现 | 可综合模块和软件驱动 | 模块仿真通过 | 未开始 |
 | P7 集成验证 | SoC、DMA、中断、CDC、回归 | 覆盖率和需求回归闭合 | 未开始 |
@@ -126,6 +126,7 @@ v1 的 NPU 输入/输出是量化张量。PCM、STFT/iSTFT、滤波器组、OLA�
 | `22_operator_instruction_contract.md` | 算子到指令序列、字段约束和 RTL 完成条件 |
 | `30_microarchitecture_budget.md` | 模块划分、数据流、片上存储、资源和周期预算 |
 | `31_command_processor_microarchitecture.md` | 首个 RTL 控制核心的接口、状态机、event 和异常语义 |
+| `32_dma_frontend_microarchitecture.md` | 描述符缓存、section 重定位、三维 DMA AGU 和边界检查 |
 | `40_verification_plan.md` | 从位精确模型到板级长稳的验证闭环 |
 | `50_p2_executable_spec.md` | 当前模型的指令编译、整数语义、存储与周期结果 |
 | `90_decision_log.md` | 已决定事项、开放问题和需要补做的实验 |

@@ -83,6 +83,7 @@ package npu_isa_pkg;
   localparam int unsigned NPU_IMM_ACTIVATION_BANK_BIT = 8;
   localparam int unsigned NPU_IMM_WEIGHT_BANK_BIT = 9;
   localparam int unsigned NPU_IMM_ACCUMULATOR_BANK_BIT = 10;
+  localparam int unsigned NPU_IMM_DMA_VECTOR_QUANT_BIT = 10;
   localparam int unsigned NPU_IMM_OUTPUT_BANK_BIT = 11;
   localparam int unsigned NPU_IMM_SEGMENT_LSB = 12;
   localparam int unsigned NPU_IMM_SEGMENT_WIDTH = 2;

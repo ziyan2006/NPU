@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "status": "P4-proposal",
+  "request_count": 1078,
+  "load_count": 830,
+  "store_count": 248,
+  "request_count_by_space": {
+    "activation": 302,
+    "bias": 248,
+    "quant": 280,
+    "weight": 248
+  },
+  "payload_bytes": 3020480,
+  "activation_clear_bytes": 1246656,
+  "maximum_scratchpad_end": {
+    "A0": 57600,
+    "A1": 57600,
+    "O0": 4096,
+    "O1": 4096,
+    "W0": 16320,
+    "W1": 16320
+  },
+  "bounds_pass": true
+}

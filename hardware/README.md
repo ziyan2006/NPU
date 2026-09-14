@@ -1,6 +1,6 @@
 # STEM NPU
 
-本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前处于 P1 需求基线与 P2/P3 架构探索阶段，尚未冻结 ISA 或开始完整 RTL。
+本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Cache 和 DMA AGU 可综合模块。
 
 建议按以下顺序阅读：
 
@@ -11,9 +11,10 @@
 5. `spec/21_control_registers.md`：通用 NPU AXI4-Lite 控制接口草案；
 6. `spec/30_microarchitecture_budget.md`：MAC、DMA、BRAM、周期与资源预算；
 7. `spec/31_command_processor_microarchitecture.md`：命令控制核心的接口、状态机和异常；
-8. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
-9. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
-10. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
+8. `spec/32_dma_frontend_microarchitecture.md`：描述符缓存、三维 DMA 请求和地址规则；
+9. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
+10. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
+11. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
 RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 开始；前者说明如何引用生成的 SystemVerilog package，后者给出算子到指令序列及逐指令执行契约。
 
@@ -21,7 +22,7 @@ RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 
 
 `generated/bott2_mir1k_v1/` 是由当前候选检查点生成的算法参考包。它的 OIHW 权重和 float scale 还需经过布局重排与整数 requant 编译，不能由 RTL 直接消费。
 
-`generated/bott2_mir1k_v1_program/` 是第一版通用 ISA 架构包，已经包含层级与逐 tile 的 128-bit 命令、固定大小描述符、O8I8 权重、整数 requant 参数、4096 项 INT12 tanh LUT，以及 bank/周期分析。它尚未封装为带 header/CRC 的任务镜像，也未经过 RTL 执行，因此不能直接上板。
+`generated/bott2_mir1k_v1_program/` 是第一版通用 ISA 架构包，已经包含层级与逐 tile 的 128-bit 命令、固定大小描述符、O8I8 权重、整数 requant 参数、4096 项 INT12 tanh LUT、bank/周期分析，以及全部 DMA command 的地址计划。它尚未封装为带 header/CRC 的任务镜像，也未经过完整数据通路 RTL 执行，因此不能直接上板。
 
 重新导出硬件包：
 
@@ -36,9 +37,11 @@ python scripts/25_export_npu_package.py
 ```powershell
 python scripts/26_compile_npu_program.py
 python scripts/28_schedule_npu_tiles.py
+python scripts/30_plan_npu_dma.py
 python scripts/29_generate_npu_isa_headers.py --check
 python scripts/_test_npu_isa.py
 python scripts/_test_npu_tile_schedule.py
+python scripts/_test_npu_dma.py
 python scripts/_test_npu_isa_headers.py
 python scripts/_test_npu_rtl.py
 ```

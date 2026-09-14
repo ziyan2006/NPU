@@ -119,6 +119,8 @@ assert bytes(c_command) == python_command.pack()
 assert "logic [7:0]  opcode;" in sv_text
 assert "logic [15:0] imm;" in sv_text
 assert "logic [31:0] input_channel_count;" in sv_text
+assert "NPU_IMM_DMA_VECTOR_QUANT_BIT = 10" in sv_text
+assert encode_control_imm(dma_vector_quant=True) == 1 << 10
 
 compiler = shutil.which("gcc") or shutil.which("clang")
 if compiler:

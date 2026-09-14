@@ -31,6 +31,9 @@ IMM_EVENT_WIDTH = 8
 IMM_ACTIVATION_BANK_BIT = 8
 IMM_WEIGHT_BANK_BIT = 9
 IMM_ACCUMULATOR_BANK_BIT = 10
+# DMA_LOAD never addresses the accumulator bank, so bit 10 is reused there to
+# select the scalar/vector quant slot instead of the convolution quant slot.
+IMM_DMA_VECTOR_QUANT_BIT = IMM_ACCUMULATOR_BANK_BIT
 IMM_OUTPUT_BANK_BIT = 11
 IMM_SEGMENT_LSB = 12
 IMM_SEGMENT_WIDTH = 2
@@ -140,13 +143,17 @@ class Command:
 def encode_control_imm(*, event: int = 0, activation: int = 0,
                        weight: int = 0, accumulator: int = 0,
                        output: int = 0, segmented: bool = False,
-                       segment: int = 0) -> int:
+                       segment: int = 0,
+                       dma_vector_quant: bool = False) -> int:
     """Pack the P3 proposed event and scratchpad routing immediate."""
     if event & ~0xFF or not 0 <= segment < (1 << IMM_SEGMENT_WIDTH):
         raise ValueError("event or segment does not fit the proposed immediate")
+    if dma_vector_quant and accumulator:
+        raise ValueError("DMA vector-quant and accumulator select share bit 10")
+    auxiliary = int(bool(dma_vector_quant)) if dma_vector_quant else (accumulator & 1)
     return (event | ((activation & 1) << IMM_ACTIVATION_BANK_BIT)
             | ((weight & 1) << IMM_WEIGHT_BANK_BIT)
-            | ((accumulator & 1) << IMM_ACCUMULATOR_BANK_BIT)
+            | (auxiliary << IMM_ACCUMULATOR_BANK_BIT)
             | ((output & 1) << IMM_OUTPUT_BANK_BIT)
             | ((segment & 3) << IMM_SEGMENT_LSB)
             | (int(segmented) << IMM_SEGMENTED_BIT))
