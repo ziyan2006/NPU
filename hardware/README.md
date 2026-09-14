@@ -14,6 +14,8 @@
 8. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
 9. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
+RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 开始；前者说明如何引用生成的 SystemVerilog package，后者给出算子到指令序列及逐指令执行契约。
+
 `spec/01_npu_architecture.md` 与 `spec/02_register_map.md` 保留为早期固定人声消除加速器基线，不再作为通用 NPU 顶层规格。
 
 `generated/bott2_mir1k_v1/` 是由当前候选检查点生成的算法参考包。它的 OIHW 权重和 float scale 还需经过布局重排与整数 requant 编译，不能由 RTL 直接消费。
@@ -33,6 +35,8 @@ python scripts/25_export_npu_package.py
 ```powershell
 python scripts/26_compile_npu_program.py
 python scripts/28_schedule_npu_tiles.py
+python scripts/29_generate_npu_isa_headers.py --check
 python scripts/_test_npu_isa.py
 python scripts/_test_npu_tile_schedule.py
+python scripts/_test_npu_isa_headers.py
 ```

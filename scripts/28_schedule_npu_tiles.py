@@ -18,8 +18,10 @@ from npu_isa import (
     OPERATOR_STRUCT,
     Command,
     CommandFlag,
+    Event,
     Opcode,
     align_up,
+    encode_control_imm,
 )
 
 
@@ -45,16 +47,7 @@ BANK_CAPACITY = {
     "O1": 16 * 1024,
 }
 
-EVENT = {
-    "A0_READY": 1 << 0,
-    "A1_READY": 1 << 1,
-    "W0_READY": 1 << 2,
-    "W1_READY": 1 << 3,
-    "C0_DONE": 1 << 4,
-    "C1_DONE": 1 << 5,
-    "S0_DONE": 1 << 6,
-    "S1_DONE": 1 << 7,
-}
+EVENT = {event.name: int(event) for event in Event}
 
 
 def sha256(path: Path) -> str:
@@ -71,21 +64,6 @@ def dma_cycles(byte_counts: list[int]) -> int:
         + math.ceil(size / BURST_BYTES) * BURST_OVERHEAD_CYCLES
         for size in byte_counts if size
     )
-
-
-def control_imm(*, event: int = 0, activation: int = 0, weight: int = 0,
-                accumulator: int = 0, output: int = 0,
-                segmented: bool = False, segment: int = 0) -> int:
-    """Pack the P3 proposed bank/event routing into a command immediate.
-
-    Bits 7:0 are completion events, 8/9/10/11 select A/W/P/O ping-pong
-    banks, 13:12 select a segment, and bit 14 marks segmented addressing.
-    """
-    if event & ~0xFF or not 0 <= segment <= 3:
-        raise ValueError("event or segment does not fit the proposed immediate")
-    return (event | ((activation & 1) << 8) | ((weight & 1) << 9)
-            | ((accumulator & 1) << 10) | ((output & 1) << 11)
-            | ((segment & 3) << 12) | (int(segmented) << 14))
 
 
 def pack_operator(row: dict[str, Any]) -> bytes:
@@ -155,6 +133,20 @@ def make_tiles(program: dict[str, Any], manifest: dict[str, Any],
         layer = manifest_layers[name]
         layer_info = analysis_layers[name]
         source = tensors[int(operator["src_td"])]
+        residual = bool(layer.get("residual"))
+        vector_quant_desc = NONE_INDEX
+        if residual:
+            matches = [
+                int(command["quant_desc"])
+                for command in program["commands"]
+                if command["opcode"] == "VEC_ADD"
+                and int(command["dst_td"]) == int(layer_info["output_tensor"])
+                and int(command["src0_td"]) == int(operator["dst_td"])
+            ]
+            if len(matches) != 1:
+                raise ValueError(
+                    f"layer {name} has {len(matches)} residual quant descriptors")
+            vector_quant_desc = matches[0]
         _, hout, wout = map(int, layer["output"])
         cin = int(layer["input"][0])
         cout = int(layer["output"][0])
@@ -196,6 +188,14 @@ def make_tiles(program: dict[str, Any], manifest: dict[str, Any],
                                 * int(operator["kh"]) * int(operator["kw"]))
                 bias_bytes = tc * 4
                 quant_bytes = tc * 16
+                vector_quant_bytes = 16 if residual else 0
+                bias_bank_offset = align_up(weight_bytes, 64)
+                quant_bank_offset = align_up(bias_bank_offset + bias_bytes, 64)
+                vector_quant_bank_offset = align_up(
+                    quant_bank_offset + quant_bytes, 64)
+                weight_bank_footprint = (
+                    vector_quant_bank_offset + vector_quant_bytes
+                    if residual else quant_bank_offset + quant_bytes)
                 output_bytes = th * wout * physical_cout * ACTIVATION_BYTES
                 accumulator_bytes = th * wout * physical_cout * ACCUMULATOR_BYTES
                 descriptor = {
@@ -220,12 +220,13 @@ def make_tiles(program: dict[str, Any], manifest: dict[str, Any],
                     "layer": name,
                     "operator_desc": descriptor_index,
                     "quant_desc": int(layer_info["quant_desc"]),
+                    "vector_quant_desc": vector_quant_desc,
                     "src_td": int(operator["src_td"]),
                     "conv_dst_td": int(operator["dst_td"]),
                     "dst_td": int(layer_info["output_tensor"]),
                     "weight_td": int(operator["weight_td"]),
                     "bias_td": int(operator["bias_td"]),
-                    "residual": bool(layer.get("residual")),
+                    "residual": residual,
                     "origin": {"h": h0, "w": 0, "cout": c0},
                     "shape": {"h": th, "w": wout, "cout": tc},
                     "input_region": region,
@@ -249,8 +250,18 @@ def make_tiles(program: dict[str, Any], manifest: dict[str, Any],
                         "weight": weight_bytes,
                         "bias": bias_bytes,
                         "quant": quant_bytes,
+                        "vector_quant": vector_quant_bytes,
+                        "weight_bank_footprint": weight_bank_footprint,
                         "output": output_bytes,
                         "accumulator": accumulator_bytes,
+                    },
+                    "weight_bank_layout": {
+                        "weight": 0,
+                        "bias": bias_bank_offset,
+                        "conv_quant": quant_bank_offset,
+                        "vector_quant": (vector_quant_bank_offset
+                                         if residual else None),
+                        "alignment": 64,
                     },
                     "cycles": {
                         "compute": (th * wout * math.ceil(tc / 8)
@@ -276,9 +287,9 @@ def add_input_loads(builder: CommandBuilder, tile: dict[str, Any]) -> list[int]:
             Opcode.DMA_LOAD, flags=int(CommandFlag.ASYNC),
             dst_td=tile["src_td"], src0_td=part["tensor"],
             op_desc=tile["operator_desc"],
-            imm=control_imm(event=event, activation=aid,
-                            segmented=len(parts) > 1,
-                            segment=part["segment"])))
+            imm=encode_control_imm(event=event, activation=aid,
+                                   segmented=len(parts) > 1,
+                                   segment=part["segment"])))
     return command_indices
 
 
@@ -286,19 +297,27 @@ def add_weight_loads(builder: CommandBuilder, tile: dict[str, Any]) -> list[int]
     wid = tile["bank_ids"]["weight"]
     common = {
         "flags": int(CommandFlag.ASYNC),
-        "dst_td": tile["weight_td"],
         "op_desc": tile["operator_desc"],
     }
     commands = [
-        builder.add(Opcode.DMA_LOAD, src0_td=tile["weight_td"],
-                    imm=control_imm(weight=wid), **common),
-        builder.add(Opcode.DMA_LOAD, src0_td=tile["bias_td"],
-                    imm=control_imm(weight=wid), **common),
-        builder.add(Opcode.DMA_LOAD, src0_td=NONE_INDEX,
+        builder.add(Opcode.DMA_LOAD, dst_td=tile["weight_td"],
+                    src0_td=tile["weight_td"],
+                    imm=encode_control_imm(weight=wid), **common),
+        builder.add(Opcode.DMA_LOAD, dst_td=tile["bias_td"],
+                    src0_td=tile["bias_td"],
+                    imm=encode_control_imm(weight=wid), **common),
+        builder.add(Opcode.DMA_LOAD, dst_td=NONE_INDEX, src0_td=NONE_INDEX,
                     quant_desc=tile["quant_desc"],
-                    imm=control_imm(event=EVENT[f"W{wid}_READY"],
-                                    weight=wid), **common),
+                    imm=encode_control_imm(
+                        event=(0 if tile["residual"] else
+                               EVENT[f"W{wid}_READY"]), weight=wid), **common),
     ]
+    if tile["residual"]:
+        commands.append(builder.add(
+            Opcode.DMA_LOAD, dst_td=NONE_INDEX, src0_td=NONE_INDEX,
+            quant_desc=tile["vector_quant_desc"],
+            imm=encode_control_imm(event=EVENT[f"W{wid}_READY"], weight=wid),
+            **common))
     return commands
 
 
@@ -342,11 +361,10 @@ def emit_commands(program: dict[str, Any], manifest: dict[str, Any],
                 dst_td=tile["conv_dst_td"], src0_td=tile["src_td"],
                 src1_td=tile["weight_td"], op_desc=tile["operator_desc"],
                 quant_desc=tile["quant_desc"],
-                imm=control_imm(event=EVENT[f"C{oid}_DONE"],
-                                activation=aid, weight=wid,
-                                accumulator=tile["bank_ids"]["accumulator"],
-                                output=oid,
-                                segmented=len(tile["input_parts"]) > 1))
+                imm=encode_control_imm(
+                    event=EVENT[f"C{oid}_DONE"], activation=aid, weight=wid,
+                    accumulator=tile["bank_ids"]["accumulator"], output=oid,
+                    segmented=len(tile["input_parts"]) > 1))
 
             if local_index + 1 < len(current):
                 following = current[local_index + 1]
@@ -360,13 +378,14 @@ def emit_commands(program: dict[str, Any], manifest: dict[str, Any],
                     Opcode.VEC_ADD, flags=int(CommandFlag.SATURATE),
                     dst_td=tile["dst_td"], src0_td=tile["conv_dst_td"],
                     src1_td=tile["src_td"], op_desc=tile["operator_desc"],
-                    quant_desc=tile["quant_desc"],
-                    imm=control_imm(activation=aid, output=oid))
+                    quant_desc=tile["vector_quant_desc"],
+                    imm=encode_control_imm(activation=aid, output=oid))
             tile["store_command"] = builder.add(
                 Opcode.DMA_STORE, flags=int(CommandFlag.ASYNC),
                 dst_td=tile["dst_td"], src0_td=tile["dst_td"],
                 op_desc=tile["operator_desc"],
-                imm=control_imm(event=EVENT[f"S{oid}_DONE"], output=oid))
+                imm=encode_control_imm(event=EVENT[f"S{oid}_DONE"],
+                                       output=oid))
             output_bank_used[oid] = True
 
         final_store_mask = sum(EVENT[f"S{i}_DONE"]
@@ -446,8 +465,8 @@ def simulate(program: dict[str, Any], manifest: dict[str, Any],
             unconstrained = max(read_free, release)
             weight_start = max(unconstrained, weight_read_until[wid])
             bank_reuse_stall += weight_start - unconstrained
-            weight_sizes = [tile["bytes"][key]
-                            for key in ("weight", "bias", "quant")]
+            weight_sizes = [tile["bytes"][key] for key in
+                            ("weight", "bias", "quant", "vector_quant")]
             weight_end = weight_start + dma_cycles(weight_sizes)
             accesses.append({
                 "bank": f"W{wid}", "mode": "write", "kind": "dma_load",
@@ -605,7 +624,7 @@ def compile_schedule(program_dir: Path, source_dir: Path | None,
             bank = tile["banks"][bank_kind]
             size = tile["bytes"][kind]
             if kind == "weight":
-                size += tile["bytes"]["bias"] + tile["bytes"]["quant"]
+                size = tile["bytes"]["weight_bank_footprint"]
             max_usage[bank] = max(max_usage[bank], size)
     capacity = {
         bank: {"capacity": BANK_CAPACITY[bank], "maximum_used": max_usage[bank],
@@ -655,7 +674,8 @@ def compile_schedule(program_dir: Path, source_dir: Path | None,
     scheduled_ddr_bytes = sum(
         ((tile["bytes"]["input"] if tile["loads_input"] else 0)
          + tile["bytes"]["weight"] + tile["bytes"]["bias"]
-         + tile["bytes"]["quant"] + tile["bytes"]["output"])
+         + tile["bytes"]["quant"] + tile["bytes"]["vector_quant"]
+         + tile["bytes"]["output"])
         for tile in tiles
     )
     # The simulator already models upsample DDR.  Recompute its byte count from

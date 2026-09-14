@@ -16,8 +16,25 @@ ISA_MAJOR = 1
 ISA_MINOR = 0
 NONE_INDEX = 0xFFFF
 COMMAND_STRUCT = struct.Struct("<BB7H")
+TENSOR_STRUCT = struct.Struct("<QI4H4IBBHHHI16x")
 OPERATOR_STRUCT = struct.Struct("<16H8I")
+QUANT_DESC_STRUCT = struct.Struct("<IIiiHH12x")
 QUANT_PARAM_STRUCT = struct.Struct("<iB3xii")
+SEGMENT_STRUCT = struct.Struct("<4H")
+
+TENSOR_FLAG_CONSTANT = 1 << 0
+TENSOR_FLAG_EXTERNAL = 1 << 1
+TENSOR_FLAG_VIEW = 1 << 2
+
+IMM_EVENT_LSB = 0
+IMM_EVENT_WIDTH = 8
+IMM_ACTIVATION_BANK_BIT = 8
+IMM_WEIGHT_BANK_BIT = 9
+IMM_ACCUMULATOR_BANK_BIT = 10
+IMM_OUTPUT_BANK_BIT = 11
+IMM_SEGMENT_LSB = 12
+IMM_SEGMENT_WIDTH = 2
+IMM_SEGMENTED_BIT = 14
 
 
 class Opcode(enum.IntEnum):
@@ -46,6 +63,17 @@ class CommandFlag(enum.IntFlag):
     IRQ = 1 << 1
     SATURATE = 1 << 2
     FUSED_POST_OP = 1 << 3
+
+
+class Event(enum.IntFlag):
+    A0_READY = 1 << 0
+    A1_READY = 1 << 1
+    W0_READY = 1 << 2
+    W1_READY = 1 << 3
+    C0_DONE = 1 << 4
+    C1_DONE = 1 << 5
+    S0_DONE = 1 << 6
+    S1_DONE = 1 << 7
 
 
 class DType(enum.IntEnum):
@@ -98,6 +126,21 @@ class Command:
             raise ValueError(f"command must be {COMMAND_STRUCT.size} bytes")
         opcode, flags, *words = COMMAND_STRUCT.unpack(payload)
         return cls(Opcode(opcode), flags, *words)
+
+
+def encode_control_imm(*, event: int = 0, activation: int = 0,
+                       weight: int = 0, accumulator: int = 0,
+                       output: int = 0, segmented: bool = False,
+                       segment: int = 0) -> int:
+    """Pack the P3 proposed event and scratchpad routing immediate."""
+    if event & ~0xFF or not 0 <= segment < (1 << IMM_SEGMENT_WIDTH):
+        raise ValueError("event or segment does not fit the proposed immediate")
+    return (event | ((activation & 1) << IMM_ACTIVATION_BANK_BIT)
+            | ((weight & 1) << IMM_WEIGHT_BANK_BIT)
+            | ((accumulator & 1) << IMM_ACCUMULATOR_BANK_BIT)
+            | ((output & 1) << IMM_OUTPUT_BANK_BIT)
+            | ((segment & 3) << IMM_SEGMENT_LSB)
+            | (int(segmented) << IMM_SEGMENTED_BIT))
 
 
 def round_shift_rne(value: int, shift: int) -> int:

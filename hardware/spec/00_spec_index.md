@@ -123,6 +123,7 @@ v1 的 NPU 输入/输出是量化张量。PCM、STFT/iSTFT、滤波器组、OLA�
 | `11_workload_profile.md` | 当前模型逐层画像、存储压力和第二验证网络候选 |
 | `20_programming_model_isa.md` | 执行模型、命令、描述符、算子和数值语义 |
 | `21_control_registers.md` | 通用 NPU AXI4-Lite 控制接口草案 |
+| `22_operator_instruction_contract.md` | 算子到指令序列、字段约束和 RTL 完成条件 |
 | `30_microarchitecture_budget.md` | 模块划分、数据流、片上存储、资源和周期预算 |
 | `40_verification_plan.md` | 从位精确模型到板级长稳的验证闭环 |
 | `50_p2_executable_spec.md` | 当前模型的指令编译、整数语义、存储与周期结果 |

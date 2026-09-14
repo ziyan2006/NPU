@@ -2,7 +2,7 @@
   "schema": 1,
   "status": "P3-proposal",
   "counts": {
-    "commands": 1837,
+    "commands": 1869,
     "operator_descriptors": 248,
     "tiles": 248
   },
@@ -110,12 +110,12 @@
     },
     "W0": {
       "capacity": 32768,
-      "maximum_used": 16288,
+      "maximum_used": 16320,
       "pass": true
     },
     "W1": {
       "capacity": 32768,
-      "maximum_used": 16288,
+      "maximum_used": 16320,
       "pass": true
     },
     "P0": {
@@ -146,17 +146,17 @@
     "compute": 1986560,
     "vector": 1024,
     "upsample_including_ddr": 93696,
-    "dma_read": 368648,
+    "dma_read": 369224,
     "dma_write": 71936,
-    "command": 7348,
-    "no_overlap": 2529212,
-    "hidden_by_overlap": 382528,
+    "command": 7476,
+    "no_overlap": 2529916,
+    "hidden_by_overlap": 383068,
     "bank_reuse_stall": 0,
-    "total": 2146684,
+    "total": 2146848,
     "budget": 4000000,
     "budget_pass": true,
-    "milliseconds_at_200mhz": 10.73342,
-    "milliseconds_at_100mhz": 21.46684
+    "milliseconds_at_200mhz": 10.734240000000002,
+    "milliseconds_at_100mhz": 21.468480000000003
   },
   "layer_cycles": [
     {
@@ -202,54 +202,54 @@
     {
       "name": "bott_blocks.0.conv",
       "start": 429252,
-      "end": 506072,
-      "cycles": 76820,
+      "end": 506090,
+      "cycles": 76838,
       "upsample_cycles": 0,
       "tile_count": 16
     },
     {
       "name": "bott_blocks.1.conv",
-      "start": 506072,
-      "end": 582892,
-      "cycles": 76820,
+      "start": 506090,
+      "end": 582928,
+      "cycles": 76838,
       "upsample_cycles": 0,
       "tile_count": 16
     },
     {
       "name": "dec3",
-      "start": 582892,
-      "end": 984528,
+      "start": 582928,
+      "end": 984564,
       "cycles": 401636,
       "upsample_cycles": 7808,
       "tile_count": 24
     },
     {
       "name": "dec2",
-      "start": 984528,
-      "end": 1753332,
+      "start": 984564,
+      "end": 1753368,
       "cycles": 768804,
       "upsample_cycles": 23424,
       "tile_count": 32
     },
     {
       "name": "dec1",
-      "start": 1753332,
-      "end": 2118584,
+      "start": 1753368,
+      "end": 2118620,
       "cycles": 365252,
       "upsample_cycles": 62464,
       "tile_count": 32
     },
     {
       "name": "out",
-      "start": 2118584,
-      "end": 2139336,
+      "start": 2118620,
+      "end": 2139372,
       "cycles": 20752,
       "upsample_cycles": 0,
       "tile_count": 8
     }
   ],
   "memory": {
-    "scheduled_ddr_bytes": 3555136,
+    "scheduled_ddr_bytes": 3555648,
     "upsample_ddr_bytes": 491520,
     "activation_input_reuse": "one load per spatial tile"
   },
@@ -262,8 +262,8 @@
   ],
   "files": {
     "tile_commands.bin": {
-      "bytes": 29392,
-      "sha256": "8a63de4521f6b70377c3a3de1d6b5a42bc4b74b7520727d0b9eb183f57a530ce"
+      "bytes": 29904,
+      "sha256": "1971619f79c346bb879ec74636c3cb04a22acd3b437530a35b98d050c21b66a9"
     },
     "tile_operator_desc.bin": {
       "bytes": 15872,

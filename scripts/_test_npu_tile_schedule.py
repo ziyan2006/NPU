@@ -36,7 +36,7 @@ schedule = json.loads((PROGRAM / "tile_schedule.json").read_text(encoding="utf-8
 assert OPERATOR_STRUCT.size == 64
 assert COMMAND_STRUCT.size == 16
 assert analysis["counts"] == {
-    "commands": 1837,
+    "commands": 1869,
     "operator_descriptors": 248,
     "tiles": 248,
 }
@@ -48,7 +48,7 @@ assert analysis["bank_conflict_count"] == 0
 assert analysis["cycles"]["compute"] == 1_986_560
 assert analysis["cycles"]["total"] < analysis["cycles"]["budget"]
 assert analysis["cycles"]["hidden_by_overlap"] > 0
-assert analysis["memory"]["scheduled_ddr_bytes"] == 3_555_136
+assert analysis["memory"]["scheduled_ddr_bytes"] == 3_555_648
 
 commands_blob = (PROGRAM / "tile_commands.bin").read_bytes()
 commands = [Command.unpack(commands_blob[offset:offset + COMMAND_STRUCT.size])
@@ -59,6 +59,16 @@ assert commands[-1].opcode == Opcode.END
 assert sum(command.opcode == Opcode.CONV2D for command in commands) == 248
 assert sum(command.opcode == Opcode.UPSAMPLE2X for command in commands) == 3
 assert sum(command.opcode == Opcode.VEC_ADD for command in commands) == 32
+
+for tile in schedule["tiles"]:
+    if tile["residual"]:
+        vector = commands[tile["vector_command"]]
+        assert tile["vector_quant_desc"] != tile["quant_desc"]
+        assert vector.quant_desc == tile["vector_quant_desc"]
+        quant_loads = [commands[index].quant_desc
+                       for index in tile["weight_load_commands"]]
+        assert tile["quant_desc"] in quant_loads
+        assert tile["vector_quant_desc"] in quant_loads
 
 descriptor_blob = (PROGRAM / "tile_operator_desc.bin").read_bytes()
 assert len(descriptor_blob) == analysis["counts"]["operator_descriptors"] * 64

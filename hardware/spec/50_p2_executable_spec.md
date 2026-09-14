@@ -45,7 +45,7 @@ hardware/generated/bott2_mir1k_v1_program/
 | Operator descriptor | 64 B | 11 | 704 B |
 | Quant descriptor | 32 B | 13 | 416 B |
 | Segment record | 8 B | 6 | 48 B |
-| Tile command | 16 B | 1,837 | 29,392 B |
+| Tile command | 16 B | 1,869 | 29,904 B |
 | Tile operator descriptor | 64 B | 248 | 15,872 B |
 
 暂定 opcode：
@@ -112,7 +112,7 @@ hardware/generated/bott2_mir1k_v1_program/
 4. 避免物化完整 concat；
 5. 输出通道按 8 计算，partial sum 保存在 accumulator bank。
 
-当前调度采用以下逻辑 bank 提案：`A0/A1` 各 64 KiB、`W0/W1` 各 32 KiB、`P0/P1` 各 16 KiB、`O0/O1` 各 16 KiB。最大实际占用分别为 48 KiB、15.91 KiB、8 KiB 和 4 KiB，全部在界内。`A` 按空间 tile 交替，`W/P/O` 按计算 tile 交替；同一空间 tile 的全部输出通道块复用一次输入加载。
+当前调度采用以下逻辑 bank 提案：`A0/A1` 各 64 KiB、`W0/W1` 各 32 KiB、`P0/P1` 各 16 KiB、`O0/O1` 各 16 KiB。最大实际占用分别为 48 KiB、16,320 B、8 KiB 和 4 KiB，全部在界内；W bank 占用已包含四类数据之间的 64-byte 对齐间隙。`A` 按空间 tile 交替，`W/P/O` 按计算 tile 交替；同一空间 tile 的全部输出通道块复用一次输入加载。
 
 解码层的 upsample 与 encoder skip 分别 DMA 到同一 `A` bank 的不同通道区间，`SEGMENTED` 描述符提供目的通道偏移。因此 concat 不分配 Tensor、也不产生一次额外的完整 concat DDR 写回。软件访问区间检查当前报告 0 个读写冲突；这证明静态调度关系自洽，不代替 BRAM 端口映射和 RTL assertion。
 
@@ -145,17 +145,17 @@ hardware/generated/bott2_mir1k_v1_program/
 | Tensor MAC | 1,986,560 |
 | residual vector | 1,024 |
 | upsample（含其 DDR 读写） | 93,696 |
-| tile DMA read | 368,648 |
+| tile DMA read | 369,224 |
 | tile DMA write | 71,936 |
-| 1,837 条命令开销 | 7,348 |
-| 全部不重叠 | 2,529,212 |
-| 被重叠隐藏 | 382,528 |
+| 1,869 条命令开销 | 7,476 |
+| 全部不重叠 | 2,529,916 |
+| 被重叠隐藏 | 383,068 |
 | bank reuse stall | 0 |
-| **调度总周期** | **2,146,684** |
+| **调度总周期** | **2,146,848** |
 
-调度总周期对应 10.73 ms@200 MHz、21.47 ms@100 MHz；逐 tile DDR 流量为 3,555,136 B，其中 upsample 流量 491,520 B。比早期层级流量估算高，是因为现在显式计入按空间 tile 重载权重、bias、量化参数以及 upsample 的 DDR 往返。
+调度总周期对应 10.73 ms@200 MHz、21.47 ms@100 MHz；逐 tile DDR 流量为 3,555,648 B，其中 upsample 流量 491,520 B。比早期层级流量估算高，是因为现在显式计入按空间 tile 重载权重、bias、量化参数、residual rescale 参数以及 upsample 的 DDR 往返。
 
-模型假设 AXI 读写通道可以并行、同方向 transaction 串行、64-bit 每周期一拍，并按每 1 KiB burst 增加 16 cycle。真实 HP 口竞争、4 KiB 拆分、back-pressure、pipeline fill/flush 尚未测量，所以 2,146,684 是架构估算而非板级保证。
+模型假设 AXI 读写通道可以并行、同方向 transaction 串行、64-bit 每周期一拍，并按每 1 KiB burst 增加 16 cycle。真实 HP 口竞争、4 KiB 拆分、back-pressure、pipeline fill/flush 尚未测量，所以 2,146,848 是架构估算而非板级保证。
 
 ## 7. tanh 标定结果
 

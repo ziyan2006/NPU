@@ -10,7 +10,6 @@ import argparse
 import hashlib
 import json
 import math
-import struct
 from pathlib import Path
 from typing import Any
 
@@ -27,7 +26,13 @@ from npu_isa import (
     OPERATOR_STRUCT,
     Opcode,
     PostOp,
+    QUANT_DESC_STRUCT,
     QUANT_PARAM_STRUCT,
+    SEGMENT_STRUCT,
+    TENSOR_FLAG_CONSTANT,
+    TENSOR_FLAG_EXTERNAL,
+    TENSOR_FLAG_VIEW,
+    TENSOR_STRUCT,
     align_up,
     dequantize_scale,
     nhwc8_nbytes,
@@ -38,14 +43,6 @@ from npu_isa import (
 ROOT = Path(__file__).resolve().parent.parent
 SOURCE_DEFAULT = ROOT / "hardware" / "generated" / "bott2_mir1k_v1"
 OUT_DEFAULT = ROOT / "hardware" / "generated" / "bott2_mir1k_v1_program"
-
-TENSOR_STRUCT = struct.Struct("<QI4H4IBBHHHI16x")
-QUANT_DESC_STRUCT = struct.Struct("<IIiiHH12x")
-SEGMENT_STRUCT = struct.Struct("<4H")
-
-TENSOR_FLAG_CONSTANT = 1 << 0
-TENSOR_FLAG_EXTERNAL = 1 << 1
-TENSOR_FLAG_VIEW = 1 << 2
 
 ACTIVATION_BYTES = 2
 BUS_BYTES = 8
