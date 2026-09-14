@@ -1,0 +1,274 @@
+{
+  "schema": 1,
+  "status": "P3-proposal",
+  "counts": {
+    "commands": 1837,
+    "operator_descriptors": 248,
+    "tiles": 248
+  },
+  "coverage": [
+    {
+      "name": "enc0",
+      "tiles": 32,
+      "output_elements": 65536,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "enc1",
+      "tiles": 32,
+      "output_elements": 32768,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "enc2",
+      "tiles": 24,
+      "output_elements": 12288,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "enc3",
+      "tiles": 16,
+      "output_elements": 4096,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "bott",
+      "tiles": 16,
+      "output_elements": 4096,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "bott_blocks.0.conv",
+      "tiles": 16,
+      "output_elements": 4096,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "bott_blocks.1.conv",
+      "tiles": 16,
+      "output_elements": 4096,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "dec3",
+      "tiles": 24,
+      "output_elements": 12288,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "dec2",
+      "tiles": 32,
+      "output_elements": 32768,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "dec1",
+      "tiles": 32,
+      "output_elements": 65536,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    },
+    {
+      "name": "out",
+      "tiles": 8,
+      "output_elements": 8192,
+      "missing_elements": 0,
+      "overlap_elements": 0,
+      "pass": true
+    }
+  ],
+  "coverage_pass": true,
+  "bank_capacity": {
+    "A0": {
+      "capacity": 65536,
+      "maximum_used": 49152,
+      "pass": true
+    },
+    "A1": {
+      "capacity": 65536,
+      "maximum_used": 49152,
+      "pass": true
+    },
+    "W0": {
+      "capacity": 32768,
+      "maximum_used": 16288,
+      "pass": true
+    },
+    "W1": {
+      "capacity": 32768,
+      "maximum_used": 16288,
+      "pass": true
+    },
+    "P0": {
+      "capacity": 16384,
+      "maximum_used": 8192,
+      "pass": true
+    },
+    "P1": {
+      "capacity": 16384,
+      "maximum_used": 8192,
+      "pass": true
+    },
+    "O0": {
+      "capacity": 16384,
+      "maximum_used": 4096,
+      "pass": true
+    },
+    "O1": {
+      "capacity": 16384,
+      "maximum_used": 4096,
+      "pass": true
+    }
+  },
+  "bank_capacity_pass": true,
+  "bank_conflict_count": 0,
+  "bank_conflicts": [],
+  "cycles": {
+    "compute": 1986560,
+    "vector": 1024,
+    "upsample_including_ddr": 93696,
+    "dma_read": 368648,
+    "dma_write": 71936,
+    "command": 7348,
+    "no_overlap": 2529212,
+    "hidden_by_overlap": 382528,
+    "bank_reuse_stall": 0,
+    "total": 2146684,
+    "budget": 4000000,
+    "budget_pass": true,
+    "milliseconds_at_200mhz": 10.73342,
+    "milliseconds_at_100mhz": 21.46684
+  },
+  "layer_cycles": [
+    {
+      "name": "enc0",
+      "start": 0,
+      "end": 75068,
+      "cycles": 75068,
+      "upsample_cycles": 0,
+      "tile_count": 32
+    },
+    {
+      "name": "enc1",
+      "start": 75068,
+      "end": 228228,
+      "cycles": 153160,
+      "upsample_cycles": 0,
+      "tile_count": 32
+    },
+    {
+      "name": "enc2",
+      "start": 228228,
+      "end": 343964,
+      "cycles": 115736,
+      "upsample_cycles": 0,
+      "tile_count": 24
+    },
+    {
+      "name": "enc3",
+      "start": 343964,
+      "end": 402960,
+      "cycles": 58996,
+      "upsample_cycles": 0,
+      "tile_count": 16
+    },
+    {
+      "name": "bott",
+      "start": 402960,
+      "end": 429252,
+      "cycles": 26292,
+      "upsample_cycles": 0,
+      "tile_count": 16
+    },
+    {
+      "name": "bott_blocks.0.conv",
+      "start": 429252,
+      "end": 506072,
+      "cycles": 76820,
+      "upsample_cycles": 0,
+      "tile_count": 16
+    },
+    {
+      "name": "bott_blocks.1.conv",
+      "start": 506072,
+      "end": 582892,
+      "cycles": 76820,
+      "upsample_cycles": 0,
+      "tile_count": 16
+    },
+    {
+      "name": "dec3",
+      "start": 582892,
+      "end": 984528,
+      "cycles": 401636,
+      "upsample_cycles": 7808,
+      "tile_count": 24
+    },
+    {
+      "name": "dec2",
+      "start": 984528,
+      "end": 1753332,
+      "cycles": 768804,
+      "upsample_cycles": 23424,
+      "tile_count": 32
+    },
+    {
+      "name": "dec1",
+      "start": 1753332,
+      "end": 2118584,
+      "cycles": 365252,
+      "upsample_cycles": 62464,
+      "tile_count": 32
+    },
+    {
+      "name": "out",
+      "start": 2118584,
+      "end": 2139336,
+      "cycles": 20752,
+      "upsample_cycles": 0,
+      "tile_count": 8
+    }
+  ],
+  "memory": {
+    "scheduled_ddr_bytes": 3555136,
+    "upsample_ddr_bytes": 491520,
+    "activation_input_reuse": "one load per spatial tile"
+  },
+  "assumptions": [
+    "DMA read and write channels may overlap; transfers within one direction serialize.",
+    "Zero padding is synthesized by the address generator and consumes no DMA bytes.",
+    "Weights, bias, and quant parameters share the selected W bank.",
+    "Layer boundaries wait for all output stores; inter-layer overlap is not modeled.",
+    "Upsample is conservatively modeled as vector cycles plus DDR read and write cycles."
+  ],
+  "files": {
+    "tile_commands.bin": {
+      "bytes": 29392,
+      "sha256": "8a63de4521f6b70377c3a3de1d6b5a42bc4b74b7520727d0b9eb183f57a530ce"
+    },
+    "tile_operator_desc.bin": {
+      "bytes": 15872,
+      "sha256": "a78fb2dfe7d022685af82692fd03679418449ab559a8ba598d94a214d4ae633c"
+    }
+  },
+  "access_interval_count": 1528
+}

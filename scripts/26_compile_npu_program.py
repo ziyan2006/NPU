@@ -24,6 +24,7 @@ from npu_isa import (
     CommandFlag,
     DType,
     Layout,
+    OPERATOR_STRUCT,
     Opcode,
     PostOp,
     QUANT_PARAM_STRUCT,
@@ -39,7 +40,6 @@ SOURCE_DEFAULT = ROOT / "hardware" / "generated" / "bott2_mir1k_v1"
 OUT_DEFAULT = ROOT / "hardware" / "generated" / "bott2_mir1k_v1_program"
 
 TENSOR_STRUCT = struct.Struct("<QI4H4IBBHHHI16x")
-OPERATOR_STRUCT = struct.Struct("<16H4I16x")
 QUANT_DESC_STRUCT = struct.Struct("<IIiiHH12x")
 SEGMENT_STRUCT = struct.Struct("<4H")
 
@@ -108,7 +108,12 @@ def pack_operator(row: dict[str, Any]) -> bytes:
         row["pad_bottom"], row["pad_left"], row["pad_right"],
         row["groups"], row["post_op_id"],
     )
-    fields32 = (row["tile_h"], row["tile_w"], row["tile_cout"], 0)
+    fields32 = (
+        row.get("tile_origin_h", 0), row.get("tile_origin_w", 0),
+        row.get("tile_origin_cout", 0), row["tile_h"], row["tile_w"],
+        row["tile_cout"], row.get("input_channel_start", 0),
+        row["input_channel_count"],
+    )
     return OPERATOR_STRUCT.pack(*fields16, *fields32)
 
 
@@ -355,6 +360,8 @@ def compile_program(source: Path, output: Path) -> dict[str, Any]:
             "groups": int(layer["groups"]),
             "post_op": post_op.name,
             "post_op_id": int(post_op),
+            "input_channel_start": 0,
+            "input_channel_count": cin,
             **{key: int(plan[key]) for key in ("tile_h", "tile_w", "tile_cout")},
         }
         op_index = len(builder.operators)

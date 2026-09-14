@@ -2048,6 +2048,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 2,
       "tile_h": 16,
       "tile_w": 16,
       "tile_cout": 8
@@ -2071,6 +2073,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 32,
       "tile_h": 16,
       "tile_w": 8,
       "tile_cout": 8
@@ -2094,6 +2098,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 64,
       "tile_h": 16,
       "tile_w": 4,
       "tile_cout": 8
@@ -2117,6 +2123,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 96,
       "tile_h": 16,
       "tile_w": 2,
       "tile_cout": 8
@@ -2140,6 +2148,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 128,
       "tile_h": 16,
       "tile_w": 2,
       "tile_cout": 8
@@ -2163,6 +2173,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 128,
       "tile_h": 16,
       "tile_w": 2,
       "tile_cout": 8
@@ -2186,6 +2198,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 128,
       "tile_h": 16,
       "tile_w": 2,
       "tile_cout": 8
@@ -2209,6 +2223,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 224,
       "tile_h": 16,
       "tile_w": 4,
       "tile_cout": 8
@@ -2232,6 +2248,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 160,
       "tile_h": 16,
       "tile_w": 8,
       "tile_cout": 8
@@ -2255,6 +2273,8 @@
       "groups": 1,
       "post_op": "LEAKY_RELU_0P1",
       "post_op_id": 2,
+      "input_channel_start": 0,
+      "input_channel_count": 96,
       "tile_h": 16,
       "tile_w": 16,
       "tile_cout": 8
@@ -2278,6 +2298,8 @@
       "groups": 1,
       "post_op": "TANH_LUT",
       "post_op_id": 3,
+      "input_channel_start": 0,
+      "input_channel_count": 32,
       "tile_h": 16,
       "tile_w": 16,
       "tile_cout": 8
@@ -7864,7 +7886,7 @@
     },
     "operator_desc.bin": {
       "bytes": 704,
-      "sha256": "54bd2a40320dc283df8bd8c8ba99d3d83bb1eae3e217c17d2b9c7a6e2020af15"
+      "sha256": "f0f2aecc462e418446bf19f0bd178a2d0338913dbd12f2921c93b8597343c602"
     },
     "quant_desc.bin": {
       "bytes": 416,

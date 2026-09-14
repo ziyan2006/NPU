@@ -109,6 +109,19 @@ XC7Z020 提供 140 个 BRAM36。NPU 暂定最多使用 112 个，预留 28 个�
 
 不能未经质量验证把当前模型激活降为 INT8 来节省 BRAM。
 
+### 网络 A 的 tile bank 实例
+
+P3 软件调度器当前采用以下子划分，它仍是逻辑容量提案，尚未换算为最终 BRAM 端口组织：
+
+| 逻辑 bank | 单 bank 容量 | 网络 A 最大占用 | 作用 |
+|---|---:|---:|---|
+| `A0/A1` | 64 KiB | 48 KiB | 输入 tile；按空间 tile ping-pong |
+| `W0/W1` | 32 KiB | 16,288 B | 权重、bias、quant；按计算 tile ping-pong |
+| `P0/P1` | 16 KiB | 8 KiB | INT32 partial sum |
+| `O0/O1` | 16 KiB | 4 KiB | requant/post 和异步写回 |
+
+两个 A bank 加两个 O bank 共 160 KiB，低于 activation 类 216 KiB 预算；两个 W bank 共 64 KiB，低于 108 KiB；两个 P bank 共 32 KiB，低于 accumulator/post 类 54 KiB。剩余容量用于边界行、DMA FIFO、端口复制或综合映射损耗，不能在 RTL 前当作可自由分配的净容量。
+
 ### INT12 存储决策
 
 基线提案是用 signed 16-bit 物理槽保存 INT12：地址简单、吞吐规整、BRAM 宽度好映射，代价是相对紧凑 12-bit 多 33% 容量/带宽。是否实现 12-bit packed 格式要比较：
@@ -154,6 +167,8 @@ DMA 必须检查 4 KiB 边界并拆 burst；片上 FIFO 吸收 AXI back-pressure
 | 权重每块重读流量 | 约 8.87 MB/s |
 
 `1,986,560 cycle` 只计 MAC 调度，不含命令、DMA stall、bank conflict、requant 和 pipeline 边界。因此规格采用 4,000,000 cycle 的完整任务目标，不能把纯计算下界当成最终性能。
+
+当前逐 tile transaction 模型生成 248 个计算 tile 和 1,837 条命令。按 64-bit 理想 AXI、1 KiB burst/16-cycle 开销、读写通道可重叠、跨层不重叠的假设，总计 2,146,684 cycle；软件访问区间中 bank conflict 为 0。该结果关闭了“当前静态分配必然冲突或超 4M cycle”的软件风险，但没有关闭 AXI 实效、BRAM 端口数或 post-route Fmax 风险。
 
 周期模型至少拆分为：
 

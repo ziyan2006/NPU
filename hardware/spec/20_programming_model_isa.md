@@ -130,6 +130,16 @@ NHWC8 address = ((((n*H + h)*W + w)*ceil(C/8) + c/8)*8 + c%8)
 
 当前因果模型通过显式非对称时间 padding 表示，不为“音频因果卷积”增加专用 opcode。编译器负责保证不会读取未来帧。
 
+当前 P3 二进制原型把 Operator descriptor 固定为 64 B：前 32 B 是 16 个 little-endian `uint16`，依次保存 `src/dst/weight/bias Tensor`、`Kh/Kw`、stride、dilation、四边 padding、groups 和 post-op；后 32 B 是 8 个 little-endian `uint32`，依次保存：
+
+```text
+tile_origin_h, tile_origin_w, tile_origin_cout,
+tile_h, tile_w, tile_cout,
+input_channel_start, input_channel_count
+```
+
+网络 A 的最大值全部在范围内，但在网络 B 完成前不缩窄这些字段。
+
 ## 8. 量化描述符
 
 硬件不读取 float scale。编译器把实数比例近似为整数乘法和移位：
@@ -153,6 +163,8 @@ out  = saturate(q, clamp_min, clamp_max)
 - 对同一外部地址的读写顺序由命令流负责，硬件不实现 cache coherence；
 - `END` 隐含等待此前所有写 DMA 完成；
 - fatal error 时停止发射新命令，但必须让已经握手的 AXI transaction 合法收尾。
+
+tile 调度原型把命令 `imm[15:0]` 暂定为：`[7:0]` completion event mask，`[8]` activation bank，`[9]` weight bank，`[10]` accumulator bank，`[11]` output bank，`[13:12]` segment index，`[14]` segmented addressing，`[15]` 保留。`WAIT` 只解释 event mask；其它字段由对应执行单元解释。该编码属于 ADR-011/020 的验证载体，尚未冻结。
 
 ## 10. 错误与版本兼容
 

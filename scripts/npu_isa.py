@@ -16,6 +16,7 @@ ISA_MAJOR = 1
 ISA_MINOR = 0
 NONE_INDEX = 0xFFFF
 COMMAND_STRUCT = struct.Struct("<BB7H")
+OPERATOR_STRUCT = struct.Struct("<16H8I")
 QUANT_PARAM_STRUCT = struct.Struct("<iB3xii")
 
 

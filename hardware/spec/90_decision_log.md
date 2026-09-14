@@ -28,8 +28,9 @@
 | ADR-017 | 提案 | depthwise 是 P0，使用 MAC 阵列的独立 lane 模式。 | 网络 B 确认和实现成本评估。 |
 | ADR-018 | 提案 | 任务周期目标 4,000,000 cycle，最低 100 MHz、目标 200 MHz。 | DMA/命令周期模型和 post-route 时序。 |
 | ADR-019 | 提案 | tanh 输入采用 max 标定的 signed INT12，step=`0.0046281479`；输出采用 signed INT12、step=`1/2047` 的 4096 项 LUT。 | 2,097,152 个 pre-tanh 观测值无裁剪，tanh 输出量化 SNR 56.31 dB。 |
+| ADR-020 | 提案 | `A` 为 2×64 KiB、`W` 为 2×32 KiB、`P` 为 2×16 KiB、`O` 为 2×16 KiB，并用静态 event/WAIT 管理 ping-pong。 | 网络 A 容量和访问区间已通过；仍需 BRAM 端口映射、网络 B 与 RTL assertion。 |
 
-当前网络 A 的软件证据：64-lane 的不重叠分析为 2,348,400 cycle，O8I8 权重仅增加约 0.23%，所有建议 tile 容量检查通过。这支持 ADR-010/012/018 继续进入原型，但在第二网络、bank conflict 和 post-route 结果出现前仍不升级为“已接受”。
+当前网络 A 的软件证据：248 个 tile 展开为 1,837 条命令，64-lane 的 transaction 调度为 2,146,684 cycle，DDR 流量 3,555,136 B；所有 bank 容量通过，静态访问区间冲突为 0。O8I8 权重仅增加约 0.23%。这支持 ADR-010/012/016/018/020 继续进入 RTL 原型，但在第二网络、实际 BRAM 端口、AXI 实效和 post-route 结果出现前仍不升级为“已接受”。
 
 ## 3. 必须确认的系统问题
 
@@ -52,8 +53,8 @@
 |---:|---|---|---|
 | 1 | 当前图规范化 | manifest + checkpoint | 标准算子图、Tensor 生命周期、P0 算子覆盖 |
 | 2 | 整数量化编译 | float scale + calibration | per-channel multiplier/shift，位精确输出 |
-| 3 | 布局/tiling 搜索 | 网络 A，NHWC8/O8I8 | 峰值 BRAM、DDR bytes、bank conflict |
-| 4 | transaction 周期模型 | tile schedule + AXI 假设 | 完整任务周期分解，关闭 4M cycle 风险 |
+| 3 | 布局/tiling 搜索 | 网络 A，NHWC8/O8I8 | 网络 A 已完成；待网络 B 与 BRAM 端口映射 |
+| 4 | transaction 周期模型 | tile schedule + AXI 假设 | 网络 A 已完成；待 RTL/板上 AXI 参数校准 |
 | 5 | 16-bit 与 packed12 对比 | 相同 tile/网络 | BRAM block、LUT、Fmax、DDR stall |
 | 6 | MAC+requant 小原型 | 8×8 datapath | DSP/LUT/FF、post-route Fmax、bit-exact |
 | 7 | DMA 小原型 | 实际 Zynq HP 口 | 有效带宽、back-pressure、4 KiB 边界 |

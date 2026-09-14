@@ -18,7 +18,7 @@
 
 `generated/bott2_mir1k_v1/` 是由当前候选检查点生成的算法参考包。它的 OIHW 权重和 float scale 还需经过布局重排与整数 requant 编译，不能由 RTL 直接消费。
 
-`generated/bott2_mir1k_v1_program/` 是第一版通用 ISA 架构包，已经包含 128-bit 命令、固定大小描述符、O8I8 权重、整数 requant 参数和 4096 项 INT12 tanh LUT。它尚未完成 tile 级调度，因此不是板级可加载镜像。
+`generated/bott2_mir1k_v1_program/` 是第一版通用 ISA 架构包，已经包含层级与逐 tile 的 128-bit 命令、固定大小描述符、O8I8 权重、整数 requant 参数、4096 项 INT12 tanh LUT，以及 bank/周期分析。它尚未封装为带 header/CRC 的任务镜像，也未经过 RTL 执行，因此不能直接上板。
 
 重新导出硬件包：
 
@@ -32,5 +32,7 @@ python scripts/25_export_npu_package.py
 
 ```powershell
 python scripts/26_compile_npu_program.py
+python scripts/28_schedule_npu_tiles.py
 python scripts/_test_npu_isa.py
+python scripts/_test_npu_tile_schedule.py
 ```

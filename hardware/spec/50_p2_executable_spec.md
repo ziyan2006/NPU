@@ -2,7 +2,7 @@
 
 文档版本：`0.1-draft`
 
-状态：网络 A 已编译；tanh 数值语义已形成，tile 级调度未冻结
+状态：网络 A 已展开为 tile 级命令；bank/周期方案已有软件证据，尚未由 RTL 冻结
 
 ## 1. 本阶段产物
 
@@ -28,9 +28,13 @@ hardware/generated/bott2_mir1k_v1_program/
     bias_int32.bin
     tanh_lut_int12.bin     4096 项 signed INT12 LUT
     analysis.json          存储、周期和风险报告
+    tile_commands.bin      逐 tile 的 128-bit 指令流
+    tile_operator_desc.bin 逐 tile 的 64-byte 卷积描述符
+    tile_schedule.json     bank、event、命令和 tile 映射
+    tile_analysis.json     覆盖、冲突、容量和重叠周期报告
 ```
 
-`scripts/npu_isa.py` 是指令编码和定点原语的单一事实来源。`scripts/_test_npu_isa.py` 验证编码、舍入、scale、权重布局和输出包完整性。
+`scripts/npu_isa.py` 是指令编码和定点原语的单一事实来源。`scripts/28_schedule_npu_tiles.py` 展开 tile 并执行资源时序模拟；`scripts/_test_npu_tile_schedule.py` 检查覆盖、描述符、bank、周期和可复现性。
 
 ## 2. 暂定二进制结构
 
@@ -41,6 +45,8 @@ hardware/generated/bott2_mir1k_v1_program/
 | Operator descriptor | 64 B | 11 | 704 B |
 | Quant descriptor | 32 B | 13 | 416 B |
 | Segment record | 8 B | 6 | 48 B |
+| Tile command | 16 B | 1,837 | 29,392 B |
+| Tile operator descriptor | 64 B | 248 | 15,872 B |
 
 暂定 opcode：
 
@@ -106,9 +112,13 @@ hardware/generated/bott2_mir1k_v1_program/
 4. 避免物化完整 concat；
 5. 输出通道按 8 计算，partial sum 保存在 accumulator bank。
 
-当前 11 层的建议 tile 均通过 216 KiB activation、108 KiB weight 和 54 KiB accumulator 容量检查。这只是容量证明，bank 端口冲突尚未建模。
+当前调度采用以下逻辑 bank 提案：`A0/A1` 各 64 KiB、`W0/W1` 各 32 KiB、`P0/P1` 各 16 KiB、`O0/O1` 各 16 KiB。最大实际占用分别为 48 KiB、15.91 KiB、8 KiB 和 4 KiB，全部在界内。`A` 按空间 tile 交替，`W/P/O` 按计算 tile 交替；同一空间 tile 的全部输出通道块复用一次输入加载。
+
+解码层的 upsample 与 encoder skip 分别 DMA 到同一 `A` bank 的不同通道区间，`SEGMENTED` 描述符提供目的通道偏移。因此 concat 不分配 Tensor、也不产生一次额外的完整 concat DDR 写回。软件访问区间检查当前报告 0 个读写冲突；这证明静态调度关系自洽，不代替 BRAM 端口映射和 RTL assertion。
 
 ## 6. 周期模型结果
+
+层级不重叠模型保留为保守基线：
 
 | 项目 | 周期 |
 |---|---:|
@@ -128,6 +138,25 @@ hardware/generated/bott2_mir1k_v1_program/
 
 这个结果说明 64-lane 方案值得继续，并不等于已经通过板级性能验收。DMA 数字假设 64-bit 总线每周期一拍并增加 burst 开销，尚未包含真实 DDR 竞争、HP 口效率和 bank stall。
 
+逐 tile transaction 模型进一步模拟读 DMA、写 DMA、MAC 的并行，并在跨层处等待写回：
+
+| 项目 | 周期 |
+|---|---:|
+| Tensor MAC | 1,986,560 |
+| residual vector | 1,024 |
+| upsample（含其 DDR 读写） | 93,696 |
+| tile DMA read | 368,648 |
+| tile DMA write | 71,936 |
+| 1,837 条命令开销 | 7,348 |
+| 全部不重叠 | 2,529,212 |
+| 被重叠隐藏 | 382,528 |
+| bank reuse stall | 0 |
+| **调度总周期** | **2,146,684** |
+
+调度总周期对应 10.73 ms@200 MHz、21.47 ms@100 MHz；逐 tile DDR 流量为 3,555,136 B，其中 upsample 流量 491,520 B。比早期层级流量估算高，是因为现在显式计入按空间 tile 重载权重、bias、量化参数以及 upsample 的 DDR 往返。
+
+模型假设 AXI 读写通道可以并行、同方向 transaction 串行、64-bit 每周期一拍，并按每 1 KiB burst 增加 16 cycle。真实 HP 口竞争、4 KiB 拆分、back-pressure、pipeline fill/flush 尚未测量，所以 2,146,684 是架构估算而非板级保证。
+
 ## 7. tanh 标定结果
 
 早期参考包只有最终输出 scale，无法确定 tanh LUT 输入。现在已经在 MIR-1K 训练缓存上观测最后一层卷积的 pre-tanh 输出：
@@ -144,19 +173,27 @@ hardware/generated/bott2_mir1k_v1_program/
 
 选择 max 而不是 P99.9，保持与其它激活相同的 max-calibration 策略并确保校准样本不裁剪。编译器生成 4096 项 LUT，索引覆盖 `[-2048,2047]`；回归验证 LUT 单调、零点正确并在两端饱和。`NUM-TANH-001` 已关闭。
 
-## 8. 尚未完成
+## 8. Tile 描述符与 bank 编码提案
 
-- layer command 展开为 tile 级 DMA/compute 命令；
-- scratchpad bank 分配和端口冲突模型；
+64-byte Operator descriptor 现在使用 `<16H8I>`：前 16 个 16-bit 字段保存 Tensor、kernel、stride、padding、group 和 post-op；后 8 个 32-bit 字段依次是 `origin_h/origin_w/origin_cout/tile_h/tile_w/tile_cout/input_channel_start/input_channel_count`。
+
+tile 命令的 16-bit `imm` 暂定为：bits `[7:0]` completion event mask，bits `[8:11]` 依次选择 A/W/P/O ping-pong bank，bits `[13:12]` 是 segmented source 编号，bit `[14]` 表示 segmented addressing。该编码已经进入二进制回归，但在网络 B 和 RTL 译码原型完成前仍是提案。
+
+## 9. 尚未完成
+
 - 第二个不同拓扑网络的编译；
 - 单一带 header、section directory 和 CRC 的 `task.bin`；
 - 完整命令解释器逐层运行网络 A。
+- BRAM 端口/宽度映射和 AXI transaction-level RTL 验证；
+- 4 KiB burst 拆分、back-pressure 与板上 HP 口效率校准。
 
-## 9. 复现
+## 10. 复现
 
 ```powershell
 python scripts/26_compile_npu_program.py
+python scripts/28_schedule_npu_tiles.py
 python scripts/_test_npu_isa.py
+python scripts/_test_npu_tile_schedule.py
 ```
 
 若更换权重或量化校准集，先重新采集 tanh 前范围：
