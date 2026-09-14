@@ -135,7 +135,7 @@
 - lint：无未驱动、多驱动、隐式锁存和位宽截断未审查告警；
 - CDC/RDC：所有跨域和复位释放路径有已批准结构；
 - assertions：AXI 协议、FIFO 不溢出/下溢、bank 所有权、event 生命周期、描述符边界；
-- 综合：乘法器确实映射 DSP，BRAM 推断与预算一致；
+- 综合：MAC/post 乘法按规划映射 DSP，控制路径不误占 DSP，BRAM 推断与预算一致；
 - post-route：目标时钟域 WNS/TNS 满足门槛，无未约束路径；
 - 代码覆盖目标：line/branch ≥90%，关键 FSM 状态/转移 100%；合理 exclusion 必须评审；
 - 功能覆盖：每条 P0 opcode、dtype、kernel/stride、错误码和同步路径至少命中一次。
@@ -178,4 +178,4 @@ P0 回归失败、未解释的 bit mismatch、负时序、资源超限或 deadli
 5. 选择网络 B 并验证 P0 算子覆盖；
 6. 再开始 MAC、requant 和 DMA 的 RTL/HLS 单元原型。
 
-当前增量：Command Processor 已完成 directed RTL 仿真，并已接受网络 A 的 1,869 条真实 tile 命令流；Descriptor Cache 已覆盖 miss/hit、四类 record、back-end error、非法索引和 reset；DMA AGU 已覆盖普通 activation、O8I8 weight、bias、两类 quant、segmented concat、尾通道 store 和越界拒绝。软件 reference 对全部 1,078 条 DMA 请求完成 allocation/scratchpad 边界检查，RTL 输出已逐 bit 一致。AXI DMA Engine 已覆盖 4 KiB/256-beat 拆分、窄尾部、三维 stride、双向 back-pressure、错误收尾和 busy reset；全网 45,664 个 burst 已静态审计。尚未覆盖真实 HP interconnect、真实 BRAM wrapper、多个 outstanding 和数值计算。
+当前增量：Command Processor 已接受网络 A 的 1,869 条真实 tile 命令流；Descriptor Cache/Fetch/AGU 已让全部 1,078 条 DMA command 的 RTL 请求与软件 reference 逐 bit 一致。AXI DMA Engine 已覆盖 4 KiB/256-beat 拆分、窄尾部、三维 stride、双向 back-pressure、错误收尾和 busy reset；全网 45,664 个 burst 已静态审计。A/W/O Scratchpad 已覆盖六 bank 路由、byte strobe、同步读、response back-pressure、并行访问和冲突仲裁；集成子系统已完成命令到 AXI read、BRAM 落地、event 以及错误 PC/tag 的端到端测试。Vivado 2026.1 OOC 综合确认 56 RAMB36、0 DSP，100 MHz WNS `+1.888 ns`，200 MHz WNS `-3.112 ns`。尚未覆盖真实 HP interconnect、多个 outstanding、MAC 宽读口、数值计算和 post-route。

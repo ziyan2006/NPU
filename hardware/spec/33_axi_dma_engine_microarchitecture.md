@@ -2,7 +2,7 @@
 
 文档版本：`0.1-draft`
 
-状态：P4 单 outstanding 可综合正确性原型；尚未接入真实 Zynq HP 端口或完成 Vivado 时序
+状态：P4 单 outstanding 可综合正确性原型；Vivado OOC 通过 100 MHz，尚未接入真实 Zynq HP 端口或完成 post-route
 
 ## 1. 目标与边界
 
@@ -36,6 +36,11 @@ otherwise      : 一个 1-byte beat
 ```
 
 因此 `x_bytes=6` 会生成 4 B + 2 B，而不是发一个 8 B read 后丢弃两字节。每个 burst 的 `ARLEN/AWLEN` 在 valid 被 back-pressure 时保持不变。
+
+burst planner 分为 `PLAN_SIZE` 和 `PLAN_BURST` 两级：第一级计算 beat size、行内
+beat 数和 4 KiB 剩余字节，第二级取行/边界/256 三者最小值。它在每个 burst 前增加
+2 cycle，但切断了原先超过 12 ns 的组合路径；按全网 45,664 个 burst 上界增加
+91,328 cycle。
 
 当前请求要求每一行 DDR/SP 起点 8-byte 对齐，且多行 stride 是 8 的倍数。现有网络 A 的全部请求满足约束。未来若网络 B 需要任意 2-byte 起点，可在不改 ISA 的前提下扩展 lane realignment。
 
@@ -95,8 +100,9 @@ Icarus testbench 使用可重复停顿的 AXI/scratchpad memory model，已覆�
 - busy 时 soft reset 不丢事务；
 - completion event、tag 和 byte counter。
 
-尚未覆盖真实 AXI interconnect、多个 outstanding、CDC、Vivado AXI protocol checker、综合资源和 post-route Fmax。
+尚未覆盖真实 AXI interconnect、多个 outstanding、CDC、Vivado AXI protocol checker
+和 post-route Fmax。当前综合证据只关闭 100 MHz OOC 时序，200 MHz 尚未关闭。
 
 ## 9. 下一步
 
-实现 scratchpad BRAM wrapper 与 DMA unit sequencer，把 Descriptor Cache、AGU、DMA Engine 接成一条可运行的 `DMA_LOAD/STORE` 通路；随后开始 8×8 Tensor MAC loop controller 和 BRAM 读端口设计。
+Scratchpad BRAM wrapper、descriptor fetch sequencer 和 DMA subsystem 已完成集成原型，见 `34_dma_subsystem_scratchpad_microarchitecture.md`。下一步开始 8×8 Tensor MAC loop controller 和宽读端口/row-buffer 设计。

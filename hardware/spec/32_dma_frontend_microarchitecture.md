@@ -2,7 +2,7 @@
 
 文档版本：`0.1-draft`
 
-状态：P4 可综合原型；网络 A 的 1,078 条 DMA 请求已由软件 reference 全部做地址与容量检查，后级 AXI burst engine 已有单 outstanding 原型
+状态：P4 可综合多周期原型；网络 A 的 1,078 条 DMA 请求已与软件 reference 逐 bit 对齐，并通过 Vivado 2026.1 OOC 综合
 
 ## 1. 模块边界
 
@@ -21,7 +21,7 @@ DMA command ─┬─► Descriptor Cache ─► Tensor/Operator/Quant/Segment d
                               后续 AXI burst / SP engine
 ```
 
-`npu_descriptor_cache.sv` 和 `npu_dma_agu.sv` 已可综合并通过 Icarus directed test。AGU 还逐条对比了网络 A 全部 1,078 个软件 reference 请求。两者目前保持分离，以便下一步增加 fetch sequencer、AXI burst 拆分和 scratchpad 写端口时不修改 ISA。
+`npu_descriptor_cache.sv` 和 `npu_dma_agu.sv` 已可综合并通过 Icarus directed test。`npu_dma_frontend.sv` 已按命令自动读取所需 Operator/Tensor/Quant/Segment 描述符；网络 A 全部 1,078 条 DMA command 经该前端后的请求与软件 reference 逐 bit 一致。AGU 不再把地址公式展开为单周期并行乘法，而是复用一个 16-cycle radix-4 shift/add 乘法器；这保留了接口语义，并把控制路径 DSP 占用从早期综合的 138 个降为 0。
 
 ## 2. 任务地址空间
 
@@ -132,10 +132,10 @@ AGU 在发出请求前检查：
 | O bank 峰值 | 4,096 / 16,384 B |
 | 地址/容量检查 | 全部通过，RTL 与 1,078 条 reference 逐 bit 一致 |
 
-生成的 `dma_plan.json` 是逐命令可审计 reference；`dma_analysis.json` 是摘要。当前结果证明地址语义自洽，不证明 AXI 协议、吞吐或 Vivado 时序已闭合。
+生成的 `dma_plan.json` 是逐命令可审计 reference；`dma_analysis.json` 是摘要。当前结果证明地址语义自洽。多周期 AGU 的 activation 最坏约 370 cycle/request；即使对全部 1,078 个请求都按此上界计，也小于 0.4M cycle，仍在 4M task budget 内。
 
 ## 8. 后续集成
 
 上述 `npu_dma_request_t` 已由 `npu_dma_engine.sv` 消费并实现 scratchpad clear、z/y 展开、256-beat/4 KiB 拆分、尾部 strobe、completion event 和 AXI error 收尾，详见 `33_axi_dma_engine_microarchitecture.md`。
 
-下一步把 descriptor fetch sequencer、cache、AGU、engine 和真实 BRAM wrapper 接到 Command Processor，形成第一条端到端 `DMA_LOAD → event → WAIT` RTL 路径。
+上述模块已经由 `npu_dma_subsystem.sv` 与 AXI Engine、A/W/O Scratchpad 接通，形成命令到 event/error 的 DMA 垂直链路，详见 `34_dma_subsystem_scratchpad_microarchitecture.md`。下一步是接入 Command Processor，并用 Tensor MAC 小原型确定最终计算读端口宽度。

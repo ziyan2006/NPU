@@ -40,6 +40,13 @@ package npu_dma_pkg;
     NPU_DMA_EXEC_AXI_PROTOCOL          = 4'd5
   } npu_dma_exec_error_e;
 
+  typedef enum logic [3:0] {
+    NPU_DMA_FE_OK                = 4'd0,
+    NPU_DMA_FE_DESCRIPTOR_READ   = 4'd1,
+    NPU_DMA_FE_SEGMENT_INDEX     = 4'd2,
+    NPU_DMA_FE_ADDRESS_GENERATOR = 4'd3
+  } npu_dma_frontend_error_e;
+
   // One request describes z_count planes, each containing y_count rows of
   // x_bytes contiguous data.  The execution engine advances the independent
   // external and scratchpad strides after each row and plane.

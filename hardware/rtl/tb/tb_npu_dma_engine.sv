@@ -314,7 +314,8 @@ module tb_npu_dma_engine;
           if (request.store && bytes_written_o != expected_bytes)
             $fatal(1, "write byte count");
           if (!request.store && bytes_read_o != expected_bytes)
-            $fatal(1, "read byte count");
+            $fatal(1, "read byte count actual=%0d expected=%0d",
+                   bytes_read_o, expected_bytes);
         end
         if (error_pulse_o) begin
           saw_error = 1'b1;

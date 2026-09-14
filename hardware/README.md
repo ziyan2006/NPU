@@ -1,6 +1,6 @@
 # STEM NPU
 
-本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Cache、DMA AGU 和 AXI DMA Engine 可综合模块。
+本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Fetch/Cache、DMA AGU、AXI DMA Engine、A/W/O Scratchpad 和集成 DMA Subsystem 可综合模块。
 
 建议按以下顺序阅读：
 
@@ -13,9 +13,10 @@
 7. `spec/31_command_processor_microarchitecture.md`：命令控制核心的接口、状态机和异常；
 8. `spec/32_dma_frontend_microarchitecture.md`：描述符缓存、三维 DMA 请求和地址规则；
 9. `spec/33_axi_dma_engine_microarchitecture.md`：AXI burst、4 KiB 拆分和错误行为；
-10. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
-11. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
-12. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
+10. `spec/34_dma_subsystem_scratchpad_microarchitecture.md`：DMA 集成、BRAM bank 和计算端口边界；
+11. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
+12. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
+13. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
 RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 开始；前者说明如何引用生成的 SystemVerilog package，后者给出算子到指令序列及逐指令执行契约。
 
@@ -48,3 +49,15 @@ python scripts/_test_npu_axi_dma.py
 python scripts/_test_npu_isa_headers.py
 python scripts/_test_npu_rtl.py
 ```
+
+Vivado 2026.1 OOC 综合当前 DMA 子系统：
+
+```powershell
+vivado -mode batch -nojournal -nolog `
+  -source scripts/32_synthesize_npu_rtl.tcl `
+  -tclargs npu_dma_subsystem xc7z020clg400-1 5.000
+```
+
+参考器件上的当前结果为 7,546 Slice LUT、7,144 FF、56 RAMB36、0 DSP；
+100 MHz WNS `+1.888 ns`，200 MHz WNS `-3.112 ns`。这是综合后 OOC 证据，
+不是最终板卡的 post-route 结论；详细报告见 `reports/vivado_2026_1/`。

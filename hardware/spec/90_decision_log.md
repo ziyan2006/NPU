@@ -34,13 +34,24 @@
 
 P4 已确定一项内部接口约束：DMA engine 接收 `x_bytes × y_count × z_count` 和 DDR/SP 独立 stride 的标准请求；segmented concat 必须按像素通道交织搬运。`DMA_LOAD.imm[10]` 显式区分 vector quant 与 convolution quant，避免从参数数量推断用途。该约束仍随 ISA 处于提案状态，网络 B 通过前不冻结。
 
+P4 DMA 垂直链路已接通 Descriptor Fetch/Cache、AGU、AXI Engine 和 6-bank
+Scratchpad。当前 BRAM wrapper 的 accelerator 侧仅为 64-bit 集成端口，不代表
+ADR-020 的最终 MAC 供数结构；宽端口 lane striping 与 row buffer 的选择留给
+MAC 小原型和 Vivado 综合决定，避免仅凭容量可装下就误判端口带宽已经闭合。
+
+P4 控制路径接受共享无 DSP 乘法器方案：AGU 采用 16-cycle radix-4 shift/add，
+DMA burst planner 采用两级状态。Vivado 2026.1 OOC 结果为 7,546 Slice LUT、
+7,144 FF、56 RAMB36E1、0 DSP48E1；100 MHz WNS `+1.888 ns`，200 MHz WNS
+`-3.112 ns`。因此 100 MHz 是当前已验证基线，200 MHz 继续保持目标而非承诺。
+参考 part 为 `xc7z020clg400-1`，实际板卡器件确认前不得据此冻结封装或 speed grade。
+
 ## 3. 必须确认的系统问题
 
 | ID | 问题 | 为什么会影响设计 | 关闭时机 |
 |---|---|---|---|
 | OI-001 | 实际开发板型号、器件封装和 speed grade 是什么？ | 决定 pin、DDR、时钟和实现余量。 | P1 冻结前 |
 | OI-002 | DDR 容量、位宽、频率以及 PS 当前负载是多少？ | 决定有效带宽、burst 和 FIFO。 | P1/P2 |
-| OI-003 | Vivado/Vitis 具体版本和授权环境是什么？ | 影响 IP、综合结果和可复现性。 | P1 冻结前 |
+| OI-003 | Vivado 2026.1 和有效 license 已确认；Vitis 版本仍待确认。 | 影响 IP、软件构建和可复现性。 | P1 冻结前 |
 | OI-004 | 音频输入输出接口、采样率范围和 codec 时钟是什么？ | 决定系统 CDC、FIFO 和产品链路，但不改变 Tensor ISA。 | SoC 规格前 |
 | OI-005 | PS 运行 Linux 还是 bare-metal？是否有 CMA/IOMMU？ | 影响驱动、物理内存和 cache maintenance。 | 驱动规格前 |
 | OI-006 | 系统可接受功耗和散热上限是多少？ | 可能限制 200 MHz 和 DSP toggle rate。 | P3/P8 |

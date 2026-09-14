@@ -67,6 +67,8 @@ module npu_dma_engine (
   typedef enum logic [3:0] {
     DE_IDLE,
     DE_CLEAR,
+    DE_PLAN_SIZE,
+    DE_PLAN_BURST,
     DE_READ_ADDRESS,
     DE_READ_DATA,
     DE_WRITE_ADDRESS,
@@ -98,6 +100,13 @@ module npu_dma_engine (
   logic [3:0] beat_bytes_q;
   logic [8:0] beats_remaining_q;
   logic burst_finishes_row_q;
+  logic [2:0] planned_beat_size_q;
+  logic [3:0] planned_beat_bytes_q;
+  logic [31:0] planned_beats_by_row_q;
+  logic [31:0] planned_row_bytes_q;
+  logic [31:0] planned_boundary_bytes_q;
+  logic [8:0] planned_burst_beats_q;
+  logic planned_finishes_row_q;
   logic read_error_q;
   logic read_drain_q;
   logic [3:0] pending_error_q;
@@ -106,9 +115,10 @@ module npu_dma_engine (
   logic [2:0] next_beat_size;
   logic [3:0] next_beat_bytes;
   logic [31:0] beats_by_row;
-  logic [31:0] beats_by_boundary;
-  logic [31:0] next_burst_beats;
   logic [31:0] boundary_bytes;
+  logic [31:0] planned_beats_by_boundary;
+  logic [31:0] selected_burst_beats;
+  logic selected_finishes_row;
   logic [7:0] byte_strobe;
   logic request_format_valid;
   logic request_alignment_valid;
@@ -173,12 +183,21 @@ module npu_dma_engine (
     end
 
     boundary_bytes = 32'd4096 - {20'd0, external_cursor_q[11:0]};
-    beats_by_boundary = boundary_bytes >> next_beat_size;
-    next_burst_beats = beats_by_row;
-    if (next_burst_beats > beats_by_boundary)
-      next_burst_beats = beats_by_boundary;
-    if (next_burst_beats > 256)
-      next_burst_beats = 256;
+  end
+
+  always @* begin
+    planned_beats_by_boundary =
+      planned_boundary_bytes_q >> planned_beat_size_q;
+    selected_burst_beats = planned_beats_by_row_q;
+    if (selected_burst_beats > planned_beats_by_boundary)
+      selected_burst_beats = planned_beats_by_boundary;
+    if (selected_burst_beats > 256)
+      selected_burst_beats = 256;
+    selected_finishes_row =
+      planned_beats_by_row_q <= planned_beats_by_boundary
+      && planned_beats_by_row_q <= 256
+      && planned_row_bytes_q
+         == (planned_beats_by_row_q << planned_beat_size_q);
   end
 
   always @* begin
@@ -191,8 +210,8 @@ module npu_dma_engine (
   end
 
   assign m_axi_araddr_o = external_cursor_q;
-  assign m_axi_arlen_o = next_burst_beats[7:0] - 1'b1;
-  assign m_axi_arsize_o = next_beat_size;
+  assign m_axi_arlen_o = planned_burst_beats_q[7:0] - 1'b1;
+  assign m_axi_arsize_o = planned_beat_size_q;
   assign m_axi_arburst_o = 2'b01;
   assign m_axi_arvalid_o = state_q == DE_READ_ADDRESS;
 
@@ -213,8 +232,8 @@ module npu_dma_engine (
         ? 1'b1 : scratchpad_write_ready_i);
 
   assign m_axi_awaddr_o = external_cursor_q;
-  assign m_axi_awlen_o = next_burst_beats[7:0] - 1'b1;
-  assign m_axi_awsize_o = next_beat_size;
+  assign m_axi_awlen_o = planned_burst_beats_q[7:0] - 1'b1;
+  assign m_axi_awsize_o = planned_beat_size_q;
   assign m_axi_awburst_o = 2'b01;
   assign m_axi_awvalid_o = state_q == DE_WRITE_ADDRESS;
   assign scratchpad_read_request_valid_o = state_q == DE_WRITE_SP_REQUEST;
@@ -251,6 +270,13 @@ module npu_dma_engine (
       beat_bytes_q <= '0;
       beats_remaining_q <= '0;
       burst_finishes_row_q <= 1'b0;
+      planned_beat_size_q <= '0;
+      planned_beat_bytes_q <= '0;
+      planned_beats_by_row_q <= '0;
+      planned_row_bytes_q <= '0;
+      planned_boundary_bytes_q <= '0;
+      planned_burst_beats_q <= '0;
+      planned_finishes_row_q <= 1'b0;
       read_error_q <= 1'b0;
       read_drain_q <= 1'b0;
       pending_error_q <= NPU_DMA_EXEC_OK;
@@ -296,10 +322,8 @@ module npu_dma_engine (
               if (incoming_request.clear_before
                   && incoming_request.clear_bytes != 0)
                 state_q <= DE_CLEAR;
-              else if (incoming_request.store)
-                state_q <= DE_WRITE_ADDRESS;
               else
-                state_q <= DE_READ_ADDRESS;
+                state_q <= DE_PLAN_SIZE;
             end
           end
         end
@@ -309,7 +333,7 @@ module npu_dma_engine (
             if (clear_remaining_q <= 8) begin
               clear_cursor_q <= 0;
               clear_remaining_q <= 0;
-              state_q <= DE_READ_ADDRESS;
+              state_q <= DE_PLAN_SIZE;
             end else begin
               clear_cursor_q <= clear_cursor_q + 8;
               clear_remaining_q <= clear_remaining_q - 8;
@@ -317,13 +341,27 @@ module npu_dma_engine (
           end
         end
 
+        DE_PLAN_SIZE: begin
+          planned_beat_size_q <= next_beat_size;
+          planned_beat_bytes_q <= next_beat_bytes;
+          planned_beats_by_row_q <= beats_by_row;
+          planned_row_bytes_q <= row_bytes_remaining_q;
+          planned_boundary_bytes_q <= boundary_bytes;
+          state_q <= DE_PLAN_BURST;
+        end
+
+        DE_PLAN_BURST: begin
+          planned_burst_beats_q <= selected_burst_beats[8:0];
+          planned_finishes_row_q <= selected_finishes_row;
+          state_q <= request_q.store ? DE_WRITE_ADDRESS : DE_READ_ADDRESS;
+        end
+
         DE_READ_ADDRESS: begin
           if (m_axi_arready_i) begin
-            beat_size_q <= next_beat_size;
-            beat_bytes_q <= next_beat_bytes;
-            beats_remaining_q <= next_burst_beats[8:0];
-            burst_finishes_row_q <=
-              row_bytes_remaining_q == next_burst_beats * next_beat_bytes;
+            beat_size_q <= planned_beat_size_q;
+            beat_bytes_q <= planned_beat_bytes_q;
+            beats_remaining_q <= planned_burst_beats_q;
+            burst_finishes_row_q <= planned_finishes_row_q;
             read_error_q <= 1'b0;
             read_drain_q <= 1'b0;
             state_q <= DE_READ_DATA;
@@ -363,7 +401,7 @@ module npu_dma_engine (
                   scratchpad_cursor_q <= scratchpad_row_q
                     + request_q.scratchpad_y_stride;
                   row_bytes_remaining_q <= request_q.x_bytes;
-                  state_q <= DE_READ_ADDRESS;
+                  state_q <= DE_PLAN_SIZE;
                 end else if (z_index_q + 1 < request_q.z_count) begin
                   z_index_q <= z_index_q + 1'b1;
                   y_index_q <= 0;
@@ -380,12 +418,12 @@ module npu_dma_engine (
                   scratchpad_cursor_q <= scratchpad_plane_q
                     + request_q.scratchpad_z_stride;
                   row_bytes_remaining_q <= request_q.x_bytes;
-                  state_q <= DE_READ_ADDRESS;
+                  state_q <= DE_PLAN_SIZE;
                 end else begin
                   state_q <= DE_DONE;
                 end
               end else begin
-                state_q <= DE_READ_ADDRESS;
+                state_q <= DE_PLAN_SIZE;
               end
             end else if (!read_drain_q) begin
               beats_remaining_q <= beats_remaining_q - 1'b1;
@@ -395,11 +433,10 @@ module npu_dma_engine (
 
         DE_WRITE_ADDRESS: begin
           if (m_axi_awready_i) begin
-            beat_size_q <= next_beat_size;
-            beat_bytes_q <= next_beat_bytes;
-            beats_remaining_q <= next_burst_beats[8:0];
-            burst_finishes_row_q <=
-              row_bytes_remaining_q == next_burst_beats * next_beat_bytes;
+            beat_size_q <= planned_beat_size_q;
+            beat_bytes_q <= planned_beat_bytes_q;
+            beats_remaining_q <= planned_burst_beats_q;
+            burst_finishes_row_q <= planned_finishes_row_q;
             state_q <= DE_WRITE_SP_REQUEST;
           end
         end
@@ -447,7 +484,7 @@ module npu_dma_engine (
                 scratchpad_cursor_q <= scratchpad_row_q
                   + request_q.scratchpad_y_stride;
                 row_bytes_remaining_q <= request_q.x_bytes;
-                state_q <= DE_WRITE_ADDRESS;
+                state_q <= DE_PLAN_SIZE;
               end else if (z_index_q + 1 < request_q.z_count) begin
                 z_index_q <= z_index_q + 1'b1;
                 y_index_q <= 0;
@@ -464,12 +501,12 @@ module npu_dma_engine (
                 scratchpad_cursor_q <= scratchpad_plane_q
                   + request_q.scratchpad_z_stride;
                 row_bytes_remaining_q <= request_q.x_bytes;
-                state_q <= DE_WRITE_ADDRESS;
+                state_q <= DE_PLAN_SIZE;
               end else begin
                 state_q <= DE_DONE;
               end
             end else begin
-              state_q <= DE_WRITE_ADDRESS;
+              state_q <= DE_PLAN_SIZE;
             end
           end
         end

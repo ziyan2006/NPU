@@ -5,6 +5,10 @@ module tb_npu_dma_agu;
   import npu_dma_pkg::*;
 
   logic command_valid_i = 1'b0;
+  logic clk_i = 1'b0;
+  logic rst_ni = 1'b0;
+  logic soft_reset_i = 1'b0;
+  logic command_ready_o;
   wire [127:0] command_bits_i;
   wire [511:0] src_tensor_desc_bits_i;
   wire [511:0] dst_tensor_desc_bits_i;
@@ -16,6 +20,7 @@ module tb_npu_dma_agu;
   logic [63:0] bias_base_i = 64'h0000_0000_3000_0000;
   logic [63:0] quant_param_base_i = 64'h0000_0000_4000_0000;
   logic request_valid_o;
+  logic request_ready_i = 1'b0;
   logic [NPU_DMA_REQUEST_BITS-1:0] request_bits_o;
   logic error_valid_o;
   logic [3:0] error_reason_o;
@@ -36,7 +41,31 @@ module tb_npu_dma_agu;
   assign segment_desc_bits_i = segment_desc;
   assign request = npu_dma_request_t'(request_bits_o);
 
+  always #5 clk_i = ~clk_i;
+
   npu_dma_agu dut (.*);
+
+  task automatic run_agu;
+    begin
+      if (request_valid_o) begin
+        request_ready_i = 1'b1;
+        @(posedge clk_i);
+        #1;
+        request_ready_i = 1'b0;
+      end else if (error_valid_o) begin
+        @(posedge clk_i);
+        #1;
+      end
+      wait (command_ready_o);
+      @(negedge clk_i);
+      command_valid_i = 1'b1;
+      @(posedge clk_i);
+      #1;
+      command_valid_i = 1'b0;
+      wait (request_valid_o || error_valid_o);
+      #1;
+    end
+  endtask
 
   task automatic clear_inputs;
     begin
@@ -78,6 +107,9 @@ module tb_npu_dma_agu;
   endtask
 
   initial begin
+    repeat (4) @(posedge clk_i);
+    rst_ni = 1'b1;
+
     // enc0 activation load: clear the padded 18x18x8 local tile, then copy
     // only the two logical source channels from the valid 17x16 region.
     clear_inputs();
@@ -100,8 +132,7 @@ module tb_npu_dma_agu;
     command.src0_td = 0;
     command.op_desc = 0;
     command.imm = NPU_EVENT_A0_READY;
-    command_valid_i = 1'b1;
-    #1;
+    run_agu();
     if (!request_valid_o || error_valid_o
         || request.external_address != activation_base_i
         || request.scratchpad != NPU_SPAD_A || request.bank != 0
@@ -131,8 +162,7 @@ module tb_npu_dma_agu;
     command.src0_td = 4;
     command.op_desc = 1;
     command.imm = 16'h0200;
-    command_valid_i = 1'b1;
-    #1;
+    run_agu();
     if (!request_valid_o
         || request.memory_space != NPU_DMA_SPACE_WEIGHT
         || request.scratchpad != NPU_SPAD_W || request.bank != 1
@@ -148,7 +178,7 @@ module tb_npu_dma_agu;
     operator_desc.bias_td = 5;
     command.dst_td = 5;
     command.src0_td = 5;
-    #1;
+    run_agu();
     if (!request_valid_o
         || request.external_address != bias_base_i + 64'd160
         || request.scratchpad_offset != 2304 || request.x_bytes != 32)
@@ -159,7 +189,7 @@ module tb_npu_dma_agu;
     command.quant_desc = 7;
     quant_desc.param_offset = 512;
     quant_desc.param_count = 64;
-    #1;
+    run_agu();
     if (!request_valid_o
         || request.external_address != quant_param_base_i + 64'd640
         || request.scratchpad_offset != 2368 || request.x_bytes != 128)
@@ -168,7 +198,7 @@ module tb_npu_dma_agu;
     command.imm = 16'h0600;
     quant_desc.param_offset = 2304;
     quant_desc.param_count = 1;
-    #1;
+    run_agu();
     if (!request_valid_o
         || request.external_address != quant_param_base_i + 64'd2304
         || request.scratchpad_offset != 2496 || request.x_bytes != 16)
@@ -215,8 +245,7 @@ module tb_npu_dma_agu;
     command.src0_td = 9;
     command.op_desc = 160;
     command.imm = 16'h5100;
-    command_valid_i = 1'b1;
-    #1;
+    run_agu();
     if (!request_valid_o || request.clear_before
         || request.external_address != activation_base_i + 64'd229376
         || request.scratchpad_offset != 3840
@@ -258,8 +287,7 @@ module tb_npu_dma_agu;
     command.src0_td = 41;
     command.op_desc = 247;
     command.imm = 16'h0800;
-    command_valid_i = 1'b1;
-    #1;
+    run_agu();
     if (!request_valid_o || !request.store
         || request.scratchpad != NPU_SPAD_O || request.bank != 1
         || request.external_address
@@ -274,7 +302,7 @@ module tb_npu_dma_agu;
 
     // Corrupt allocation metadata must stop the request before execution.
     src_tensor.allocation_bytes = 16;
-    #1;
+    run_agu();
     if (request_valid_o || !error_valid_o
         || error_reason_o != NPU_DMA_AGU_EXTERNAL_BOUNDS)
       $fatal(1, "external bounds rejection");

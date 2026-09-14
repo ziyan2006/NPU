@@ -14,6 +14,10 @@ module tb_npu_dma_stream;
   logic [NPU_DMA_REQUEST_BITS-1:0] expected [0:MAX_REQUESTS-1];
 
   logic command_valid_i = 1'b0;
+  logic clk_i = 1'b0;
+  logic rst_ni = 1'b0;
+  logic soft_reset_i = 1'b0;
+  logic command_ready_o;
   logic [127:0] command_bits_i = '0;
   logic [511:0] src_tensor_desc_bits_i = '0;
   logic [511:0] dst_tensor_desc_bits_i = '0;
@@ -25,6 +29,7 @@ module tb_npu_dma_stream;
   logic [63:0] bias_base_i = '0;
   logic [63:0] quant_param_base_i = '0;
   logic request_valid_o;
+  logic request_ready_i = 1'b1;
   logic [NPU_DMA_REQUEST_BITS-1:0] request_bits_o;
   logic error_valid_o;
   logic [3:0] error_reason_o;
@@ -38,6 +43,8 @@ module tb_npu_dma_stream;
   string expected_path;
   integer request_count;
   integer index;
+
+  always #5 clk_i = ~clk_i;
 
   npu_dma_agu dut (.*);
 
@@ -62,14 +69,22 @@ module tb_npu_dma_stream;
     $readmemh(segment_path, segments);
     $readmemh(expected_path, expected);
 
-    command_valid_i = 1'b1;
+    repeat (4) @(posedge clk_i);
+    rst_ni = 1'b1;
     for (index = 0; index < request_count; index = index + 1) begin
+      wait (command_ready_o);
+      @(negedge clk_i);
       command_bits_i = commands[index];
       src_tensor_desc_bits_i = source_tensors[index];
       dst_tensor_desc_bits_i = destination_tensors[index];
       operator_desc_bits_i = operators[index];
       quant_desc_bits_i = quant_descriptors[index];
       segment_desc_bits_i = segments[index];
+      command_valid_i = 1'b1;
+      @(posedge clk_i);
+      @(negedge clk_i);
+      command_valid_i = 1'b0;
+      wait (request_valid_o || error_valid_o);
       #1;
       if (!request_valid_o || error_valid_o) begin
         $display("AGU rejected request %0d reason %0d command %032x",
@@ -81,6 +96,7 @@ module tb_npu_dma_stream;
         $display("request %0d actual   %h", index, request_bits_o);
         $fatal(1, "DMA stream request mismatch");
       end
+      @(posedge clk_i);
     end
     $display("npu_dma_stream: PASS (%0d requests)", request_count);
     $finish;

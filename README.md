@@ -18,7 +18,7 @@
 | **延迟** | 通路 **133.5 ms**（恒定）· 按键响应 **≈30 ms** · 冷启动 **≈110 ms** |
 | **训练** | 无标注音乐 + HTDemucs 蒸馏（教师 80 MB 已就绪）；v1→v4 四轮 + 3 个损失探针 + K 片段实验 |
 | **出货权重** | **`models/student_k3s_model.pt`** + 推理期 `<250 Hz` 掩码置 0 |
-| **当前卡点** | K=3 增益约 **+0.25 dB**，与 A/B 噪声底同量级 → **必须先复现才敢出货**（见 §8） |
+| **NPU RTL** | DMA/Scratchpad 垂直链路已综合：56 BRAM36、0 DSP；100 MHz OOC 时序通过，200 MHz 尚未闭合 |
 
 ---
 
@@ -59,8 +59,8 @@ out = mix_delay − g · vocal_est
 - ✅ 算法定义、规格、量化方案、延迟账、训练权重、评测结论：**已定稿**
 - ✅ INT8/INT12 量化方案与精度损失：**已实测**
 - ✅ NPU ISA、描述符、tile 编译器、bank/周期模型：**已有可执行提案**
-- 🚧 PL 侧 RTL：**P4 原型进行中**，已有 Command Processor、Descriptor Cache、DMA AGU、AXI DMA Engine
-- 🔜 Scratchpad、MAC/Vector 数据通路、SoC 集成和端到端上板实测：**未完成**
+- 🚧 PL 侧 RTL：**P4/P6 并行原型**，已有 Command Processor 和端到端 DMA/Scratchpad 垂直链路；Vivado 2026.1 OOC 综合在参考 `xc7z020clg400-1` 上通过 100 MHz，最终器件封装和 post-route 尚未确认
+- 🔜 Tensor MAC/Vector 数值数据通路、SoC AXI 集成和端到端上板实测：**未完成**
 
 ---
 

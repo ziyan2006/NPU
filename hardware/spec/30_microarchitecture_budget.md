@@ -122,6 +122,12 @@ P3 软件调度器当前采用以下子划分，它仍是逻辑容量提案，�
 
 两个 A bank 加两个 O bank 共 160 KiB，低于 activation 类 216 KiB 预算；两个 W bank 共 64 KiB，低于 108 KiB；两个 P bank 共 32 KiB，低于 accumulator/post 类 54 KiB。剩余容量用于边界行、DMA FIFO、端口复制或综合映射损耗，不能在 RTL 前当作可自由分配的净容量。
 
+P4 Scratchpad 原型已按 `A0/A1=2x64 KiB`、`W0/W1=2x32 KiB`、
+`O0/O1=2x16 KiB` 实现 6 个 64-bit true-dual-port bank。Vivado 2026.1
+在参考 `xc7z020clg400-1` 上实际推断为 56 个 RAMB36E1，和容量推导一致；加上
+尚未实现的 `P0/P1=2x16 KiB` 理想值 8 个，共 64 个。最终 MAC 宽读口可能引入
+lane striping、row buffer 或端口复制，所以 56 只冻结当前 DMA 原型，不冻结完整 NPU。
+
 ### INT12 存储决策
 
 基线提案是用 signed 16-bit 物理槽保存 INT12：地址简单、吞吐规整、BRAM 宽度好映射，代价是相对紧凑 12-bit 多 33% 容量/带宽。是否实现 12-bit packed 格式要比较：
@@ -191,6 +197,12 @@ XC7Z020 总量基线为 220 DSP48E1、140 BRAM36、53,200 LUT、106,400 FF。NPU
 | FF | 70,000 | ≤55,000 | 系统控制和时序寄存 |
 
 DSP48E1 资源上限不是阵列规模目标。首版不使用 220 个 DSP 全铺阵列，因为更大的阵列会同时增加 BRAM 端口、路由、权重带宽和尾通道空闲率。
+
+当前 DMA 子系统的 Vivado 2026.1 OOC 综合结果为 7,546 Slice LUT、7,144 FF、
+56 RAMB36E1、0 DSP48E1。AGU 使用共享 radix-4 shift/add 乘法器，Descriptor
+Cache 的 record size 和 Engine 的 beat size 使用移位，因此控制路径不占用计划留给
+Tensor MAC 的 DSP。100 MHz WNS 为 `+1.888 ns`；200 MHz WNS 为 `-3.112 ns`，
+故当前只关闭最低验收频率，目标频率仍需在完整约束和布局布线阶段优化。
 
 ## 9. 时钟与复位
 

@@ -119,6 +119,7 @@ with tempfile.TemporaryDirectory() as temporary:
     output = run([
         iverilog, "-g2012", "-Wall", "-s", "tb_npu_dma_agu",
         "-o", str(agu_image), *dma_common,
+        str(RTL / "npu_u32_mul_iter.sv"),
         str(RTL / "npu_dma_agu.sv"),
         str(RTL / "tb" / "tb_npu_dma_agu.sv"),
     ])
@@ -181,6 +182,7 @@ with tempfile.TemporaryDirectory() as temporary:
     output = run([
         iverilog, "-g2012", "-Wall", "-s", "tb_npu_dma_stream",
         "-o", str(dma_stream_image), *dma_common,
+        str(RTL / "npu_u32_mul_iter.sv"),
         str(RTL / "npu_dma_agu.sv"),
         str(RTL / "tb" / "tb_npu_dma_stream.sv"),
     ])
@@ -197,6 +199,51 @@ with tempfile.TemporaryDirectory() as temporary:
     ])
     assert f"PASS ({len(dma_plan['requests'])} requests)" in output
 
+    descriptor_tables = {
+        "tensor_table": (tensor_blob, 64),
+        "operator_table": (operator_blob, 64),
+        "quant_table": (quant_blob, 32),
+        "segment_table": (segment_blob, 8),
+    }
+    descriptor_paths = {}
+    descriptor_counts = {}
+    for name, (blob, record_bytes) in descriptor_tables.items():
+        assert len(blob) % record_bytes == 0
+        rows = [
+            f"{int.from_bytes(blob[offset:offset + record_bytes], 'little'):0{record_bytes * 2}x}"
+            for offset in range(0, len(blob), record_bytes)
+        ]
+        path = temp / f"{name}.hex"
+        path.write_text("\n".join(rows) + "\n", encoding="ascii")
+        descriptor_paths[name] = path
+        descriptor_counts[name] = len(rows)
+
+    frontend_image = temp / "tb_npu_dma_frontend_stream.vvp"
+    output = run([
+        iverilog, "-g2012", "-Wall", "-s", "tb_npu_dma_frontend_stream",
+        "-o", str(frontend_image), *dma_common,
+        str(RTL / "npu_descriptor_cache.sv"),
+        str(RTL / "npu_u32_mul_iter.sv"),
+        str(RTL / "npu_dma_agu.sv"),
+        str(RTL / "npu_dma_frontend.sv"),
+        str(RTL / "tb" / "tb_npu_dma_frontend_stream.sv"),
+    ])
+    output += run([
+        vvp, str(frontend_image),
+        f"+COMMAND_HEX={vector_paths['command'].as_posix()}",
+        f"+EXPECTED_HEX={vector_paths['expected'].as_posix()}",
+        f"+TENSOR_HEX={descriptor_paths['tensor_table'].as_posix()}",
+        f"+OPERATOR_HEX={descriptor_paths['operator_table'].as_posix()}",
+        f"+QUANT_HEX={descriptor_paths['quant_table'].as_posix()}",
+        f"+SEGMENT_HEX={descriptor_paths['segment_table'].as_posix()}",
+        f"+REQUEST_COUNT={len(dma_plan['requests'])}",
+        f"+TENSOR_COUNT={descriptor_counts['tensor_table']}",
+        f"+OPERATOR_COUNT={descriptor_counts['operator_table']}",
+        f"+QUANT_COUNT={descriptor_counts['quant_table']}",
+        f"+SEGMENT_COUNT={descriptor_counts['segment_table']}",
+    ])
+    assert f"PASS ({len(dma_plan['requests'])} requests" in output
+
     dma_engine_image = temp / "tb_npu_dma_engine.vvp"
     output = run([
         iverilog, "-g2012", "-Wall", "-s", "tb_npu_dma_engine",
@@ -207,6 +254,35 @@ with tempfile.TemporaryDirectory() as temporary:
     ])
     output += run([vvp, str(dma_engine_image)])
     assert "npu_dma_engine: PASS" in output
+
+    scratchpad_image = temp / "tb_npu_scratchpad.vvp"
+    output = run([
+        iverilog, "-g2012", "-Wall", "-s", "tb_npu_scratchpad",
+        "-o", str(scratchpad_image),
+        str(RTL / "include" / "npu_dma_pkg.sv"),
+        str(RTL / "npu_scratchpad_bank.sv"),
+        str(RTL / "npu_scratchpad.sv"),
+        str(RTL / "tb" / "tb_npu_scratchpad.sv"),
+    ])
+    output += run([vvp, str(scratchpad_image)])
+    assert "npu_scratchpad: PASS" in output
+
+    subsystem_image = temp / "tb_npu_dma_subsystem.vvp"
+    output = run([
+        iverilog, "-g2012", "-Wall", "-s", "tb_npu_dma_subsystem",
+        "-o", str(subsystem_image), *dma_common,
+        str(RTL / "npu_descriptor_cache.sv"),
+        str(RTL / "npu_u32_mul_iter.sv"),
+        str(RTL / "npu_dma_agu.sv"),
+        str(RTL / "npu_dma_frontend.sv"),
+        str(RTL / "npu_dma_engine.sv"),
+        str(RTL / "npu_scratchpad_bank.sv"),
+        str(RTL / "npu_scratchpad.sv"),
+        str(RTL / "npu_dma_subsystem.sv"),
+        str(RTL / "tb" / "tb_npu_dma_subsystem.sv"),
+    ])
+    output += run([vvp, str(subsystem_image)])
+    assert "npu_dma_subsystem: PASS" in output
 
     run([iverilog, "-g2012", "-Wall", "-tnull", "-f",
          str(RTL / "npu_rtl.f")])

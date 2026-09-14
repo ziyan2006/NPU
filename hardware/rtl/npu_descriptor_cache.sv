@@ -95,8 +95,15 @@ module npu_descriptor_cache #(
       && valid_q[request_line]
       && (kind_q[request_line] == request_kind_i)
       && (index_q[request_line] == request_index_i);
-    request_address = request_base
-      + ({{48{1'b0}}, request_index_i} * {{57{1'b0}}, request_bytes});
+    case (request_kind_i)
+      NPU_DESC_TENSOR,
+      NPU_DESC_OPERATOR: request_address = request_base
+        + ({48'd0, request_index_i} << 6);
+      NPU_DESC_QUANT: request_address = request_base
+        + ({48'd0, request_index_i} << 5);
+      default: request_address = request_base
+        + ({48'd0, request_index_i} << 3);
+    endcase
   end
 
   assign request_ready_o = (state_q == DC_IDLE);

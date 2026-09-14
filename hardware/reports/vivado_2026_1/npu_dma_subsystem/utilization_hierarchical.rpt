@@ -1,0 +1,40 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Mon Sep 14 23:32:52 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -hierarchical_depth 4 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_dma_subsystem/utilization_hierarchical.rpt
+| Design       : npu_dma_subsystem
+| Device       : xc7z020clg400-1
+| Speed File   : -1
+| Design State : Synthesized
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++---------------------------------+---------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+|             Instance            |                 Module                | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++---------------------------------+---------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+| npu_dma_subsystem               |                                 (top) |       7546 |       7546 |       0 |    0 | 7144 |     56 |      0 |          0 |
+|   (npu_dma_subsystem)           |                                 (top) |          0 |          0 |       0 |    0 |   64 |      0 |      0 |          0 |
+|   engine                        |                        npu_dma_engine |       1560 |       1560 |       0 |    0 |  857 |      0 |      0 |          0 |
+|   frontend                      |                      npu_dma_frontend |       5576 |       5576 |       0 |    0 | 6211 |      0 |      0 |          0 |
+|     (frontend)                  |                      npu_dma_frontend |         60 |         60 |       0 |    0 |  993 |      0 |      0 |          0 |
+|     address_generator           |                           npu_dma_agu |       3903 |       3903 |       0 |    0 | 2569 |      0 |      0 |          0 |
+|       (address_generator)       |                           npu_dma_agu |       1782 |       1782 |       0 |    0 | 2339 |      0 |      0 |          0 |
+|       shared_address_multiplier |                      npu_u32_mul_iter |       2121 |       2121 |       0 |    0 |  230 |      0 |      0 |          0 |
+|     descriptor_cache            |                  npu_descriptor_cache |       1613 |       1613 |       0 |    0 | 2649 |      0 |      0 |          0 |
+|   scratchpad                    |                        npu_scratchpad |        410 |        410 |       0 |    0 |   12 |     56 |      0 |          0 |
+|     activation_bank0            |                   npu_scratchpad_bank |        135 |        135 |       0 |    0 |    2 |     16 |      0 |          0 |
+|     output_bank0                |   npu_scratchpad_bank__parameterized1 |        132 |        132 |       0 |    0 |    2 |      4 |      0 |          0 |
+|     weight_bank1                | npu_scratchpad_bank__parameterized0_2 |        131 |        131 |       0 |    0 |    2 |      8 |      0 |          0 |
++---------------------------------+---------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+
+

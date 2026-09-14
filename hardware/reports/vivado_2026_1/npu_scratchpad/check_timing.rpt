@@ -1,0 +1,511 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Mon Sep 14 22:53:12 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : check_timing -verbose -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_scratchpad/check_timing.rpt
+| Design       : npu_scratchpad
+| Device       : 7z020-clg400
+| Speed File   : -1  PRODUCTION 1.12 2019-11-22
+| Design State : Synthesized
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+check_timing report
+
+Table of Contents
+-----------------
+1. checking no_clock (0)
+2. checking constant_clock (0)
+3. checking pulse_width_clock (0)
+4. checking unconstrained_internal_endpoints (0)
+5. checking no_input_delay (279)
+6. checking no_output_delay (132)
+7. checking multiple_clock (0)
+8. checking generated_clocks (0)
+9. checking loops (0)
+10. checking partial_input_delay (0)
+11. checking partial_output_delay (0)
+12. checking latch_loops (0)
+
+1. checking no_clock (0)
+------------------------
+ There are 0 register/latch pins with no clock.
+
+
+2. checking constant_clock (0)
+------------------------------
+ There are 0 register/latch pins with constant_clock.
+
+
+3. checking pulse_width_clock (0)
+---------------------------------
+ There are 0 register/latch pins which need pulse_width check
+
+
+4. checking unconstrained_internal_endpoints (0)
+------------------------------------------------
+ There are 0 pins that are not constrained for maximum delay.
+
+ There are 0 pins that are not constrained for maximum delay due to constant clock.
+
+
+5. checking no_input_delay (279)
+--------------------------------
+ There are 279 input ports with no input delay specified. (HIGH)
+
+accelerator_read_address_i[10]
+accelerator_read_address_i[11]
+accelerator_read_address_i[12]
+accelerator_read_address_i[13]
+accelerator_read_address_i[14]
+accelerator_read_address_i[15]
+accelerator_read_address_i[16]
+accelerator_read_address_i[17]
+accelerator_read_address_i[18]
+accelerator_read_address_i[19]
+accelerator_read_address_i[20]
+accelerator_read_address_i[21]
+accelerator_read_address_i[22]
+accelerator_read_address_i[23]
+accelerator_read_address_i[24]
+accelerator_read_address_i[25]
+accelerator_read_address_i[26]
+accelerator_read_address_i[27]
+accelerator_read_address_i[28]
+accelerator_read_address_i[29]
+accelerator_read_address_i[30]
+accelerator_read_address_i[31]
+accelerator_read_address_i[3]
+accelerator_read_address_i[4]
+accelerator_read_address_i[5]
+accelerator_read_address_i[6]
+accelerator_read_address_i[7]
+accelerator_read_address_i[8]
+accelerator_read_address_i[9]
+accelerator_read_bank_i
+accelerator_read_kind_i[0]
+accelerator_read_kind_i[1]
+accelerator_read_request_valid_i
+accelerator_read_response_ready_i
+accelerator_write_address_i[10]
+accelerator_write_address_i[11]
+accelerator_write_address_i[12]
+accelerator_write_address_i[13]
+accelerator_write_address_i[14]
+accelerator_write_address_i[15]
+accelerator_write_address_i[16]
+accelerator_write_address_i[17]
+accelerator_write_address_i[18]
+accelerator_write_address_i[19]
+accelerator_write_address_i[20]
+accelerator_write_address_i[21]
+accelerator_write_address_i[22]
+accelerator_write_address_i[23]
+accelerator_write_address_i[24]
+accelerator_write_address_i[25]
+accelerator_write_address_i[26]
+accelerator_write_address_i[27]
+accelerator_write_address_i[28]
+accelerator_write_address_i[29]
+accelerator_write_address_i[30]
+accelerator_write_address_i[31]
+accelerator_write_address_i[3]
+accelerator_write_address_i[4]
+accelerator_write_address_i[5]
+accelerator_write_address_i[6]
+accelerator_write_address_i[7]
+accelerator_write_address_i[8]
+accelerator_write_address_i[9]
+accelerator_write_bank_i
+accelerator_write_data_i[0]
+accelerator_write_data_i[10]
+accelerator_write_data_i[11]
+accelerator_write_data_i[12]
+accelerator_write_data_i[13]
+accelerator_write_data_i[14]
+accelerator_write_data_i[15]
+accelerator_write_data_i[16]
+accelerator_write_data_i[17]
+accelerator_write_data_i[18]
+accelerator_write_data_i[19]
+accelerator_write_data_i[1]
+accelerator_write_data_i[20]
+accelerator_write_data_i[21]
+accelerator_write_data_i[22]
+accelerator_write_data_i[23]
+accelerator_write_data_i[24]
+accelerator_write_data_i[25]
+accelerator_write_data_i[26]
+accelerator_write_data_i[27]
+accelerator_write_data_i[28]
+accelerator_write_data_i[29]
+accelerator_write_data_i[2]
+accelerator_write_data_i[30]
+accelerator_write_data_i[31]
+accelerator_write_data_i[32]
+accelerator_write_data_i[33]
+accelerator_write_data_i[34]
+accelerator_write_data_i[35]
+accelerator_write_data_i[36]
+accelerator_write_data_i[37]
+accelerator_write_data_i[38]
+accelerator_write_data_i[39]
+accelerator_write_data_i[3]
+accelerator_write_data_i[40]
+accelerator_write_data_i[41]
+accelerator_write_data_i[42]
+accelerator_write_data_i[43]
+accelerator_write_data_i[44]
+accelerator_write_data_i[45]
+accelerator_write_data_i[46]
+accelerator_write_data_i[47]
+accelerator_write_data_i[48]
+accelerator_write_data_i[49]
+accelerator_write_data_i[4]
+accelerator_write_data_i[50]
+accelerator_write_data_i[51]
+accelerator_write_data_i[52]
+accelerator_write_data_i[53]
+accelerator_write_data_i[54]
+accelerator_write_data_i[55]
+accelerator_write_data_i[56]
+accelerator_write_data_i[57]
+accelerator_write_data_i[58]
+accelerator_write_data_i[59]
+accelerator_write_data_i[5]
+accelerator_write_data_i[60]
+accelerator_write_data_i[61]
+accelerator_write_data_i[62]
+accelerator_write_data_i[63]
+accelerator_write_data_i[6]
+accelerator_write_data_i[7]
+accelerator_write_data_i[8]
+accelerator_write_data_i[9]
+accelerator_write_kind_i[0]
+accelerator_write_kind_i[1]
+accelerator_write_strobe_i[0]
+accelerator_write_strobe_i[1]
+accelerator_write_strobe_i[2]
+accelerator_write_strobe_i[3]
+accelerator_write_strobe_i[4]
+accelerator_write_strobe_i[5]
+accelerator_write_strobe_i[6]
+accelerator_write_strobe_i[7]
+accelerator_write_valid_i
+dma_read_address_i[10]
+dma_read_address_i[11]
+dma_read_address_i[12]
+dma_read_address_i[13]
+dma_read_address_i[14]
+dma_read_address_i[15]
+dma_read_address_i[16]
+dma_read_address_i[17]
+dma_read_address_i[18]
+dma_read_address_i[19]
+dma_read_address_i[20]
+dma_read_address_i[21]
+dma_read_address_i[22]
+dma_read_address_i[23]
+dma_read_address_i[24]
+dma_read_address_i[25]
+dma_read_address_i[26]
+dma_read_address_i[27]
+dma_read_address_i[28]
+dma_read_address_i[29]
+dma_read_address_i[30]
+dma_read_address_i[31]
+dma_read_address_i[3]
+dma_read_address_i[4]
+dma_read_address_i[5]
+dma_read_address_i[6]
+dma_read_address_i[7]
+dma_read_address_i[8]
+dma_read_address_i[9]
+dma_read_bank_i
+dma_read_kind_i[0]
+dma_read_kind_i[1]
+dma_read_request_valid_i
+dma_read_response_ready_i
+dma_write_address_i[10]
+dma_write_address_i[11]
+dma_write_address_i[12]
+dma_write_address_i[13]
+dma_write_address_i[14]
+dma_write_address_i[15]
+dma_write_address_i[16]
+dma_write_address_i[17]
+dma_write_address_i[18]
+dma_write_address_i[19]
+dma_write_address_i[20]
+dma_write_address_i[21]
+dma_write_address_i[22]
+dma_write_address_i[23]
+dma_write_address_i[24]
+dma_write_address_i[25]
+dma_write_address_i[26]
+dma_write_address_i[27]
+dma_write_address_i[28]
+dma_write_address_i[29]
+dma_write_address_i[30]
+dma_write_address_i[31]
+dma_write_address_i[3]
+dma_write_address_i[4]
+dma_write_address_i[5]
+dma_write_address_i[6]
+dma_write_address_i[7]
+dma_write_address_i[8]
+dma_write_address_i[9]
+dma_write_bank_i
+dma_write_data_i[0]
+dma_write_data_i[10]
+dma_write_data_i[11]
+dma_write_data_i[12]
+dma_write_data_i[13]
+dma_write_data_i[14]
+dma_write_data_i[15]
+dma_write_data_i[16]
+dma_write_data_i[17]
+dma_write_data_i[18]
+dma_write_data_i[19]
+dma_write_data_i[1]
+dma_write_data_i[20]
+dma_write_data_i[21]
+dma_write_data_i[22]
+dma_write_data_i[23]
+dma_write_data_i[24]
+dma_write_data_i[25]
+dma_write_data_i[26]
+dma_write_data_i[27]
+dma_write_data_i[28]
+dma_write_data_i[29]
+dma_write_data_i[2]
+dma_write_data_i[30]
+dma_write_data_i[31]
+dma_write_data_i[32]
+dma_write_data_i[33]
+dma_write_data_i[34]
+dma_write_data_i[35]
+dma_write_data_i[36]
+dma_write_data_i[37]
+dma_write_data_i[38]
+dma_write_data_i[39]
+dma_write_data_i[3]
+dma_write_data_i[40]
+dma_write_data_i[41]
+dma_write_data_i[42]
+dma_write_data_i[43]
+dma_write_data_i[44]
+dma_write_data_i[45]
+dma_write_data_i[46]
+dma_write_data_i[47]
+dma_write_data_i[48]
+dma_write_data_i[49]
+dma_write_data_i[4]
+dma_write_data_i[50]
+dma_write_data_i[51]
+dma_write_data_i[52]
+dma_write_data_i[53]
+dma_write_data_i[54]
+dma_write_data_i[55]
+dma_write_data_i[56]
+dma_write_data_i[57]
+dma_write_data_i[58]
+dma_write_data_i[59]
+dma_write_data_i[5]
+dma_write_data_i[60]
+dma_write_data_i[61]
+dma_write_data_i[62]
+dma_write_data_i[63]
+dma_write_data_i[6]
+dma_write_data_i[7]
+dma_write_data_i[8]
+dma_write_data_i[9]
+dma_write_kind_i[0]
+dma_write_kind_i[1]
+dma_write_strobe_i[0]
+dma_write_strobe_i[1]
+dma_write_strobe_i[2]
+dma_write_strobe_i[3]
+dma_write_strobe_i[4]
+dma_write_strobe_i[5]
+dma_write_strobe_i[6]
+dma_write_strobe_i[7]
+dma_write_valid_i
+rst_ni
+
+ There are 0 input ports with no input delay but user has a false path constraint.
+
+
+6. checking no_output_delay (132)
+---------------------------------
+ There are 132 ports with no output delay specified. (HIGH)
+
+accelerator_read_request_ready_o
+accelerator_read_response_data_o[0]
+accelerator_read_response_data_o[10]
+accelerator_read_response_data_o[11]
+accelerator_read_response_data_o[12]
+accelerator_read_response_data_o[13]
+accelerator_read_response_data_o[14]
+accelerator_read_response_data_o[15]
+accelerator_read_response_data_o[16]
+accelerator_read_response_data_o[17]
+accelerator_read_response_data_o[18]
+accelerator_read_response_data_o[19]
+accelerator_read_response_data_o[1]
+accelerator_read_response_data_o[20]
+accelerator_read_response_data_o[21]
+accelerator_read_response_data_o[22]
+accelerator_read_response_data_o[23]
+accelerator_read_response_data_o[24]
+accelerator_read_response_data_o[25]
+accelerator_read_response_data_o[26]
+accelerator_read_response_data_o[27]
+accelerator_read_response_data_o[28]
+accelerator_read_response_data_o[29]
+accelerator_read_response_data_o[2]
+accelerator_read_response_data_o[30]
+accelerator_read_response_data_o[31]
+accelerator_read_response_data_o[32]
+accelerator_read_response_data_o[33]
+accelerator_read_response_data_o[34]
+accelerator_read_response_data_o[35]
+accelerator_read_response_data_o[36]
+accelerator_read_response_data_o[37]
+accelerator_read_response_data_o[38]
+accelerator_read_response_data_o[39]
+accelerator_read_response_data_o[3]
+accelerator_read_response_data_o[40]
+accelerator_read_response_data_o[41]
+accelerator_read_response_data_o[42]
+accelerator_read_response_data_o[43]
+accelerator_read_response_data_o[44]
+accelerator_read_response_data_o[45]
+accelerator_read_response_data_o[46]
+accelerator_read_response_data_o[47]
+accelerator_read_response_data_o[48]
+accelerator_read_response_data_o[49]
+accelerator_read_response_data_o[4]
+accelerator_read_response_data_o[50]
+accelerator_read_response_data_o[51]
+accelerator_read_response_data_o[52]
+accelerator_read_response_data_o[53]
+accelerator_read_response_data_o[54]
+accelerator_read_response_data_o[55]
+accelerator_read_response_data_o[56]
+accelerator_read_response_data_o[57]
+accelerator_read_response_data_o[58]
+accelerator_read_response_data_o[59]
+accelerator_read_response_data_o[5]
+accelerator_read_response_data_o[60]
+accelerator_read_response_data_o[61]
+accelerator_read_response_data_o[62]
+accelerator_read_response_data_o[63]
+accelerator_read_response_data_o[6]
+accelerator_read_response_data_o[7]
+accelerator_read_response_data_o[8]
+accelerator_read_response_data_o[9]
+accelerator_read_response_valid_o
+dma_read_request_ready_o
+dma_read_response_data_o[0]
+dma_read_response_data_o[10]
+dma_read_response_data_o[11]
+dma_read_response_data_o[12]
+dma_read_response_data_o[13]
+dma_read_response_data_o[14]
+dma_read_response_data_o[15]
+dma_read_response_data_o[16]
+dma_read_response_data_o[17]
+dma_read_response_data_o[18]
+dma_read_response_data_o[19]
+dma_read_response_data_o[1]
+dma_read_response_data_o[20]
+dma_read_response_data_o[21]
+dma_read_response_data_o[22]
+dma_read_response_data_o[23]
+dma_read_response_data_o[24]
+dma_read_response_data_o[25]
+dma_read_response_data_o[26]
+dma_read_response_data_o[27]
+dma_read_response_data_o[28]
+dma_read_response_data_o[29]
+dma_read_response_data_o[2]
+dma_read_response_data_o[30]
+dma_read_response_data_o[31]
+dma_read_response_data_o[32]
+dma_read_response_data_o[33]
+dma_read_response_data_o[34]
+dma_read_response_data_o[35]
+dma_read_response_data_o[36]
+dma_read_response_data_o[37]
+dma_read_response_data_o[38]
+dma_read_response_data_o[39]
+dma_read_response_data_o[3]
+dma_read_response_data_o[40]
+dma_read_response_data_o[41]
+dma_read_response_data_o[42]
+dma_read_response_data_o[43]
+dma_read_response_data_o[44]
+dma_read_response_data_o[45]
+dma_read_response_data_o[46]
+dma_read_response_data_o[47]
+dma_read_response_data_o[48]
+dma_read_response_data_o[49]
+dma_read_response_data_o[4]
+dma_read_response_data_o[50]
+dma_read_response_data_o[51]
+dma_read_response_data_o[52]
+dma_read_response_data_o[53]
+dma_read_response_data_o[54]
+dma_read_response_data_o[55]
+dma_read_response_data_o[56]
+dma_read_response_data_o[57]
+dma_read_response_data_o[58]
+dma_read_response_data_o[59]
+dma_read_response_data_o[5]
+dma_read_response_data_o[60]
+dma_read_response_data_o[61]
+dma_read_response_data_o[62]
+dma_read_response_data_o[63]
+dma_read_response_data_o[6]
+dma_read_response_data_o[7]
+dma_read_response_data_o[8]
+dma_read_response_data_o[9]
+dma_read_response_valid_o
+
+ There are 0 ports with no output delay but user has a false path constraint
+
+ There are 0 ports with no output delay but with a timing clock defined on it or propagating through it
+
+
+7. checking multiple_clock (0)
+------------------------------
+ There are 0 register/latch pins with multiple clocks.
+
+
+8. checking generated_clocks (0)
+--------------------------------
+ There are 0 generated clocks that are not connected to a clock source.
+
+
+9. checking loops (0)
+---------------------
+ There are 0 combinational loops in the design.
+
+
+10. checking partial_input_delay (0)
+------------------------------------
+ There are 0 input ports with partial input delay specified.
+
+
+11. checking partial_output_delay (0)
+-------------------------------------
+ There are 0 ports with partial output delay specified.
+
+
+12. checking latch_loops (0)
+----------------------------
+ There are 0 combinational latch loops in the design through latch input
+
+
