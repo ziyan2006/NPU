@@ -63,9 +63,9 @@ vivado -mode batch -nojournal -nolog `
   -tclargs npu_dma_subsystem xc7z020clg400-1 10.000
 ```
 
-参考器件上的当前结果为 17,707 Slice LUT、10,993 FF、56 RAMB36、64 DSP；
-100 MHz WNS `+0.484 ns`。该 top 已包含 DMA、独立 A/W 计算宽口、CONV2D
-controller、8x8 MAC、256-bit O 写回和 2-entry 写回 FIFO。这是综合后 OOC 证据，
+参考器件上的当前结果为 19,035 Slice LUT、13,856 FF、58 RAMB36、68 DSP；
+100 MHz WNS `+0.197 ns`。该 top 已包含 DMA、独立 A/W 计算宽口、CONV2D
+controller、8x8 MAC、参数预取、requant/post、128-bit O 写回和 2-entry FIFO。这是综合后 OOC 证据，
 不是最终板卡的 post-route 结论；详细报告见 `reports/vivado_2026_1/`。
 
 综合 8x8 Tensor MAC 数值切片：
@@ -78,9 +78,8 @@ vivado -mode batch -nojournal -nolog `
 
 MAC 单元使用 1,996 Slice LUT、1,968 FF、64 DSP48E1、0 BRAM，200 MHz OOC
 WNS `+1.701 ns`。当前 lane-striped Scratchpad 使用 5,668 Slice LUT、1,244 FF、
-56 RAMB36，计算端提供独立 128-bit A、512-bit W 和 256-bit O 端口；100 MHz WNS
-`+4.568 ns`，200 MHz WNS `-0.432 ns`。完整 Scratchpad/CONV2D 已集成，post
-pipeline 尚未实现。CONV2D controller + MAC 使用
+56 RAMB36，计算端提供独立 128-bit A、512-bit W 和 128-bit O 端口；100 MHz WNS
+`+4.568 ns`，200 MHz WNS `-0.432 ns`。完整 Scratchpad/CONV2D/post 已集成。CONV2D controller + MAC 使用
 3,610 LUT、2,645 FF、64 DSP；100 MHz WNS `+2.660 ns`，200 MHz WNS
 `-2.340 ns`。
 

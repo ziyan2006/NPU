@@ -9,11 +9,12 @@ timing check 和机器可读摘要。OOC 报告不是 post-route 结论，SoC �
 互连接入后必须重新综合、实现并检查 CDC。
 
 当前保存 `npu_dma_subsystem`、`npu_scratchpad`、`npu_tensor_mac_8x8`、
-`npu_conv2d_controller` 和 `npu_requant_post` 五个 top。Controller 报告包含 loop 与 MAC，但不包含
+`npu_conv2d_controller`、`npu_conv2d_pipeline` 和 `npu_requant_post` 六个 top。Controller 报告包含 loop 与 MAC，但不包含
 Scratchpad、bias、requant 或 post-op；它在 100 MHz 闭合，在 200 MHz 尚未闭合。
 当前 `npu_dma_subsystem` 报告已包含 Scratchpad、CONV2D controller、MAC 和 O 写回
-FIFO：17,707 LUT、10,993 FF、56 RAMB36、64 DSP，100 MHz 综合后 OOC WNS
-`+0.484 ns`。`npu_scratchpad` 的 256-bit O 行版本为 5,668 LUT、1,244 FF、
+FIFO 及 post：19,035 LUT、13,856 FF、58 RAMB36、68 DSP，100 MHz 综合后 OOC WNS
+`+0.197 ns`。`npu_scratchpad` 的 128-bit O 行版本为 5,668 LUT、1,244 FF、
 56 RAMB36，100 MHz WNS `+4.568 ns`。
 `npu_requant_post` 为 2,702 LUT、1,639 FF、2 RAMB36、4 DSP，100 MHz WNS
-`+0.197 ns`；该 top 尚不包含 W bank 参数读取。
+`+0.197 ns`。`npu_conv2d_pipeline` 包含 W bank 参数预取、MAC 和 post，为
+6,398 LUT、5,521 FF、2 RAMB36、68 DSP，100 MHz WNS `+0.197 ns`。

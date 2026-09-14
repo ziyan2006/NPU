@@ -2,15 +2,15 @@
 
 文档版本：`0.1-draft`
 
-状态：P4 可综合控制/数值垂直切片；真实 tile 已位精确验证，Scratchpad 和 post
-pipeline 尚未接入同一顶层
+状态：P4 可综合控制/数值垂直切片；真实 tile 已位精确验证，Scratchpad、参数预取
+和 post pipeline 已接入同一数据子系统
 
 ## 1. 模块边界
 
 `npu_conv2d_controller.sv` 接收一个 512-bit Operator descriptor、A/W bank 和完成
 event。它生成成对的 128-bit activation 与 512-bit O8I8 weight 读取请求，并直接
-驱动 `npu_tensor_mac_8x8`。MAC 的每个结果为 8xINT32，控制器给出 32-byte 递增的
-O bank 地址和输出尾 lane mask。
+驱动 `npu_tensor_mac_8x8`。MAC 的每个结果为 8xINT32，控制器给出中间地址和输出
+尾 lane mask；`npu_conv2d_pipeline` 将其转换为 post 后的 16-byte O-bank 行地址。
 
 当前支持普通卷积的 `1x1`、`1x3`、`3x3`，stride 1/2、dilation 1、groups 1。
 当前网络使用的 padding 已由 DMA 在本地 receptive field 中清零，因此计算循环不做
@@ -83,6 +83,5 @@ mode、capacity 三类错误以及忙态 soft reset 后重新运行。
 
 ## 6. 下一步
 
-将 Scratchpad 的 A/W 计算读口拆成独立并行接口并接入本控制器，再加入 bias、
-per-channel Q31 requant、signed RNE、clamp 和激活 pipeline。完成命令处理器、DMA、
-compute 和 CSR 顶层后，运行全 1,869 条命令的逐命令位精确仿真。
+完成 `VEC_ADD`、`UPSAMPLE2X`、命令处理器、DMA、compute 和 CSR 顶层后，运行全
+1,869 条命令的逐命令位精确仿真。

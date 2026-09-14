@@ -74,6 +74,10 @@ module tb_npu_dma_subsystem;
   logic conv_weight_bank_i = 1'b0;
   logic conv_output_bank_i = 1'b0;
   logic [7:0] conv_completion_event_i = NPU_EVENT_C0_DONE;
+  logic conv_lut_write_valid_i = 1'b0;
+  logic conv_lut_write_ready_o;
+  logic [11:0] conv_lut_write_address_i = '0;
+  logic [15:0] conv_lut_write_data_i = '0;
   logic conv_busy_o;
   logic conv_done_pulse_o;
   logic [7:0] conv_event_set_o;
@@ -94,6 +98,7 @@ module tb_npu_dma_subsystem;
   npu_command_t command;
   npu_tensor_desc_t tensor_desc;
   npu_operator_desc_t operator_desc;
+  npu_quant_param_t quant_param;
   logic descriptor_pending_q = 1'b0;
   logic [511:0] descriptor_pending_data_q = '0;
   logic read_active_q = 1'b0;
@@ -103,7 +108,9 @@ module tb_npu_dma_subsystem;
   logic inject_read_error = 1'b0;
   logic [127:0] conv_activation_vector;
   logic [511:0] conv_weight_vector;
-  logic [255:0] conv_expected_result;
+  logic [255:0] conv_bias_vector;
+  logic [1023:0] conv_quant_vector;
+  logic [127:0] conv_expected_result;
   integer timeout;
   integer input_lane;
   integer output_lane;
@@ -234,7 +241,7 @@ module tb_npu_dma_subsystem;
     end
   endtask
 
-  task automatic read_o0_check(input logic [255:0] expected);
+  task automatic read_o0_check(input logic [127:0] expected);
     begin
       @(negedge clk_i);
       accelerator_read_kind_i = NPU_SPAD_O;
@@ -245,9 +252,9 @@ module tb_npu_dma_subsystem;
       @(negedge clk_i);
       accelerator_read_request_valid_i = 1'b0;
       do @(negedge clk_i); while (!accelerator_read_response_valid_o);
-      if (accelerator_read_response_data_o[255:0] !== expected)
-        $fatal(1, "integrated CONV2D output mismatch got=%064x expected=%064x",
-               accelerator_read_response_data_o[255:0], expected);
+      if (accelerator_read_response_data_o[127:0] !== expected)
+        $fatal(1, "integrated CONV2D output mismatch got=%032x expected=%032x",
+               accelerator_read_response_data_o[127:0], expected);
       accelerator_read_response_ready_i = 1'b1;
       @(posedge clk_i);
       @(negedge clk_i);
@@ -328,11 +335,21 @@ module tb_npu_dma_subsystem;
     // weights make each output lane equal its corresponding activation lane.
     conv_activation_vector = '0;
     conv_weight_vector = '0;
+    conv_bias_vector = '0;
+    conv_quant_vector = '0;
     conv_expected_result = '0;
+    quant_param = '0;
+    quant_param.multiplier = 32'sd1073741824;
+    quant_param.shift = 8'd30;
+    quant_param.clamp_min = -32'sd2048;
+    quant_param.clamp_max = 32'sd2047;
     for (input_lane = 0; input_lane < 8; input_lane = input_lane + 1)
       conv_activation_vector[input_lane*16 +: 16] = input_lane + 1;
     for (output_lane = 0; output_lane < 8; output_lane = output_lane + 1) begin
-      conv_expected_result[output_lane*32 +: 32] = output_lane + 1;
+      conv_bias_vector[output_lane*32 +: 32] = output_lane + 10;
+      conv_quant_vector[output_lane*128 +: 128] = quant_param;
+      conv_expected_result[output_lane*16 +: 16]
+        = (output_lane + 1) + (output_lane + 10);
       for (input_lane = 0; input_lane < 8; input_lane = input_lane + 1)
         conv_weight_vector[(output_lane*8 + input_lane)*8 +: 8]
           = output_lane == input_lane ? 8'd1 : 8'd0;
@@ -341,6 +358,15 @@ module tb_npu_dma_subsystem;
                       {384'd0, conv_activation_vector},
                       64'h0000_0000_0000_ffff);
     accelerator_write(NPU_SPAD_W, 1'b0, 32'd0, conv_weight_vector,
+                      64'hffff_ffff_ffff_ffff);
+    accelerator_write(NPU_SPAD_W, 1'b0, 32'd64,
+                      {256'd0, conv_bias_vector},
+                      64'h0000_0000_ffff_ffff);
+    accelerator_write(NPU_SPAD_W, 1'b0, 32'd128,
+                      conv_quant_vector[511:0],
+                      64'hffff_ffff_ffff_ffff);
+    accelerator_write(NPU_SPAD_W, 1'b0, 32'd192,
+                      conv_quant_vector[1023:512],
                       64'hffff_ffff_ffff_ffff);
     operator_desc.tile_h = 1;
     operator_desc.tile_w = 1;

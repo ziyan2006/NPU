@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
-| Date         : Tue Sep 15 01:24:31 2026
+| Date         : Tue Sep 15 02:23:11 2026
 | Host         : RAW2332 running 64-bit major release  (build 9200)
 | Command      : check_timing -verbose -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_dma_subsystem/check_timing.rpt
 | Design       : npu_dma_subsystem
@@ -19,8 +19,8 @@ Table of Contents
 2. checking constant_clock (0)
 3. checking pulse_width_clock (0)
 4. checking unconstrained_internal_endpoints (0)
-5. checking no_input_delay (2148)
-6. checking no_output_delay (956)
+5. checking no_input_delay (2161)
+6. checking no_output_delay (959)
 7. checking multiple_clock (0)
 8. checking generated_clocks (0)
 9. checking loops (0)
@@ -50,9 +50,9 @@ Table of Contents
  There are 0 pins that are not constrained for maximum delay due to constant clock.
 
 
-5. checking no_input_delay (2148)
+5. checking no_input_delay (2161)
 ---------------------------------
- There are 2148 input ports with no input delay specified. (HIGH)
+ There are 2161 input ports with no input delay specified. (HIGH)
 
 accelerator_read_address_i[10]
 accelerator_read_address_i[11]
@@ -60,22 +60,6 @@ accelerator_read_address_i[12]
 accelerator_read_address_i[13]
 accelerator_read_address_i[14]
 accelerator_read_address_i[15]
-accelerator_read_address_i[16]
-accelerator_read_address_i[17]
-accelerator_read_address_i[18]
-accelerator_read_address_i[19]
-accelerator_read_address_i[20]
-accelerator_read_address_i[21]
-accelerator_read_address_i[22]
-accelerator_read_address_i[23]
-accelerator_read_address_i[24]
-accelerator_read_address_i[25]
-accelerator_read_address_i[26]
-accelerator_read_address_i[27]
-accelerator_read_address_i[28]
-accelerator_read_address_i[29]
-accelerator_read_address_i[30]
-accelerator_read_address_i[31]
 accelerator_read_address_i[4]
 accelerator_read_address_i[5]
 accelerator_read_address_i[6]
@@ -93,22 +77,6 @@ accelerator_write_address_i[12]
 accelerator_write_address_i[13]
 accelerator_write_address_i[14]
 accelerator_write_address_i[15]
-accelerator_write_address_i[16]
-accelerator_write_address_i[17]
-accelerator_write_address_i[18]
-accelerator_write_address_i[19]
-accelerator_write_address_i[20]
-accelerator_write_address_i[21]
-accelerator_write_address_i[22]
-accelerator_write_address_i[23]
-accelerator_write_address_i[24]
-accelerator_write_address_i[25]
-accelerator_write_address_i[26]
-accelerator_write_address_i[27]
-accelerator_write_address_i[28]
-accelerator_write_address_i[29]
-accelerator_write_address_i[30]
-accelerator_write_address_i[31]
 accelerator_write_address_i[4]
 accelerator_write_address_i[5]
 accelerator_write_address_i[6]
@@ -968,6 +936,35 @@ conv_completion_event_i[4]
 conv_completion_event_i[5]
 conv_completion_event_i[6]
 conv_completion_event_i[7]
+conv_lut_write_address_i[0]
+conv_lut_write_address_i[10]
+conv_lut_write_address_i[11]
+conv_lut_write_address_i[1]
+conv_lut_write_address_i[2]
+conv_lut_write_address_i[3]
+conv_lut_write_address_i[4]
+conv_lut_write_address_i[5]
+conv_lut_write_address_i[6]
+conv_lut_write_address_i[7]
+conv_lut_write_address_i[8]
+conv_lut_write_address_i[9]
+conv_lut_write_data_i[0]
+conv_lut_write_data_i[10]
+conv_lut_write_data_i[11]
+conv_lut_write_data_i[12]
+conv_lut_write_data_i[13]
+conv_lut_write_data_i[14]
+conv_lut_write_data_i[15]
+conv_lut_write_data_i[1]
+conv_lut_write_data_i[2]
+conv_lut_write_data_i[3]
+conv_lut_write_data_i[4]
+conv_lut_write_data_i[5]
+conv_lut_write_data_i[6]
+conv_lut_write_data_i[7]
+conv_lut_write_data_i[8]
+conv_lut_write_data_i[9]
+conv_lut_write_valid_i
 conv_operator_desc_bits_i[100]
 conv_operator_desc_bits_i[101]
 conv_operator_desc_bits_i[102]
@@ -1044,6 +1041,22 @@ conv_operator_desc_bits_i[236]
 conv_operator_desc_bits_i[237]
 conv_operator_desc_bits_i[238]
 conv_operator_desc_bits_i[239]
+conv_operator_desc_bits_i[240]
+conv_operator_desc_bits_i[241]
+conv_operator_desc_bits_i[242]
+conv_operator_desc_bits_i[243]
+conv_operator_desc_bits_i[244]
+conv_operator_desc_bits_i[245]
+conv_operator_desc_bits_i[246]
+conv_operator_desc_bits_i[247]
+conv_operator_desc_bits_i[248]
+conv_operator_desc_bits_i[249]
+conv_operator_desc_bits_i[250]
+conv_operator_desc_bits_i[251]
+conv_operator_desc_bits_i[252]
+conv_operator_desc_bits_i[253]
+conv_operator_desc_bits_i[254]
+conv_operator_desc_bits_i[255]
 conv_operator_desc_bits_i[352]
 conv_operator_desc_bits_i[353]
 conv_operator_desc_bits_i[354]
@@ -2206,9 +2219,9 @@ weight_base_i[9]
  There are 0 input ports with no input delay but user has a false path constraint.
 
 
-6. checking no_output_delay (956)
+6. checking no_output_delay (959)
 ---------------------------------
- There are 956 ports with no output delay specified. (HIGH)
+ There are 959 ports with no output delay specified. (HIGH)
 
 accelerator_read_request_ready_o
 accelerator_read_response_data_o[0]
@@ -2796,6 +2809,8 @@ conv_done_pulse_o
 conv_error_pulse_o
 conv_error_reason_o[0]
 conv_error_reason_o[1]
+conv_error_reason_o[2]
+conv_error_reason_o[3]
 conv_event_set_o[0]
 conv_event_set_o[1]
 conv_event_set_o[2]
@@ -2804,6 +2819,7 @@ conv_event_set_o[4]
 conv_event_set_o[5]
 conv_event_set_o[6]
 conv_event_set_o[7]
+conv_lut_write_ready_o
 conv_start_ready_o
 descriptor_memory_request_address_o[0]
 descriptor_memory_request_address_o[10]

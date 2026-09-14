@@ -66,6 +66,7 @@ Vivado 2026.1、临时参考 part `xc7z020clg400-1`、100 MHz 综合后 OOC 结�
 | DSP48E1 | 4 |
 | 100 MHz WNS | `+0.197 ns` |
 
-该结果不含 Scratchpad 取 bias/quant 的端口、最终布局布线、PS interconnect 和真实
-clock source。下一步要把 W bank 中 `bias_base/conv_quant_base` 接入 CONV2D 数据
-链路，并在完整 top 重新检查资源和时序。
+`npu_conv2d_pipeline` 已从 W bank 的 `bias_base/conv_quant_base` 预取参数并完成
+真实 tile 位精确回归。包含 DMA、Scratchpad 和完整卷积链路的子系统为 19,035 LUT、
+13,856 FF、58 RAMB36、68 DSP，100 MHz OOC WNS `+0.197 ns`。该结果仍不含最终
+布局布线、PS interconnect 和真实 clock source。

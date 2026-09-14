@@ -1,0 +1,34 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Tue Sep 15 02:11:31 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -hierarchical_depth 4 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_conv2d_pipeline/utilization_hierarchical.rpt
+| Design       : npu_conv2d_pipeline
+| Device       : xc7z020clg400-1
+| Speed File   : -1
+| Design State : Synthesized
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++-------------------------+-----------------------+------------+------------+---------+------+------+--------+--------+------------+
+|         Instance        |         Module        | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++-------------------------+-----------------------+------------+------------+---------+------+------+--------+--------+------------+
+| npu_conv2d_pipeline     |                 (top) |       5420 |       5411 |       0 |    9 | 5521 |      2 |      0 |         68 |
+|   (npu_conv2d_pipeline) |                 (top) |          3 |          3 |       0 |    0 | 1238 |      0 |      0 |          0 |
+|   controller            | npu_conv2d_controller |       3016 |       3007 |       0 |    9 | 2645 |      0 |      0 |         64 |
+|     (controller)        | npu_conv2d_controller |        671 |        671 |       0 |    0 |  448 |      0 |      0 |          0 |
+|     mac                 |    npu_tensor_mac_8x8 |       1959 |       1950 |       0 |    9 | 1967 |      0 |      0 |         64 |
+|     setup_multiplier    |      npu_u32_mul_iter |        417 |        417 |       0 |    0 |  230 |      0 |      0 |          0 |
+|   post                  |      npu_requant_post |       2401 |       2401 |       0 |    0 | 1638 |      2 |      0 |          4 |
++-------------------------+-----------------------+------------+------------+---------+------+------+--------+--------+------------+
+
+

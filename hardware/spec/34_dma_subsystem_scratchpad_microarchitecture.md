@@ -2,9 +2,9 @@
 
 文档版本：`0.3-draft`
 
-状态：P4 可综合集成原型；DMA、lane-striped Scratchpad、CONV2D controller 和
-8x8 MAC 已完成直接集成并通过 100 MHz Vivado 2026.1 OOC 综合，尚未经过真实
-Zynq HP 端口和 post-route 验证
+状态：P4 可综合集成原型；DMA、lane-striped Scratchpad、CONV2D controller、
+8x8 MAC 和 requant/post 已完成直接集成并通过 100 MHz Vivado 2026.1 OOC 综合，
+尚未经过真实 Zynq HP 端口和 post-route 验证
 
 ## 1. 已打通的数据路径
 
@@ -25,9 +25,9 @@ DMA AGU -> npu_dma_request_t -> AXI DMA Engine
                                              |
                               128-bit A + 512-bit W
                                              v
-                                CONV2D controller + 8x8 MAC
+                         CONV2D controller + 8x8 MAC + requant/post
                                              |
-                                  2-entry 256-bit O FIFO
+                                  2-entry 128-bit O FIFO
 ```
 
 `npu_dma_frontend.sv`、`npu_dma_engine.sv` 和 `npu_scratchpad.sv` 由
@@ -66,17 +66,18 @@ Operator -> source Tensor -> destination Tensor -> Quant -> Segment
 |---|---:|---:|---:|---:|---:|
 | `A0/A1` | 2 | 64 KiB | `2 × 4096 × 64` | 128 bit | 16 |
 | `W0/W1` | 2 | 32 KiB | `8 × 512 × 64` | 512 bit | 8 |
-| `O0/O1` | 2 | 16 KiB | `4 × 512 × 64` | 256 bit | 4 |
+| `O0/O1` | 2 | 16 KiB | `2 × 1024 × 64` | 128 bit | 4 |
 | **合计** | **6** | **224 KiB** | - | - | **56** |
 
 每条 lane 使用 simple-dual-port BRAM：一个物理方向写、另一个物理方向读。仲裁器允许
-主路径中的 DMA write 与 compute read、compute write 与 DMA read 并行；同一 bank
-的双写或双读由 DMA 优先，同一行的交叉读写也暂停 compute 并产生
-`collision_stall`。不同 bank 可并行访问。两侧均保留逐 byte write strobe。
+主路径中的 DMA write 与 compute read、compute write 与 DMA read可在不同 bank
+并行；同一 bank 的访问由 DMA 优先并暂停 compute，产生 `collision_stall`。
+合法 tile 调度使用 ping-pong bank，因此保守的 bank 级互斥不会降低计划吞吐，且
+避免在 compute ready 路径放置宽地址比较器。两侧均保留逐 byte write strobe。
 
 计算侧保留统一 512-bit debug/vector 接口，并新增可并行工作的独立 CONV2D 端口：
-A 读 128 bit、W 读 512 bit、O 写 256 bit。计算地址必须按行宽对齐：A 为 16 byte、
-W 为 64 byte、O 为 32 byte；lane 0 位于总线最低位并对应最低字节地址。
+A 读 128 bit、W 读 512 bit、O 写 128 bit。计算地址必须按行宽对齐：A 为 16 byte、
+W 为 64 byte、O 为 16 byte；lane 0 位于总线最低位并对应最低字节地址。
 读请求经过 bank BRAM 输出与顶层 response register 两级，稳态在 consumer ready 时
 仍可每拍接收一个请求并返回一个响应。顶层 pending selector 明确记录响应 bank，
 避免通过六 bank valid OR 推断响应归属。
@@ -91,11 +92,12 @@ lane-striped 端口每拍提供 128-bit activation 和 512-bit weight，满足 8
 token 的供数宽度。A/W bank 各自仲裁，join 逻辑允许其中一侧先被接受并记账；只有
 两侧请求均被接受后，controller 才推进到下一地址，避免 DMA 冲突造成 A/W 错配。
 
-MAC 每次返回完整 `8 × INT32`，O bank 用 256-bit 行在一拍内写入，不做串行拆分。
-MAC 和 O bank 之间有 2-entry 写回 FIFO，它把 O bank 冲突反压从 MAC、A/W response
-和 controller 计数器的组合路径上隔离。controller 发出内部 done 后，子系统先锁存
-event，等待写回 FIFO 完全排空，再对外产生 `conv_done_pulse` 和 `conv_event_set`；
-因此外部看到完成时，O bank 数据已经可读。
+MAC 每次返回完整 `8 × INT32` 中间值。流水线从 W bank 预取 bias 和 per-channel
+quant 参数，经 Q31/RNE、clamp 和 post-op 生成 `8 × INT16`，再以 128-bit 行写入
+O bank。post 和 O bank 之间有 2-entry 写回 FIFO，它把 O bank 冲突反压从 MAC、
+A/W response 和 controller 计数器的组合路径上隔离。流水线接受最后一个 post
+结果后，子系统仍等待写回 FIFO 完全排空，再对外产生完成脉冲和 event；因此外部
+看到完成时，O bank 数据已经可读。
 
 ## 5. 完成、错误与复位
 
@@ -116,27 +118,27 @@ Icarus 回归已覆盖：
   `dma_plan.json` 的请求逐 bit 一致；
 - A/W/O 六个 bank 的路由、byte strobe、两级同步读和 response back-pressure；
 - A/O 128-bit 与 W 512-bit 行映射、W 全行读写及连续周期计算读吞吐；
-- 不同 bank 并行访问、同 word 冲突时 DMA 优先且 accelerator 后续恢复；
+- 不同 bank 并行访问、同 bank 冲突时 DMA 优先且 accelerator 后续恢复；
 - 一条端到端 activation load 从命令和描述符开始，经 AXI read 写入 A0，再从
   accelerator port 读回；
 - AXI read error 返回正确的 source/reason/PC/tag。
 - 独立 A/W 宽读可同拍请求并正确配对；
-- 256-bit O 行可一次写入并由 64-bit DMA/debug 路径逐 lane 读回；
-- 最小 `1x1` CONV2D 已覆盖 A/W 写入、宽读、MAC、O FIFO、O bank 落地和完成事件。
+- 128-bit O 行可一次写入并由 64-bit DMA/debug 路径逐 lane 读回；
+- 最小 `1x1` CONV2D 已覆盖 A/W 写入、参数预取、MAC、requant/post、O FIFO、
+  O bank 落地和完成事件；
+- 四类真实 tile 共核对 9,472 次 A/W 请求和 672 个 post 后 8-lane 结果。
 
-尚未覆盖真实 HP interconnect、描述符/payload AXI 仲裁、post pipeline、CDC 和
-post-route Fmax。
+尚未覆盖真实 HP interconnect、描述符/payload AXI 仲裁、CDC 和 post-route Fmax。
 
 ## 7. Vivado OOC 结果
 
-| 项目 | `npu_scratchpad` | `npu_dma_subsystem`（含 CONV2D/MAC） |
-|---|---:|---:|
-| Slice LUT | 5,668 | 17,707 |
-| Slice Register | 1,244 | 10,993 |
-| RAMB36E1 | 56 | 56 |
-| DSP48E1 | 0 | 64 |
-| 100 MHz WNS | `+4.568 ns` | `+0.484 ns` |
-| 200 MHz WNS | `-0.432 ns` | 未作为当前退出门槛 |
+| 项目 | `npu_scratchpad` | `npu_conv2d_pipeline` | `npu_dma_subsystem` |
+|---|---:|---:|---:|
+| Slice LUT | 5,668 | 6,398 | 19,035 |
+| Slice Register | 1,244 | 5,521 | 13,856 |
+| RAMB36E1 | 56 | 2 | 58 |
+| DSP48E1 | 0 | 68 | 68 |
+| 100 MHz WNS | `+4.568 ns` | `+0.197 ns` | `+0.197 ns` |
 
 这是综合后 OOC 结果：没有最终 clock source、input/output delay、PS interconnect 和
 布局布线。Vivado 仍提示部分 BRAM 输出寄存器未合并，完整集成后需结合布局继续检查。
@@ -144,6 +146,5 @@ post-route Fmax。
 
 ## 8. 下一步
 
-实现 bias、per-channel requant、signed RNE、clamp 与 activation post pipeline，
-然后接入 `VEC_ADD`、`UPSAMPLE2X` 和完整 Command Processor。完整顶层 place/route
-前不把 OOC WNS 当作最终 Fmax。
+接入 `VEC_ADD`、`UPSAMPLE2X` 和完整 Command Processor。完整顶层 place/route 前
+不把 OOC WNS 当作最终 Fmax。

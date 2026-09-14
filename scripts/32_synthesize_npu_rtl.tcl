@@ -24,6 +24,7 @@ set valid_tops {
   npu_tensor_mac_8x8
   npu_requant_post
   npu_conv2d_controller
+  npu_conv2d_pipeline
 }
 if {[lsearch -exact $valid_tops $top] < 0} {
   puts stderr "unsupported top '$top'; choose one of: $valid_tops"
@@ -45,7 +46,8 @@ set source_files [list \
   [file join $rtl_dir npu_dma_subsystem.sv] \
   [file join $rtl_dir npu_tensor_mac_8x8.sv] \
   [file join $rtl_dir npu_requant_post.sv] \
-  [file join $rtl_dir npu_conv2d_controller.sv]]
+  [file join $rtl_dir npu_conv2d_controller.sv] \
+  [file join $rtl_dir npu_conv2d_pipeline.sv]]
 
 read_verilog -sv $source_files
 synth_design -top $top -part $part -mode out_of_context \

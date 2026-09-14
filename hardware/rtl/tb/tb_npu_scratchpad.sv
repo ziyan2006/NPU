@@ -53,8 +53,8 @@ module tb_npu_scratchpad;
   logic compute_output_write_ready_o;
   logic compute_output_write_bank_i = 1'b0;
   logic [31:0] compute_output_write_address_i = '0;
-  logic [255:0] compute_output_write_data_i = '0;
-  logic [31:0] compute_output_write_strobe_i = '0;
+  logic [127:0] compute_output_write_data_i = '0;
+  logic [15:0] compute_output_write_strobe_i = '0;
   logic collision_stall_o;
   logic [63:0] held_data;
 
@@ -373,28 +373,23 @@ module tb_npu_scratchpad;
     compute_activation_read_response_ready_i = 1'b0;
     compute_weight_read_response_ready_i = 1'b0;
 
-    // Four 64-bit lanes make one 256-bit O row, matching one 8xINT32 MAC
-    // result without a serialization cycle.
+    // Two 64-bit lanes make one 128-bit O row, matching eight post-processed
+    // INT16 activation lanes without padding gaps.
     compute_output_write_bank_i = 1'b0;
     compute_output_write_address_i = 32'd256;
     compute_output_write_data_i
-      = {64'hdddd_dddd_dddd_dddd, 64'hcccc_cccc_cccc_cccc,
-         64'hbbbb_bbbb_bbbb_bbbb, 64'haaaa_aaaa_aaaa_aaaa};
-    compute_output_write_strobe_i = 32'hffff_ffff;
+      = {64'hbbbb_bbbb_bbbb_bbbb, 64'haaaa_aaaa_aaaa_aaaa};
+    compute_output_write_strobe_i = 16'hffff;
     compute_output_write_valid_i = 1'b1;
     @(posedge clk_i);
     if (!compute_output_write_ready_o)
-      $fatal(1, "256-bit output write was not accepted");
+      $fatal(1, "128-bit output write was not accepted");
     @(negedge clk_i);
     compute_output_write_valid_i = 1'b0;
     dma_read_check(NPU_SPAD_O, 1'b0, 32'd256,
                    64'haaaa_aaaa_aaaa_aaaa);
     dma_read_check(NPU_SPAD_O, 1'b0, 32'd264,
                    64'hbbbb_bbbb_bbbb_bbbb);
-    dma_read_check(NPU_SPAD_O, 1'b0, 32'd272,
-                   64'hcccc_cccc_cccc_cccc);
-    dma_read_check(NPU_SPAD_O, 1'b0, 32'd280,
-                   64'hdddd_dddd_dddd_dddd);
 
     $display("npu_scratchpad: PASS");
     $finish;

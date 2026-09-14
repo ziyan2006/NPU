@@ -54,8 +54,8 @@ module npu_scratchpad (
   output logic         compute_output_write_ready_o,
   input  logic         compute_output_write_bank_i,
   input  logic [31:0]  compute_output_write_address_i,
-  input  logic [255:0] compute_output_write_data_i,
-  input  logic [31:0]  compute_output_write_strobe_i,
+  input  logic [127:0] compute_output_write_data_i,
+  input  logic [15:0]  compute_output_write_strobe_i,
 
   output logic         collision_stall_o
 );
@@ -90,7 +90,7 @@ module npu_scratchpad (
   logic [5:0][511:0] b_response_data;
   logic [1:0][127:0] activation_response_data;
   logic [1:0][511:0] weight_response_data;
-  logic [1:0][255:0] output_response_data;
+  logic [1:0][127:0] output_response_data;
   logic [5:0][31:0] b_write_address;
   logic [5:0][511:0] b_write_data;
   logic [5:0][63:0] b_write_strobe;
@@ -135,23 +135,6 @@ module npu_scratchpad (
       NPU_SPAD_W: bank_select = 3'd2 + bank;
       NPU_SPAD_O: bank_select = 3'd4 + bank;
       default: bank_select = 3'd7;
-    endcase
-  endfunction
-
-  function automatic logic same_compute_row(
-    input logic [1:0] kind,
-    input logic [31:0] narrow_address,
-    input logic [31:0] wide_address
-  );
-    case (kind)
-      NPU_SPAD_W:
-        same_compute_row = narrow_address[31:6] == wide_address[31:6];
-      NPU_SPAD_A:
-        same_compute_row = narrow_address[31:4] == wide_address[31:4];
-      NPU_SPAD_O:
-        same_compute_row = narrow_address[31:5] == wide_address[31:5];
-      default:
-        same_compute_row = 1'b0;
     endcase
   endfunction
 
@@ -265,17 +248,15 @@ module npu_scratchpad (
 
   // A lane-striped bank has one physical write direction and one read
   // direction. DMA keeps priority when two clients request the same direction.
-  // Opposite-direction operations may proceed together unless their rows are
-  // equal, in which case the accelerator waits to avoid BRAM collision modes.
+  // Opposite-direction operations on one bank also serialize. Legal tile
+  // schedules use ping-pong banks, and bank-level exclusion avoids a wide
+  // address comparator in the compute ready path.
   assign accelerator_write_collision = accelerator_write_valid_i
     && accelerator_write_select_valid
     && ((dma_write_valid_i && dma_write_select_valid
          && dma_write_select == accelerator_write_select)
         || (dma_read_request_valid_i && dma_read_select_valid
-            && dma_read_select == accelerator_write_select
-            && same_compute_row(accelerator_write_kind_i,
-                                dma_read_address_i,
-                                accelerator_write_address_i))
+            && dma_read_select == accelerator_write_select)
         || (compute_output_write_valid_i
             && accelerator_write_select == compute_output_select));
   assign accelerator_read_collision = accelerator_read_request_valid_i
@@ -283,10 +264,7 @@ module npu_scratchpad (
     && ((dma_read_request_valid_i && dma_read_select_valid
          && dma_read_select == accelerator_read_select)
         || (dma_write_valid_i && dma_write_select_valid
-            && dma_write_select == accelerator_read_select
-            && same_compute_row(accelerator_read_kind_i,
-                                dma_write_address_i,
-                                accelerator_read_address_i))
+            && dma_write_select == accelerator_read_select)
         || (compute_activation_read_request_valid_i
             && accelerator_read_select == compute_activation_select)
         || (compute_weight_read_request_valid_i
@@ -298,24 +276,18 @@ module npu_scratchpad (
       && ((dma_read_request_valid_i && dma_read_select_valid
            && dma_read_select == compute_activation_select)
           || (dma_write_valid_i && dma_write_select_valid
-              && dma_write_select == compute_activation_select
-              && same_compute_row(NPU_SPAD_A, dma_write_address_i,
-                                  compute_activation_read_address_i)));
+              && dma_write_select == compute_activation_select));
   assign compute_weight_read_collision
     = compute_weight_read_request_valid_i
       && ((dma_read_request_valid_i && dma_read_select_valid
            && dma_read_select == compute_weight_select)
           || (dma_write_valid_i && dma_write_select_valid
-              && dma_write_select == compute_weight_select
-              && same_compute_row(NPU_SPAD_W, dma_write_address_i,
-                                  compute_weight_read_address_i)));
+              && dma_write_select == compute_weight_select));
   assign compute_output_write_collision = compute_output_write_valid_i
     && ((dma_write_valid_i && dma_write_select_valid
          && dma_write_select == compute_output_select)
         || (dma_read_request_valid_i && dma_read_select_valid
-            && dma_read_select == compute_output_select
-            && same_compute_row(NPU_SPAD_O, dma_read_address_i,
-                                compute_output_write_address_i)));
+            && dma_read_select == compute_output_select));
   assign collision_stall_o = accelerator_write_collision
     || accelerator_read_collision || compute_activation_read_collision
     || compute_weight_read_collision || compute_output_write_collision;
@@ -429,9 +401,9 @@ module npu_scratchpad (
         b_write_address[compute_output_select]
           = compute_output_write_address_i;
         b_write_data[compute_output_select]
-          = {256'd0, compute_output_write_data_i};
+          = {384'd0, compute_output_write_data_i};
         b_write_strobe[compute_output_select]
-          = {32'd0, compute_output_write_strobe_i};
+          = {48'd0, compute_output_write_strobe_i};
       end
     end
   end
@@ -442,8 +414,8 @@ module npu_scratchpad (
     b_response_data[1][127:0] = activation_response_data[1];
     b_response_data[2] = weight_response_data[0];
     b_response_data[3] = weight_response_data[1];
-    b_response_data[4][255:0] = output_response_data[0];
-    b_response_data[5][255:0] = output_response_data[1];
+    b_response_data[4][127:0] = output_response_data[0];
+    b_response_data[5][127:0] = output_response_data[1];
   end
 
   genvar bank_index;
@@ -506,7 +478,7 @@ module npu_scratchpad (
     end
     for (bank_index = 0; bank_index < 2; bank_index = bank_index + 1) begin : g_output
       npu_scratchpad_bank #(
-        .WORD_COUNT(2048), .COMPUTE_LANES(4)
+        .WORD_COUNT(2048), .COMPUTE_LANES(2)
       ) bank (
         .clk_i(clk_i), .rst_ni(rst_ni),
         .port_a_write_valid_i(a_write_valid[bank_index+4]),
@@ -523,8 +495,8 @@ module npu_scratchpad (
         .port_b_write_valid_i(b_write_valid[bank_index+4]),
         .port_b_write_ready_o(b_write_ready[bank_index+4]),
         .port_b_write_address_i(b_write_address[bank_index+4]),
-        .port_b_write_data_i(b_write_data[bank_index+4][255:0]),
-        .port_b_write_strobe_i(b_write_strobe[bank_index+4][31:0]),
+        .port_b_write_data_i(b_write_data[bank_index+4][127:0]),
+        .port_b_write_strobe_i(b_write_strobe[bank_index+4][15:0]),
         .port_b_read_request_valid_i(b_read_valid[bank_index+4]),
         .port_b_read_request_ready_o(b_read_ready[bank_index+4]),
         .port_b_read_address_i(b_read_address[bank_index+4]),

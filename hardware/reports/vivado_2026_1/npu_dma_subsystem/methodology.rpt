@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
-| Date         : Tue Sep 15 01:24:30 2026
+| Date         : Tue Sep 15 02:23:11 2026
 | Host         : RAW2332 running 64-bit major release  (build 9200)
 | Command      : report_methodology -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_dma_subsystem/methodology.rpt
 | Design       : npu_dma_subsystem
@@ -23,11 +23,12 @@ Table of Contents
           Floorplan: design_1
       Design limits: <entire design considered>
              Max checks: <unlimited>
-             Checks found: 1056
+             Checks found: 1062
 +-----------+----------+--------------------------------------------+--------+
 | Rule      | Severity | Description                                | Checks |
 +-----------+----------+--------------------------------------------+--------+
-| SYNTH-6   | Warning  | Timing of a RAM block might be sub-optimal | 56     |
+| SYNTH-6   | Warning  | Timing of a RAM block might be sub-optimal | 58     |
+| SYNTH-10  | Warning  | Wide multiplier                            | 4      |
 | TIMING-18 | Warning  | Missing input or output delay              | 1000   |
 +-----------+----------+--------------------------------------------+--------+
 
@@ -35,282 +36,312 @@ Table of Contents
 -----------------
 SYNTH-6#1 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance conv2d_pipeline/post/tanh_lut_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#2 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance conv2d_pipeline/post/tanh_lut_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#3 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_2, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#4 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_3, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#5 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_4, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_2, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#6 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_5, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_3, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#7 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_6, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_4, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#8 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_7, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_5, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#9 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_6, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#10 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[0].lane/memory_reg_7, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#11 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#12 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#13 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#14 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#15 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_6, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#16 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_7, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#17 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_6, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#18 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[0].bank/g_memory_lane[1].lane/memory_reg_7, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#19 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_2, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#20 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_3, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#21 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_4, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_2, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#22 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_5, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_3, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#23 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_6, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_4, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#24 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_7, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_5, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#25 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_6, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#26 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[0].lane/memory_reg_7, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#27 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_2, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#28 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_3, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#29 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_4, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_2, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#30 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_5, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_3, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#31 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_6, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_4, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#32 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_7, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_5, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#33 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_output[0].bank/g_memory_lane[0].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_6, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#34 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_output[0].bank/g_memory_lane[1].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_activation[1].bank/g_memory_lane[1].lane/memory_reg_7, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#35 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_output[0].bank/g_memory_lane[2].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_output[0].bank/g_memory_lane[0].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#36 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_output[0].bank/g_memory_lane[3].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_output[0].bank/g_memory_lane[0].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#37 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_output[1].bank/g_memory_lane[0].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_output[0].bank/g_memory_lane[1].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#38 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_output[1].bank/g_memory_lane[1].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_output[0].bank/g_memory_lane[1].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#39 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_output[1].bank/g_memory_lane[2].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_output[1].bank/g_memory_lane[0].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#40 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_output[1].bank/g_memory_lane[3].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_output[1].bank/g_memory_lane[0].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#41 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[0].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_output[1].bank/g_memory_lane[1].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#42 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[1].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_output[1].bank/g_memory_lane[1].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#43 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[2].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[0].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#44 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[3].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[1].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#45 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[4].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[2].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#46 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[5].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[3].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#47 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[6].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[4].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#48 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[7].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[5].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#49 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[0].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[6].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#50 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[1].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[0].bank/g_memory_lane[7].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#51 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[2].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[0].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#52 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[3].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[1].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#53 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[4].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[2].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#54 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[5].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[3].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#55 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[6].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[4].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#56 Warning
 Timing of a RAM block might be sub-optimal  
+The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[5].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+Related violations: <none>
+
+SYNTH-6#57 Warning
+Timing of a RAM block might be sub-optimal  
+The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[6].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+Related violations: <none>
+
+SYNTH-6#58 Warning
+Timing of a RAM block might be sub-optimal  
 The timing for the instance scratchpad/g_weight[1].bank/g_memory_lane[7].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+Related violations: <none>
+
+SYNTH-10#1 Warning
+Wide multiplier  
+Detected multiplier at conv2d_pipeline/post/product_q0 of size 15x18, it is decomposed from a wide multipler into 4 DSP blocks.
+Related violations: <none>
+
+SYNTH-10#2 Warning
+Wide multiplier  
+Detected multiplier at conv2d_pipeline/post/product_q0__0 of size 18x18, it is decomposed from a wide multipler into 4 DSP blocks.
+Related violations: <none>
+
+SYNTH-10#3 Warning
+Wide multiplier  
+Detected multiplier at conv2d_pipeline/post/product_q_reg of size 15x15, it is decomposed from a wide multipler into 4 DSP blocks.
+Related violations: <none>
+
+SYNTH-10#4 Warning
+Wide multiplier  
+Detected multiplier at conv2d_pipeline/post/product_q_reg__0 of size 18x15, it is decomposed from a wide multipler into 4 DSP blocks.
 Related violations: <none>
 
 TIMING-18#1 Warning
