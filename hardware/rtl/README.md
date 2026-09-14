@@ -10,7 +10,7 @@
 - `npu_dma_agu.sv`：把 DMA command/descriptor 转换为带独立 DDR/SP stride 的三维请求，并检查边界；
 - `npu_dma_frontend.sv`：按命令取回所需描述符并驱动 AGU；
 - `npu_dma_engine.sv`：执行清零和 AXI4 read/write burst，处理 4 KiB、窄尾部、back-pressure 与错误；
-- `npu_scratchpad_bank.sv` / `npu_scratchpad.sv`：A/W/O 六 bank 的双口 BRAM 推断原型与冲突仲裁；
+- `npu_scratchpad_bank.sv` / `npu_scratchpad.sv`：A/W/O 六 bank 的 lane-striped simple-dual-port BRAM、512-bit 计算接口与冲突仲裁；
 - `npu_dma_subsystem.sv`：把 fetch/cache/AGU/Engine/Scratchpad 接成 DMA 垂直链路；
 - `npu_tensor_mac_8x8.sv`：64-lane signed INT16xINT8 DSP 阵列、三级加法树、INT32 累加和结果反压；
 - `include/npu_dma_pkg.sv`：DMA 内部接口类型。

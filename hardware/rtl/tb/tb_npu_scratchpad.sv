@@ -25,8 +25,8 @@ module tb_npu_scratchpad;
   logic [1:0] accelerator_write_kind_i = '0;
   logic accelerator_write_bank_i = 1'b0;
   logic [31:0] accelerator_write_address_i = '0;
-  logic [63:0] accelerator_write_data_i = '0;
-  logic [7:0] accelerator_write_strobe_i = '0;
+  logic [511:0] accelerator_write_data_i = '0;
+  logic [63:0] accelerator_write_strobe_i = '0;
   logic accelerator_read_request_valid_i = 1'b0;
   logic accelerator_read_request_ready_o;
   logic [1:0] accelerator_read_kind_i = '0;
@@ -34,7 +34,7 @@ module tb_npu_scratchpad;
   logic [31:0] accelerator_read_address_i = '0;
   logic accelerator_read_response_valid_o;
   logic accelerator_read_response_ready_i = 1'b0;
-  logic [63:0] accelerator_read_response_data_o;
+  logic [511:0] accelerator_read_response_data_o;
   logic collision_stall_o;
   logic [63:0] held_data;
 
@@ -66,7 +66,8 @@ module tb_npu_scratchpad;
     input logic [1:0] kind,
     input logic bank,
     input logic [31:0] address,
-    input logic [63:0] data
+    input logic [511:0] data,
+    input logic [63:0] strobe
   );
     begin
       @(negedge clk_i);
@@ -74,7 +75,7 @@ module tb_npu_scratchpad;
       accelerator_write_bank_i = bank;
       accelerator_write_address_i = address;
       accelerator_write_data_i = data;
-      accelerator_write_strobe_i = 8'hff;
+      accelerator_write_strobe_i = strobe;
       accelerator_write_valid_i = 1'b1;
       do @(posedge clk_i); while (!accelerator_write_ready_o);
       @(negedge clk_i);
@@ -112,7 +113,7 @@ module tb_npu_scratchpad;
     input logic [1:0] kind,
     input logic bank,
     input logic [31:0] address,
-    input logic [63:0] expected
+    input logic [511:0] expected
   );
     begin
       @(negedge clk_i);
@@ -137,24 +138,78 @@ module tb_npu_scratchpad;
     repeat (4) @(posedge clk_i);
     rst_ni = 1'b1;
 
-    // Byte strobes update only selected lanes, and the accelerator port sees
-    // the same physical A0 memory through the second BRAM port.
+    // Byte strobes update only selected DMA lanes. A compute read returns both
+    // 64-bit lanes of the 128-bit activation row in address order.
     dma_write(NPU_SPAD_A, 1'b0, 32'd16,
               64'h1122_3344_5566_7788, 8'hff);
     dma_write(NPU_SPAD_A, 1'b0, 32'd16,
               64'haabb_ccdd_eeff_0011, 8'h0c);
+    dma_write(NPU_SPAD_A, 1'b0, 32'd24,
+              64'h99aa_bbcc_ddee_ff00, 8'hff);
     accelerator_read_check(NPU_SPAD_A, 1'b0, 32'd16,
-                           64'h1122_3344_eeff_7788);
+      {384'd0, 64'h99aa_bbcc_ddee_ff00, 64'h1122_3344_eeff_7788});
 
-    // Each kind/bank is physically distinct.
-    accelerator_write(NPU_SPAD_W, 1'b1, 32'd24,
-                      64'hdead_beef_1234_5678);
-    dma_read_check(NPU_SPAD_W, 1'b1, 32'd24,
+    // A 512-bit weight write distributes eight consecutive 64-bit lanes.
+    accelerator_write(NPU_SPAD_W, 1'b1, 32'd64,
+      {64'h7777_7777_7777_7777, 64'h6666_6666_6666_6666,
+       64'h5555_5555_5555_5555, 64'h4444_4444_4444_4444,
+       64'h3333_3333_3333_3333, 64'h2222_2222_2222_2222,
+       64'h1111_1111_1111_1111, 64'hdead_beef_1234_5678},
+      64'hffff_ffff_ffff_ffff);
+    accelerator_read_check(NPU_SPAD_W, 1'b1, 32'd64,
+      {64'h7777_7777_7777_7777, 64'h6666_6666_6666_6666,
+       64'h5555_5555_5555_5555, 64'h4444_4444_4444_4444,
+       64'h3333_3333_3333_3333, 64'h2222_2222_2222_2222,
+       64'h1111_1111_1111_1111, 64'hdead_beef_1234_5678});
+    dma_read_check(NPU_SPAD_W, 1'b1, 32'd64,
                    64'hdead_beef_1234_5678);
+    dma_read_check(NPU_SPAD_W, 1'b1, 32'd120,
+                   64'h7777_7777_7777_7777);
+    // Each kind/bank remains physically distinct.
     dma_write(NPU_SPAD_O, 1'b1, 32'd8,
               64'h0102_0304_0506_0708, 8'hff);
     dma_read_check(NPU_SPAD_O, 1'b1, 32'd8,
                    64'h0102_0304_0506_0708);
+
+    // Once the two-stage read path is full, aligned compute requests and
+    // responses both sustain one transfer per cycle.
+    dma_write(NPU_SPAD_A, 1'b0, 32'd32,
+              64'h0000_0000_0000_0032, 8'hff);
+    dma_write(NPU_SPAD_A, 1'b0, 32'd40,
+              64'h0000_0000_0000_0040, 8'hff);
+    dma_write(NPU_SPAD_A, 1'b0, 32'd48,
+              64'h0000_0000_0000_0048, 8'hff);
+    dma_write(NPU_SPAD_A, 1'b0, 32'd56,
+              64'h0000_0000_0000_0056, 8'hff);
+    @(negedge clk_i);
+    accelerator_read_kind_i = NPU_SPAD_A;
+    accelerator_read_bank_i = 1'b0;
+    accelerator_read_address_i = 32'd32;
+    accelerator_read_response_ready_i = 1'b1;
+    accelerator_read_request_valid_i = 1'b1;
+    @(posedge clk_i);
+    if (!accelerator_read_request_ready_o)
+      $fatal(1, "first pipelined read was not accepted");
+    @(negedge clk_i);
+    accelerator_read_address_i = 32'd48;
+    @(posedge clk_i);
+    if (!accelerator_read_request_ready_o)
+      $fatal(1, "consecutive pipelined read was not accepted");
+    @(negedge clk_i);
+    accelerator_read_request_valid_i = 1'b0;
+    if (!accelerator_read_response_valid_o
+        || accelerator_read_response_data_o[127:0]
+           !== {64'h0000_0000_0000_0040, 64'h0000_0000_0000_0032})
+      $fatal(1, "first pipelined response mismatch");
+    @(posedge clk_i);
+    @(negedge clk_i);
+    if (!accelerator_read_response_valid_o
+        || accelerator_read_response_data_o[127:0]
+           !== {64'h0000_0000_0000_0056, 64'h0000_0000_0000_0048})
+      $fatal(1, "second pipelined response mismatch");
+    @(posedge clk_i);
+    @(negedge clk_i);
+    accelerator_read_response_ready_i = 1'b0;
 
     // A simultaneous read/write on one physical port accepts the write and
     // holds the read request for the following cycle instead of deadlocking.
@@ -219,8 +274,9 @@ module tb_npu_scratchpad;
     accelerator_write_kind_i = NPU_SPAD_A;
     accelerator_write_bank_i = 1'b1;
     accelerator_write_address_i = 32'd64;
-    accelerator_write_data_i = 64'hb1b1_b1b1_b1b1_b1b1;
-    accelerator_write_strobe_i = 8'hff;
+    accelerator_write_data_i = {384'd0,
+      64'hb2b2_b2b2_b2b2_b2b2, 64'hb1b1_b1b1_b1b1_b1b1};
+    accelerator_write_strobe_i = 64'h0000_0000_0000_ffff;
     accelerator_write_valid_i = 1'b1;
     @(posedge clk_i);
     if (!dma_write_ready_o || !accelerator_write_ready_o || collision_stall_o)
@@ -245,8 +301,9 @@ module tb_npu_scratchpad;
     accelerator_write_kind_i = NPU_SPAD_O;
     accelerator_write_bank_i = 1'b0;
     accelerator_write_address_i = 32'd128;
-    accelerator_write_data_i = 64'h2222_2222_2222_2222;
-    accelerator_write_strobe_i = 8'hff;
+    accelerator_write_data_i = {384'd0,
+      64'h3333_3333_3333_3333, 64'h2222_2222_2222_2222};
+    accelerator_write_strobe_i = 64'h0000_0000_0000_ffff;
     accelerator_write_valid_i = 1'b1;
     @(posedge clk_i);
     if (!dma_write_ready_o || accelerator_write_ready_o || !collision_stall_o)

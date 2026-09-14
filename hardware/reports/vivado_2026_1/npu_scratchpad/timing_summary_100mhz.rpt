@@ -1,14 +1,14 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
-| Date         : Tue Sep 15 00:32:42 2026
+| Date         : Tue Sep 15 00:32:46 2026
 | Host         : RAW2332 running 64-bit major release  (build 9200)
-| Command      : report_timing_summary -delay_type max -max_paths 20 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_scratchpad/timing_summary.rpt
+| Command      : report_timing_summary -delay_type max -max_paths 20 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_scratchpad/timing_summary_100mhz.rpt
 | Design       : npu_scratchpad
 | Device       : 7z020-clg400
 | Speed File   : -1  PRODUCTION 1.12 2019-11-22
 | Design State : Synthesized
-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
 Timing Summary Report
 
@@ -41,7 +41,12 @@ Timing Summary Report
 | ------------------
 ------------------------------------------------------------------------------------------------
 
-No report available as report_methodology has not been run prior. Run report_methodology on the current design for the summary of methodology violations.
+Rule       Severity  Description                                 Violations  
+---------  --------  ------------------------------------------  ----------  
+SYNTH-6    Warning   Timing of a RAM block might be sub-optimal  56          
+TIMING-18  Warning   Missing input or output delay               1000        
+
+Note: This report is based on the most recent report_methodology run and may not be up-to-date. Run report_methodology on the current design for the latest report.
 
 
 
@@ -138,7 +143,7 @@ Table of Contents
 
     WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
     -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      0.360        0.000                      0                 2220        2.000        0.000                       0                   708  
+      5.360        0.000                      0                 2220        4.500        0.000                       0                   708  
 
 
 All user specified timing constraints are met.
@@ -149,9 +154,9 @@ All user specified timing constraints are met.
 | -------------
 ------------------------------------------------------------------------------------------------
 
-Clock     Waveform(ns)         Period(ns)      Frequency(MHz)
------     ------------         ----------      --------------
-core_clk  {0.000 2.500}        5.000           200.000         
+Clock     Waveform(ns)       Period(ns)      Frequency(MHz)
+-----     ------------       ----------      --------------
+core_clk  {0.000 5.000}      10.000          100.000         
 
 
 ------------------------------------------------------------------------------------------------
@@ -161,7 +166,7 @@ core_clk  {0.000 2.500}        5.000           200.000
 
 Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
 -----             -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-core_clk            0.360        0.000                      0                 2220        2.000        0.000                       0                   708  
+core_clk            5.360        0.000                      0                 2220        4.500        0.000                       0                   708  
 
 
 ------------------------------------------------------------------------------------------------
@@ -192,26 +197,26 @@ Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing 
 From Clock:  core_clk
   To Clock:  core_clk
 
-Setup :            0  Failing Endpoints,  Worst Slack        0.360ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        5.360ns,  Total Violation        0.000ns
 Hold  :           NA  Failing Endpoints,  Worst Slack           NA  ,  Total Violation           NA
-PW    :            0  Failing Endpoints,  Worst Slack        2.000ns,  Total Violation        0.000ns
+PW    :            0  Failing Endpoints,  Worst Slack        4.500ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
 
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[11]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -241,31 +246,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[11]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[11]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[11]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[13]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -295,31 +300,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[13]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[13]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[13]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[15]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -349,31 +354,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[15]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[15]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[15]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[17]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -403,31 +408,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[17]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[17]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[17]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[19]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -457,31 +462,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[19]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[19]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[19]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[1]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -511,31 +516,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[1]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[1]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[1]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[21]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -565,31 +570,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[21]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[21]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[21]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[23]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -619,31 +624,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[23]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[23]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[23]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[25]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -673,31 +678,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[25]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[25]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[25]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[27]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -727,31 +732,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[27]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[27]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[27]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[29]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -781,31 +786,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[29]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[29]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[29]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[31]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -835,31 +840,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[31]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[31]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[31]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[33]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -889,31 +894,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[33]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[33]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[33]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[35]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -943,31 +948,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[35]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[35]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[35]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[37]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -997,31 +1002,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[37]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[37]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[37]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[39]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1051,31 +1056,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[39]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[39]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[39]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[3]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1105,31 +1110,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[3]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[3]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[3]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[41]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1159,31 +1164,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[41]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[41]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[41]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[43]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1213,31 +1218,31 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[43]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[43]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[43]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
-Slack (MET) :             0.360ns  (required time - arrival time)
+Slack (MET) :             5.360ns  (required time - arrival time)
   Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKBWRCLK
-                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Destination:            dma_output_data_q_reg[45]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@2.500ns period=5.000ns})
+                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
-  Requirement:            5.000ns  (core_clk rise@5.000ns - core_clk rise@0.000ns)
+  Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
   Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
   Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
-    Destination Clock Delay (DCD):    0.924ns = ( 5.924 - 5.000 ) 
+    Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
     Clock Pessimism Removal (CPR):    0.000ns
   Clock Uncertainty:      0.035ns  ((TSJ^2 + TIJ^2)^1/2 + DJ) / 2 + PE
@@ -1267,18 +1272,18 @@ Slack (MET) :             0.360ns  (required time - arrival time)
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
-                                                      5.000     5.000 r  <hidden>
-                                                      0.000     5.000 r  clk_i
-                         net (fo=707, unset)          0.924     5.924    clk_i
+                                                     10.000    10.000 r  <hidden>
+                                                      0.000    10.000 r  clk_i
+                         net (fo=707, unset)          0.924    10.924    clk_i
                          FDRE                                         r  dma_output_data_q_reg[45]/C
-                         clock pessimism              0.000     5.924    <hidden>
-                         clock uncertainty           -0.035     5.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113     6.002    dma_output_data_q_reg[45]
+                         clock pessimism              0.000    10.924    <hidden>
+                         clock uncertainty           -0.035    10.889    <hidden>
+                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[45]
   -------------------------------------------------------------------
-                         required time                          6.002    <hidden>
+                         required time                         11.002    <hidden>
                          arrival time                          -5.642    <hidden>
   -------------------------------------------------------------------
-                         slack                                  0.360    <hidden>
+                         slack                                  5.360    <hidden>
 
 
 
@@ -1287,71 +1292,71 @@ Slack (MET) :             0.360ns  (required time - arrival time)
 Pulse Width Checks
 --------------------------------------------------------------------------------------
 Clock Name:         core_clk
-Waveform(ns):       { 0.000 2.500 }
-Period(ns):         5.000
+Waveform(ns):       { 0.000 5.000 }
+Period(ns):         10.000
 Sources:            { clk_i }
 
 Check Type        Corner  Lib Pin             Reference Pin  Required(ns)  Actual(ns)  Slack(ns)  Location  Pin
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_1/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_2/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_3/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_4/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_5/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_6/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_7/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_6/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_7/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[1].bank/g_memory_lane[0].lane/memory_reg_0/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[1].bank/g_memory_lane[0].lane/memory_reg_1/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[1].bank/g_memory_lane[0].lane/memory_reg_2/CLKARDCLK
-Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         5.000       2.056                g_activation[1].bank/g_memory_lane[0].lane/memory_reg_3/CLKARDCLK
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[0]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[0]/C
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[100]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[100]/C
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[101]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[101]/C
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[102]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[102]/C
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[103]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[103]/C
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[104]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[104]/C
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[105]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[105]/C
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[106]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[106]/C
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[107]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[107]/C
-Low Pulse Width   Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[108]/C
-Low Pulse Width   Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[108]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[0]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[0]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[100]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[100]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[101]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[101]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[102]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[102]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[103]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[103]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[104]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[104]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[105]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[105]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[106]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[106]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[107]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[107]/C
-High Pulse Width  Slow    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[108]/C
-High Pulse Width  Fast    FDRE/C              n/a            0.500         2.500       2.000                accelerator_output_data_q_reg[108]/C
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_1/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_2/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_3/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_4/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_5/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_6/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[0].lane/memory_reg_7/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_6/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[0].bank/g_memory_lane[1].lane/memory_reg_7/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[1].bank/g_memory_lane[0].lane/memory_reg_0/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[1].bank/g_memory_lane[0].lane/memory_reg_1/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[1].bank/g_memory_lane[0].lane/memory_reg_2/CLKARDCLK
+Min Period        n/a     RAMB36E1/CLKARDCLK  n/a            2.944         10.000      7.056                g_activation[1].bank/g_memory_lane[0].lane/memory_reg_3/CLKARDCLK
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[0]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[0]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[100]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[100]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[101]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[101]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[102]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[102]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[103]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[103]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[104]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[104]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[105]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[105]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[106]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[106]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[107]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[107]/C
+Low Pulse Width   Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[108]/C
+Low Pulse Width   Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[108]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[0]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[0]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[100]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[100]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[101]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[101]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[102]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[102]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[103]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[103]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[104]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[104]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[105]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[105]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[106]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[106]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[107]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[107]/C
+High Pulse Width  Slow    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[108]/C
+High Pulse Width  Fast    FDRE/C              n/a            0.500         5.000       4.500                accelerator_output_data_q_reg[108]/C
 
 
 

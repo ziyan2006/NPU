@@ -35,9 +35,10 @@
 P4 已确定一项内部接口约束：DMA engine 接收 `x_bytes × y_count × z_count` 和 DDR/SP 独立 stride 的标准请求；segmented concat 必须按像素通道交织搬运。`DMA_LOAD.imm[10]` 显式区分 vector quant 与 convolution quant，避免从参数数量推断用途。该约束仍随 ISA 处于提案状态，网络 B 通过前不冻结。
 
 P4 DMA 垂直链路已接通 Descriptor Fetch/Cache、AGU、AXI Engine 和 6-bank
-Scratchpad。当前 BRAM wrapper 的 accelerator 侧仅为 64-bit 集成端口，不代表
-ADR-020 的最终 MAC 供数结构；宽端口 lane striping 与 row buffer 的选择留给
-MAC 小原型和 Vivado 综合决定，避免仅凭容量可装下就误判端口带宽已经闭合。
+Scratchpad。Scratchpad 已选择 64-bit lane striping：DMA 端保持 64 bit，计算端
+A/O 为 128 bit、W 为 512 bit。Vivado 2026.1 OOC 实际映射仍为 56 RAMB36，
+200 MHz WNS `+0.360 ns`；回归覆盖宽行映射和连续每拍计算读。该证据冻结 P4
+内部供数接口，但不冻结最终 part、post-route Fmax 或尚未实现的 P bank。
 
 P4 控制路径接受共享无 DSP 乘法器方案：AGU 采用 16-cycle radix-4 shift/add，
 DMA burst planner 采用两级状态。Vivado 2026.1 OOC 结果为 7,546 Slice LUT、
@@ -51,10 +52,9 @@ OOC 结果为 1,996 Slice LUT、1,968 FF、64 DSP48E1、0 BRAM36，200 MHz WNS
 post-route 证据，因此 ADR-010 仍保持“提案”。综合比较同时排除了让加法树自动占用
 额外 16 个 DSP 的方案：64 个 DSP 仅用于乘法，加法树使用 LUT/carry chain。
 
-MAC 满速输入为每拍 128-bit activation + 512-bit weight。当前 A/W 各一个 64-bit
-计算端口不足以直连，下一版采用 512-bit weight buffer 与 128-bit activation
-ping/pong buffer 做预取，并用真实 tile 循环测 refill stall；在该实验前不冻结
-ADR-020 的物理 bank 组织。
+MAC 满速输入为每拍 128-bit activation + 512-bit weight，现由 Scratchpad 宽行
+直接提供。下一版用真实 tile loop 验证 A/W 地址、连续发射与 bank 冲突；在完整
+CONV2D 和第二网络通过前，ADR-020 的总容量仍保持“提案”。
 
 ## 3. 必须确认的系统问题
 

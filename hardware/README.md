@@ -72,4 +72,6 @@ vivado -mode batch -nojournal -nolog `
 ```
 
 MAC 单元使用 1,996 Slice LUT、1,968 FF、64 DSP48E1、0 BRAM，200 MHz OOC
-WNS `+1.701 ns`。它尚未包含 CONV2D loop controller、row buffer 和 post pipeline。
+WNS `+1.701 ns`。lane-striped Scratchpad 使用 3,147 Slice LUT、596 FF、56 RAMB36，
+计算端提供 128-bit A/O 与 512-bit W，200 MHz OOC WNS `+0.360 ns`。两者尚未通过
+CONV2D loop controller 集成和 post pipeline 验证。

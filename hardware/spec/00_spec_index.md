@@ -42,7 +42,7 @@
 | P1 需求基线 | 带编号的功能、性能、接口、资源要求 | 每个 P0 要求有验证方法 | **进行中** |
 | P2 工作负载分析 | 算子覆盖、张量尺寸、MAC/带宽/生命周期 | 当前模型和第二模型均可映射 | 部分完成 |
 | P3 架构/ISA 探索 | 数据流、存储层次、ISA、周期模型 | 性能和 BRAM 预算闭合 | **进行中，网络 A 已有 tile 证据** |
-| P4 微架构规格 | 模块接口、流水线、时序、异常行为 | RTL 接口和逐周期行为可实现 | **进行中：控制、DMA/SP 和 8x8 MAC 原型** |
+| P4 微架构规格 | 模块接口、流水线、时序、异常行为 | RTL 接口和逐周期行为可实现 | **进行中：控制、宽口 DMA/SP 和 8x8 MAC 原型** |
 | P5 可执行参考 | 图编译器、位精确模拟器、测试向量 | 所有 P0 指令有 golden | **进行中：ISA/DMA golden 已完成** |
 | P6 RTL/HLS 实现 | 可综合模块和软件驱动 | 模块仿真通过 | **进行中：控制、DMA/SP 和 MAC slice 已实现** |
 | P7 集成验证 | SoC、DMA、中断、CDC、回归 | 覆盖率和需求回归闭合 | 未开始 |
@@ -50,8 +50,9 @@
 | P9 上板验收 | 长稳、实时性、音频效果 | 所有 P0 板级测试通过 | 未开始 |
 
 P4/P5/P6 当前按垂直切片并行推进。DMA/Scratchpad 切片已有软件 golden、RTL
-回归和 OOC 综合证据；8x8 Tensor MAC 算术切片也已 bit-exact 并通过 200 MHz OOC，
-但 CONV2D loop/row buffer 与 Vector/post 数值切片仍需完成后才能进入完整 SoC 集成。
+回归和 OOC 综合证据，lane-striped 计算口在 56 BRAM36 下通过 200 MHz；8x8 Tensor
+MAC 算术切片也已 bit-exact 并通过 200 MHz OOC，但 CONV2D loop 与 Vector/post
+数值切片仍需完成后才能进入完整 SoC 集成。
 
 ## 4. 系统边界
 

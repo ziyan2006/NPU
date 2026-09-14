@@ -2,8 +2,8 @@
 
 文档版本：`0.1-draft`
 
-状态：P4 可综合数值切片；MAC 算术和流协议已验证，CONV2D loop controller、
-row buffer、bias/requant/post-op 尚未接入
+状态：P4 可综合数值切片；MAC 算术、流协议和 Scratchpad 供数宽度已验证，
+CONV2D loop controller、bias/requant/post-op 尚未接入
 
 ## 1. 模块边界
 
@@ -59,17 +59,14 @@ DSP multiply -> add 2 -> add 4 -> add 8 -> INT32 accumulate/result
 
 ## 4. Scratchpad 带宽结论
 
-MAC 满速每拍需要 128-bit activation 和 512-bit weight，共 640 bit。当前 A/W bank
-各只有一个 64-bit accelerator 读口，不能直接喂满阵列。O8I8 中一个权重 block
-恰为 64 byte，因此下一阶段采用显式预取：
+MAC 满速每拍需要 128-bit activation 和 512-bit weight，共 640 bit。Scratchpad
+现已采用 64-bit lane striping：A bank 两 lane 并行读 128 bit，W bank 八 lane
+并行读 512 bit。O8I8 的一个 8×8 权重 token 恰为连续 64 byte，因此无需八拍预取
+或复制 BRAM 数据。
 
-1. 从 W bank 用 8 次 64-bit read 填充 512-bit weight buffer，并跨空间像素复用；
-2. 从 A bank 用 2 次 64-bit read 组装一个 128-bit activation vector；
-3. 使用 ping/pong row buffer 将 BRAM 读取与 MAC 发射重叠；
-4. 用真实 tile 循环仿真验证 refill stall，而不是继续沿用“天然每拍供数”的假设。
-
-因此该原型证明 64-lane 算术资源和时序可行，但尚未证明完整 CONV2D 能达到
-每拍一个 token。
+宽口 Scratchpad 在不增加 56 个 RAMB36 容量映射的情况下通过 200 MHz OOC，且回归
+证明计算读可连续每拍发射。尚未证明的是 CONV2D loop controller 能正确生成两类
+地址并维持整条 A/W/MAC 流水；这由下一阶段真实 tile 仿真关闭。
 
 ## 5. Vivado 2026.1 OOC 证据
 
@@ -86,7 +83,7 @@ MAC 满速每拍需要 128-bit activation 和 512-bit weight，共 640 bit。当
 乘法显式映射到 64 个 DSP48E1，加法树和 accumulator 显式保留在 LUT/carry
 chain，防止综合器额外消耗 16 个 DSP。`synth_design` 为 0 error、0 critical
 warning、0 synthesis warning。OOC 顶层没有 input/output delay 和最终 clock source，
-结果仍需在 row buffer、loop controller 和 SoC 顶层接入后做 post-route 复核。
+结果仍需在 loop controller、Scratchpad 和 SoC 顶层接入后做 post-route 复核。
 
 ## 6. 当前验证与下一步
 
@@ -94,6 +91,6 @@ Icarus 回归使用独立 Python golden，覆盖 INT12/INT16 正负值、INT8 �
 尾 lane、单 token/多 token 累加、INT32 回绕和随机结果反压，并检查结果在反压时
 保持稳定。
 
-下一步实现 `CONV2D` loop controller 和 A/W ping/pong row buffer，先执行一个真实
-O8I8 `1x1` tile，再扩展到 `1x3/3x3`、padding、stride 和 segmented input。随后
-接 bias + per-channel Q31 requant/RNE，形成首个命令级 bit-exact 计算闭环。
+下一步实现 `CONV2D` loop controller，先执行一个真实 O8I8 `1x1` tile，再扩展到
+`1x3/3x3`、padding、stride 和 segmented input。随后接 bias + per-channel Q31
+requant/RNE，形成首个命令级 bit-exact 计算闭环。

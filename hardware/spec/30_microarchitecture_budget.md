@@ -123,10 +123,10 @@ P3 软件调度器当前采用以下子划分，它仍是逻辑容量提案，�
 两个 A bank 加两个 O bank 共 160 KiB，低于 activation 类 216 KiB 预算；两个 W bank 共 64 KiB，低于 108 KiB；两个 P bank 共 32 KiB，低于 accumulator/post 类 54 KiB。剩余容量用于边界行、DMA FIFO、端口复制或综合映射损耗，不能在 RTL 前当作可自由分配的净容量。
 
 P4 Scratchpad 原型已按 `A0/A1=2x64 KiB`、`W0/W1=2x32 KiB`、
-`O0/O1=2x16 KiB` 实现 6 个 64-bit true-dual-port bank。Vivado 2026.1
-在参考 `xc7z020clg400-1` 上实际推断为 56 个 RAMB36E1，和容量推导一致；加上
-尚未实现的 `P0/P1=2x16 KiB` 理想值 8 个，共 64 个。最终 MAC 宽读口可能引入
-lane striping、row buffer 或端口复制，所以 56 只冻结当前 DMA 原型，不冻结完整 NPU。
+`O0/O1=2x16 KiB` 实现 6 个 lane-striped bank。DMA 端保持 64 bit，计算端 A/O
+为 128 bit、W 为 512 bit。Vivado 2026.1 在参考 `xc7z020clg400-1` 上实际推断为
+56 个 RAMB36E1，和容量推导一致；宽口没有复制数据。加上尚未实现的
+`P0/P1=2x16 KiB` 理想值 8 个，共 64 个。
 
 ### INT12 存储决策
 
@@ -208,8 +208,10 @@ Tensor MAC 的 DSP。100 MHz WNS 为 `+1.888 ns`；200 MHz WNS 为 `-3.112 ns`�
 0 BRAM36，200 MHz WNS `+1.701 ns`。乘法固定使用 64 DSP，加法树使用 LUT/carry
 chain。DMA 与 MAC 的 OOC 资源简单相加约为 9,542 Slice LUT、9,112 FF、56
 BRAM36 和 64 DSP，仍在 NPU 基线预算内；完整集成后的共享逻辑和布线结果才是最终值。
-MAC 每拍需要 128-bit A 和 512-bit W，现有 64-bit accelerator 端口必须增加预取
-row buffer，不能依据 MAC 单体时序宣称完整计算路径已经闭合。
+MAC 每拍需要的 128-bit A 和 512-bit W 已由 lane-striped Scratchpad 原生提供；
+Scratchpad 单体为 3,147 Slice LUT、596 FF、56 BRAM36，200 MHz WNS `+0.360 ns`。
+仍不能依据两个单体结果宣称完整计算路径闭合，必须继续验证 loop controller、
+A/W 并行调度和集成后的 place/route。
 
 ## 9. 时钟与复位
 
