@@ -67,6 +67,18 @@ module tb_npu_dma_subsystem;
   logic accelerator_read_response_valid_o;
   logic accelerator_read_response_ready_i = 1'b0;
   logic [511:0] accelerator_read_response_data_o;
+  logic conv_start_valid_i = 1'b0;
+  logic conv_start_ready_o;
+  logic [511:0] conv_operator_desc_bits_i = '0;
+  logic conv_activation_bank_i = 1'b0;
+  logic conv_weight_bank_i = 1'b0;
+  logic conv_output_bank_i = 1'b0;
+  logic [7:0] conv_completion_event_i = NPU_EVENT_C0_DONE;
+  logic conv_busy_o;
+  logic conv_done_pulse_o;
+  logic [7:0] conv_event_set_o;
+  logic conv_error_pulse_o;
+  logic [3:0] conv_error_reason_o;
   logic busy_o;
   logic [7:0] event_set_o;
   logic error_pulse_o;
@@ -89,7 +101,12 @@ module tb_npu_dma_subsystem;
   logic [8:0] read_beats_q = '0;
   logic [3:0] read_beat_bytes_q = '0;
   logic inject_read_error = 1'b0;
+  logic [127:0] conv_activation_vector;
+  logic [511:0] conv_weight_vector;
+  logic [255:0] conv_expected_result;
   integer timeout;
+  integer input_lane;
+  integer output_lane;
 
   always #5 clk_i = ~clk_i;
   assign descriptor_memory_request_ready_i = !descriptor_pending_q
@@ -196,6 +213,48 @@ module tb_npu_dma_subsystem;
     end
   endtask
 
+  task automatic accelerator_write(
+    input logic [1:0] kind,
+    input logic bank,
+    input logic [31:0] address,
+    input logic [511:0] data,
+    input logic [63:0] strobe
+  );
+    begin
+      @(negedge clk_i);
+      accelerator_write_kind_i = kind;
+      accelerator_write_bank_i = bank;
+      accelerator_write_address_i = address;
+      accelerator_write_data_i = data;
+      accelerator_write_strobe_i = strobe;
+      accelerator_write_valid_i = 1'b1;
+      do @(posedge clk_i); while (!accelerator_write_ready_o);
+      @(negedge clk_i);
+      accelerator_write_valid_i = 1'b0;
+    end
+  endtask
+
+  task automatic read_o0_check(input logic [255:0] expected);
+    begin
+      @(negedge clk_i);
+      accelerator_read_kind_i = NPU_SPAD_O;
+      accelerator_read_bank_i = 1'b0;
+      accelerator_read_address_i = 32'd0;
+      accelerator_read_request_valid_i = 1'b1;
+      do @(posedge clk_i); while (!accelerator_read_request_ready_o);
+      @(negedge clk_i);
+      accelerator_read_request_valid_i = 1'b0;
+      do @(negedge clk_i); while (!accelerator_read_response_valid_o);
+      if (accelerator_read_response_data_o[255:0] !== expected)
+        $fatal(1, "integrated CONV2D output mismatch got=%064x expected=%064x",
+               accelerator_read_response_data_o[255:0], expected);
+      accelerator_read_response_ready_i = 1'b1;
+      @(posedge clk_i);
+      @(negedge clk_i);
+      accelerator_read_response_ready_i = 1'b0;
+    end
+  endtask
+
   initial begin
     command = '0;
     command.opcode = NPU_OP_DMA_LOAD;
@@ -264,6 +323,42 @@ module tb_npu_dma_subsystem;
     read_a0_check(8, external_word(activation_base_i + 64'h108));
     read_a0_check(16, external_word(activation_base_i + 64'h110));
     read_a0_check(24, external_word(activation_base_i + 64'h118));
+
+    // Run a complete one-token CONV2D through the shared Scratchpad. Unit
+    // weights make each output lane equal its corresponding activation lane.
+    conv_activation_vector = '0;
+    conv_weight_vector = '0;
+    conv_expected_result = '0;
+    for (input_lane = 0; input_lane < 8; input_lane = input_lane + 1)
+      conv_activation_vector[input_lane*16 +: 16] = input_lane + 1;
+    for (output_lane = 0; output_lane < 8; output_lane = output_lane + 1) begin
+      conv_expected_result[output_lane*32 +: 32] = output_lane + 1;
+      for (input_lane = 0; input_lane < 8; input_lane = input_lane + 1)
+        conv_weight_vector[(output_lane*8 + input_lane)*8 +: 8]
+          = output_lane == input_lane ? 8'd1 : 8'd0;
+    end
+    accelerator_write(NPU_SPAD_A, 1'b0, 32'd0,
+                      {384'd0, conv_activation_vector},
+                      64'h0000_0000_0000_ffff);
+    accelerator_write(NPU_SPAD_W, 1'b0, 32'd0, conv_weight_vector,
+                      64'hffff_ffff_ffff_ffff);
+    operator_desc.tile_h = 1;
+    operator_desc.tile_w = 1;
+    conv_operator_desc_bits_i = operator_desc;
+    @(negedge clk_i);
+    conv_start_valid_i = 1'b1;
+    do @(posedge clk_i); while (!conv_start_ready_o);
+    @(negedge clk_i);
+    conv_start_valid_i = 1'b0;
+    timeout = 0;
+    while (!conv_done_pulse_o && timeout < 1000) begin
+      @(negedge clk_i);
+      timeout = timeout + 1;
+    end
+    if (timeout == 1000 || conv_error_pulse_o || conv_busy_o
+        || conv_event_set_o != NPU_EVENT_C0_DONE)
+      $fatal(1, "integrated CONV2D completion mismatch");
+    read_o0_check(conv_expected_result);
 
     // The subsystem retains the issuing PC while the asynchronous engine is
     // active and reports it with a later AXI error.

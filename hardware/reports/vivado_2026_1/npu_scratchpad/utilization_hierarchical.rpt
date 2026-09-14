@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
-| Date         : Tue Sep 15 00:32:32 2026
+| Date         : Tue Sep 15 01:15:52 2026
 | Host         : RAW2332 running 64-bit major release  (build 9200)
 | Command      : report_utilization -hierarchical -hierarchical_depth 4 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_scratchpad/utilization_hierarchical.rpt
 | Design       : npu_scratchpad
@@ -19,41 +19,49 @@ Table of Contents
 1. Utilization by Hierarchy
 ---------------------------
 
-+---------------------------+----------------------------------------+------------+------------+---------+------+-----+--------+--------+------------+
-|          Instance         |                 Module                 | Total LUTs | Logic LUTs | LUTRAMs | SRLs | FFs | RAMB36 | RAMB18 | DSP Blocks |
-+---------------------------+----------------------------------------+------------+------------+---------+------+-----+--------+--------+------------+
-| npu_scratchpad            |                                  (top) |       3147 |       3147 |       0 |    0 | 596 |     56 |      0 |          0 |
-|   (npu_scratchpad)        |                                  (top) |         19 |         19 |       0 |    0 | 586 |      0 |      0 |          0 |
-|   g_activation[0].bank    |                    npu_scratchpad_bank |        211 |        211 |       0 |    0 |   1 |     16 |      0 |          0 |
-|     g_memory_lane[1].lane |                 npu_scratchpad_lane_23 |        137 |        137 |       0 |    0 |   0 |      8 |      0 |          0 |
-|     g_memory_lane[0].lane |                 npu_scratchpad_lane_22 |         73 |         73 |       0 |    0 |   0 |      8 |      0 |          0 |
-|   g_activation[1].bank    |                  npu_scratchpad_bank_0 |        213 |        213 |       0 |    0 |   1 |     16 |      0 |          0 |
-|     g_memory_lane[1].lane |                 npu_scratchpad_lane_21 |        136 |        136 |       0 |    0 |   0 |      8 |      0 |          0 |
-|     g_memory_lane[0].lane |                    npu_scratchpad_lane |         76 |         76 |       0 |    0 |   0 |      8 |      0 |          0 |
-|   g_output[0].bank        |    npu_scratchpad_bank__parameterized1 |        204 |        204 |       0 |    0 |   1 |      4 |      0 |          0 |
-|     g_memory_lane[1].lane | npu_scratchpad_lane__parameterized1_20 |        130 |        130 |       0 |    0 |   0 |      2 |      0 |          0 |
-|     g_memory_lane[0].lane | npu_scratchpad_lane__parameterized1_19 |         73 |         73 |       0 |    0 |   0 |      2 |      0 |          0 |
-|   g_output[1].bank        |  npu_scratchpad_bank__parameterized1_1 |        364 |        364 |       0 |    0 |   1 |      4 |      0 |          0 |
-|     g_memory_lane[1].lane | npu_scratchpad_lane__parameterized1_18 |        226 |        226 |       0 |    0 |   0 |      2 |      0 |          0 |
-|     g_memory_lane[0].lane |    npu_scratchpad_lane__parameterized1 |        137 |        137 |       0 |    0 |   0 |      2 |      0 |          0 |
-|   g_weight[0].bank        |    npu_scratchpad_bank__parameterized0 |       1192 |       1192 |       0 |    0 |   3 |      8 |      0 |          0 |
-|     g_memory_lane[7].lane | npu_scratchpad_lane__parameterized0_17 |        278 |        278 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[0].lane | npu_scratchpad_lane__parameterized0_10 |         76 |         76 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[1].lane | npu_scratchpad_lane__parameterized0_11 |         75 |         75 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[2].lane | npu_scratchpad_lane__parameterized0_12 |        140 |        140 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[3].lane | npu_scratchpad_lane__parameterized0_13 |        204 |        204 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[4].lane | npu_scratchpad_lane__parameterized0_14 |        139 |        139 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[5].lane | npu_scratchpad_lane__parameterized0_15 |        139 |        139 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[6].lane | npu_scratchpad_lane__parameterized0_16 |        139 |        139 |       0 |    0 |   0 |      1 |      0 |          0 |
-|   g_weight[1].bank        |  npu_scratchpad_bank__parameterized0_2 |        944 |        944 |       0 |    0 |   3 |      8 |      0 |          0 |
-|     g_memory_lane[7].lane |  npu_scratchpad_lane__parameterized0_9 |        161 |        161 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[0].lane |    npu_scratchpad_lane__parameterized0 |        140 |        140 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[1].lane |  npu_scratchpad_lane__parameterized0_3 |        139 |        139 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[2].lane |  npu_scratchpad_lane__parameterized0_4 |         75 |         75 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[3].lane |  npu_scratchpad_lane__parameterized0_5 |        203 |        203 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[4].lane |  npu_scratchpad_lane__parameterized0_6 |         75 |         75 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[5].lane |  npu_scratchpad_lane__parameterized0_7 |         75 |         75 |       0 |    0 |   0 |      1 |      0 |          0 |
-|     g_memory_lane[6].lane |  npu_scratchpad_lane__parameterized0_8 |         74 |         74 |       0 |    0 |   0 |      1 |      0 |          0 |
-+---------------------------+----------------------------------------+------------+------------+---------+------+-----+--------+--------+------------+
++---------------------------+----------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+|          Instance         |                 Module                 | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++---------------------------+----------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
+| npu_scratchpad            |                                  (top) |       4995 |       4995 |       0 |    0 | 1244 |     56 |      0 |          0 |
+|   (npu_scratchpad)        |                                  (top) |         39 |         39 |       0 |    0 | 1232 |      0 |      0 |          0 |
+|   g_activation[0].bank    |                    npu_scratchpad_bank |        259 |        259 |       0 |    0 |    1 |     16 |      0 |          0 |
+|     g_memory_lane[1].lane |                 npu_scratchpad_lane_28 |        153 |        153 |       0 |    0 |    0 |      8 |      0 |          0 |
+|     g_memory_lane[0].lane |                 npu_scratchpad_lane_27 |         73 |         73 |       0 |    0 |    0 |      8 |      0 |          0 |
+|   g_activation[1].bank    |                  npu_scratchpad_bank_0 |        404 |        404 |       0 |    0 |    1 |     16 |      0 |          0 |
+|     g_memory_lane[1].lane |                 npu_scratchpad_lane_26 |        262 |        262 |       0 |    0 |    0 |      8 |      0 |          0 |
+|     g_memory_lane[0].lane |                    npu_scratchpad_lane |        141 |        141 |       0 |    0 |    0 |      8 |      0 |          0 |
+|   g_output[0].bank        |    npu_scratchpad_bank__parameterized1 |        686 |        686 |       0 |    0 |    2 |      4 |      0 |          0 |
+|     (g_output[0].bank)    |    npu_scratchpad_bank__parameterized1 |         66 |         66 |       0 |    0 |    2 |      0 |      0 |          0 |
+|     g_memory_lane[0].lane | npu_scratchpad_lane__parameterized0_22 |        163 |        163 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[1].lane | npu_scratchpad_lane__parameterized0_23 |        149 |        149 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[2].lane | npu_scratchpad_lane__parameterized0_24 |        175 |        175 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[3].lane | npu_scratchpad_lane__parameterized0_25 |        133 |        133 |       0 |    0 |    0 |      1 |      0 |          0 |
+|   g_output[1].bank        |  npu_scratchpad_bank__parameterized1_1 |        983 |        983 |       0 |    0 |    2 |      4 |      0 |          0 |
+|     (g_output[1].bank)    |  npu_scratchpad_bank__parameterized1_1 |         66 |         66 |       0 |    0 |    2 |      0 |      0 |          0 |
+|     g_memory_lane[0].lane | npu_scratchpad_lane__parameterized0_18 |        249 |        249 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[1].lane | npu_scratchpad_lane__parameterized0_19 |        214 |        214 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[2].lane | npu_scratchpad_lane__parameterized0_20 |        212 |        212 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[3].lane | npu_scratchpad_lane__parameterized0_21 |        242 |        242 |       0 |    0 |    0 |      1 |      0 |          0 |
+|   g_weight[0].bank        |    npu_scratchpad_bank__parameterized0 |       1275 |       1275 |       0 |    0 |    3 |      8 |      0 |          0 |
+|     (g_weight[0].bank)    |    npu_scratchpad_bank__parameterized0 |        130 |        130 |       0 |    0 |    3 |      0 |      0 |          0 |
+|     g_memory_lane[0].lane | npu_scratchpad_lane__parameterized0_10 |         78 |         78 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[1].lane | npu_scratchpad_lane__parameterized0_11 |         76 |         76 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[2].lane | npu_scratchpad_lane__parameterized0_12 |        213 |        213 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[3].lane | npu_scratchpad_lane__parameterized0_13 |        211 |        211 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[4].lane | npu_scratchpad_lane__parameterized0_14 |        133 |        133 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[5].lane | npu_scratchpad_lane__parameterized0_15 |        133 |        133 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[6].lane | npu_scratchpad_lane__parameterized0_16 |        132 |        132 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[7].lane | npu_scratchpad_lane__parameterized0_17 |        169 |        169 |       0 |    0 |    0 |      1 |      0 |          0 |
+|   g_weight[1].bank        |  npu_scratchpad_bank__parameterized0_2 |       1349 |       1349 |       0 |    0 |    3 |      8 |      0 |          0 |
+|     (g_weight[1].bank)    |  npu_scratchpad_bank__parameterized0_2 |        130 |        130 |       0 |    0 |    3 |      0 |      0 |          0 |
+|     g_memory_lane[0].lane |    npu_scratchpad_lane__parameterized0 |        174 |        174 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[1].lane |  npu_scratchpad_lane__parameterized0_3 |        173 |        173 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[2].lane |  npu_scratchpad_lane__parameterized0_4 |        181 |        181 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[3].lane |  npu_scratchpad_lane__parameterized0_5 |        180 |        180 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[4].lane |  npu_scratchpad_lane__parameterized0_6 |        117 |        117 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[5].lane |  npu_scratchpad_lane__parameterized0_7 |        118 |        118 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[6].lane |  npu_scratchpad_lane__parameterized0_8 |        116 |        116 |       0 |    0 |    0 |      1 |      0 |          0 |
+|     g_memory_lane[7].lane |  npu_scratchpad_lane__parameterized0_9 |        160 |        160 |       0 |    0 |    0 |      1 |      0 |          0 |
++---------------------------+----------------------------------------+------------+------------+---------+------+------+--------+--------+------------+
 
 

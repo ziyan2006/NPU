@@ -70,6 +70,19 @@ module npu_dma_subsystem (
   input  logic         accelerator_read_response_ready_i,
   output logic [511:0] accelerator_read_response_data_o,
 
+  input  logic         conv_start_valid_i,
+  output logic         conv_start_ready_o,
+  input  logic [511:0] conv_operator_desc_bits_i,
+  input  logic         conv_activation_bank_i,
+  input  logic         conv_weight_bank_i,
+  input  logic         conv_output_bank_i,
+  input  logic [7:0]   conv_completion_event_i,
+  output logic         conv_busy_o,
+  output logic         conv_done_pulse_o,
+  output logic [7:0]   conv_event_set_o,
+  output logic         conv_error_pulse_o,
+  output logic [3:0]   conv_error_reason_o,
+
   output logic         busy_o,
   output logic [7:0]   event_set_o,
   output logic         error_pulse_o,
@@ -116,6 +129,56 @@ module npu_dma_subsystem (
   logic spad_read_response_valid;
   logic spad_read_response_ready;
   logic [63:0] spad_read_response_data;
+  logic conv_read_request_valid;
+  logic conv_read_request_ready;
+  logic conv_activation_read_bank;
+  logic [31:0] conv_activation_read_address;
+  logic conv_weight_read_bank;
+  logic [31:0] conv_weight_read_address;
+  logic conv_read_response_valid;
+  logic conv_read_response_ready;
+  logic [127:0] conv_activation_read_data;
+  logic [511:0] conv_weight_read_data;
+  logic conv_result_valid;
+  logic conv_result_ready;
+  logic [31:0] conv_result_address;
+  logic [7:0] conv_result_lane_mask;
+  logic [255:0] conv_result_data;
+  logic conv_activation_request_valid;
+  logic conv_activation_request_ready;
+  logic conv_activation_response_valid;
+  logic conv_activation_response_ready;
+  logic conv_weight_request_valid;
+  logic conv_weight_request_ready;
+  logic conv_weight_response_valid;
+  logic conv_weight_response_ready;
+  logic conv_output_write_ready;
+  logic [31:0] conv_output_write_strobe;
+  logic conv_output_write_valid;
+  logic [31:0] conv_output_write_address;
+  logic [255:0] conv_output_write_data;
+  logic [7:0] conv_output_write_lane_mask;
+  logic conv_output_write_bank;
+  logic [1:0][31:0] conv_output_address_fifo_q;
+  logic [1:0][255:0] conv_output_data_fifo_q;
+  logic [1:0][7:0] conv_output_mask_fifo_q;
+  logic [1:0] conv_output_bank_fifo_q;
+  logic conv_output_write_pointer_q;
+  logic conv_output_read_pointer_q;
+  logic [1:0] conv_output_count_q;
+  logic conv_output_push;
+  logic conv_output_pop;
+  logic conv_controller_start_ready;
+  logic conv_controller_busy;
+  logic conv_controller_done;
+  logic [7:0] conv_controller_event;
+  logic conv_completion_pending_q;
+  logic [7:0] conv_completion_event_q;
+  logic conv_activation_sent_q;
+  logic conv_weight_sent_q;
+  logic conv_activation_fire;
+  logic conv_weight_fire;
+  logic conv_output_bank_q;
 
   assign busy_o = frontend_busy || engine_busy;
   assign internal_soft_reset = soft_reset_i && !busy_o;
@@ -128,6 +191,115 @@ module npu_dma_subsystem (
   assign error_detail_o = engine_error ? 4'd0 : frontend_error_detail;
   assign error_pc_o = engine_error ? engine_pc_q : frontend_pc_q;
   assign error_tag_o = engine_error ? engine_error_tag : frontend_error_tag;
+  assign conv_start_ready_o = conv_controller_start_ready
+    && !conv_completion_pending_q && conv_output_count_q == 0;
+  assign conv_busy_o = conv_controller_busy || conv_completion_pending_q
+    || conv_output_count_q != 0;
+
+  assign conv_activation_request_valid = conv_read_request_valid
+    && !conv_activation_sent_q;
+  assign conv_weight_request_valid = conv_read_request_valid
+    && !conv_weight_sent_q;
+  assign conv_activation_fire = conv_activation_request_valid
+    && conv_activation_request_ready;
+  assign conv_weight_fire = conv_weight_request_valid
+    && conv_weight_request_ready;
+  assign conv_read_request_ready
+    = (conv_activation_sent_q || conv_activation_fire)
+      && (conv_weight_sent_q || conv_weight_fire);
+
+  assign conv_read_response_valid = conv_activation_response_valid
+    && conv_weight_response_valid;
+  assign conv_activation_response_ready = conv_read_response_ready
+    && conv_weight_response_valid;
+  assign conv_weight_response_ready = conv_read_response_ready
+    && conv_activation_response_valid;
+  assign conv_result_ready = conv_output_count_q < 2;
+  assign conv_output_push = conv_result_valid && conv_result_ready;
+  assign conv_output_write_valid = conv_output_count_q != 0;
+  assign conv_output_pop = conv_output_write_valid && conv_output_write_ready;
+  assign conv_output_write_address
+    = conv_output_address_fifo_q[conv_output_read_pointer_q];
+  assign conv_output_write_data
+    = conv_output_data_fifo_q[conv_output_read_pointer_q];
+  assign conv_output_write_lane_mask
+    = conv_output_mask_fifo_q[conv_output_read_pointer_q];
+  assign conv_output_write_bank
+    = conv_output_bank_fifo_q[conv_output_read_pointer_q];
+
+  genvar output_lane;
+  generate
+    for (output_lane = 0; output_lane < 8;
+         output_lane = output_lane + 1) begin : g_output_strobe
+      assign conv_output_write_strobe[output_lane*4 +: 4]
+        = {4{conv_output_write_lane_mask[output_lane]}};
+    end
+  endgenerate
+
+  always_ff @(posedge clk_i or negedge rst_ni) begin
+    if (!rst_ni) begin
+      conv_activation_sent_q <= 1'b0;
+      conv_weight_sent_q <= 1'b0;
+      conv_output_bank_q <= 1'b0;
+      conv_output_write_pointer_q <= 1'b0;
+      conv_output_read_pointer_q <= 1'b0;
+      conv_output_count_q <= '0;
+      conv_completion_pending_q <= 1'b0;
+      conv_completion_event_q <= '0;
+      conv_done_pulse_o <= 1'b0;
+      conv_event_set_o <= '0;
+    end else if (soft_reset_i) begin
+      conv_activation_sent_q <= 1'b0;
+      conv_weight_sent_q <= 1'b0;
+      conv_output_write_pointer_q <= 1'b0;
+      conv_output_read_pointer_q <= 1'b0;
+      conv_output_count_q <= '0;
+      conv_completion_pending_q <= 1'b0;
+      conv_done_pulse_o <= 1'b0;
+      conv_event_set_o <= '0;
+    end else begin
+      conv_done_pulse_o <= 1'b0;
+      conv_event_set_o <= '0;
+      if (conv_start_valid_i && conv_start_ready_o)
+        conv_output_bank_q <= conv_output_bank_i;
+      if (conv_read_request_valid && conv_read_request_ready) begin
+        conv_activation_sent_q <= 1'b0;
+        conv_weight_sent_q <= 1'b0;
+      end else begin
+        if (conv_activation_fire)
+          conv_activation_sent_q <= 1'b1;
+        if (conv_weight_fire)
+          conv_weight_sent_q <= 1'b1;
+      end
+      case ({conv_output_push, conv_output_pop})
+        2'b10: conv_output_count_q <= conv_output_count_q + 1'b1;
+        2'b01: conv_output_count_q <= conv_output_count_q - 1'b1;
+        default: conv_output_count_q <= conv_output_count_q;
+      endcase
+      if (conv_output_push) begin
+        conv_output_address_fifo_q[conv_output_write_pointer_q]
+          <= conv_result_address;
+        conv_output_data_fifo_q[conv_output_write_pointer_q]
+          <= conv_result_data;
+        conv_output_mask_fifo_q[conv_output_write_pointer_q]
+          <= conv_result_lane_mask;
+        conv_output_bank_fifo_q[conv_output_write_pointer_q]
+          <= conv_output_bank_q;
+        conv_output_write_pointer_q <= conv_output_write_pointer_q + 1'b1;
+      end
+      if (conv_output_pop)
+        conv_output_read_pointer_q <= conv_output_read_pointer_q + 1'b1;
+      if (conv_controller_done) begin
+        conv_completion_pending_q <= 1'b1;
+        conv_completion_event_q <= conv_controller_event;
+      end else if (conv_completion_pending_q
+                   && conv_output_count_q == 0) begin
+        conv_completion_pending_q <= 1'b0;
+        conv_done_pulse_o <= 1'b1;
+        conv_event_set_o <= conv_completion_event_q;
+      end
+    end
+  end
 
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
@@ -208,6 +380,33 @@ module npu_dma_subsystem (
     .error_tag_o(engine_error_tag), .bytes_read_o(bytes_read_o),
     .bytes_written_o(bytes_written_o));
 
+  npu_conv2d_controller conv2d_controller (
+    .clk_i(clk_i), .rst_ni(rst_ni), .soft_reset_i(soft_reset_i),
+    .start_valid_i(conv_start_valid_i && conv_start_ready_o),
+    .start_ready_o(conv_controller_start_ready),
+    .operator_desc_bits_i(conv_operator_desc_bits_i),
+    .activation_bank_i(conv_activation_bank_i),
+    .weight_bank_i(conv_weight_bank_i),
+    .completion_event_i(conv_completion_event_i),
+    .read_request_valid_o(conv_read_request_valid),
+    .read_request_ready_i(conv_read_request_ready),
+    .activation_read_bank_o(conv_activation_read_bank),
+    .activation_read_address_o(conv_activation_read_address),
+    .weight_read_bank_o(conv_weight_read_bank),
+    .weight_read_address_o(conv_weight_read_address),
+    .read_response_valid_i(conv_read_response_valid),
+    .read_response_ready_o(conv_read_response_ready),
+    .activation_read_data_i(conv_activation_read_data),
+    .weight_read_data_i(conv_weight_read_data),
+    .result_valid_o(conv_result_valid),
+    .result_ready_i(conv_result_ready),
+    .result_address_o(conv_result_address),
+    .result_lane_mask_o(conv_result_lane_mask),
+    .result_data_o(conv_result_data),
+    .busy_o(conv_controller_busy), .done_pulse_o(conv_controller_done),
+    .event_set_o(conv_controller_event), .error_pulse_o(conv_error_pulse_o),
+    .error_reason_o(conv_error_reason_o));
+
   npu_scratchpad scratchpad (
     .clk_i(clk_i), .rst_ni(rst_ni),
     .dma_write_valid_i(spad_write_valid),
@@ -236,6 +435,30 @@ module npu_dma_subsystem (
     .accelerator_read_response_valid_o(accelerator_read_response_valid_o),
     .accelerator_read_response_ready_i(accelerator_read_response_ready_i),
     .accelerator_read_response_data_o(accelerator_read_response_data_o),
+    .compute_activation_read_request_valid_i(
+      conv_activation_request_valid),
+    .compute_activation_read_request_ready_o(
+      conv_activation_request_ready),
+    .compute_activation_read_bank_i(conv_activation_read_bank),
+    .compute_activation_read_address_i(conv_activation_read_address),
+    .compute_activation_read_response_valid_o(
+      conv_activation_response_valid),
+    .compute_activation_read_response_ready_i(
+      conv_activation_response_ready),
+    .compute_activation_read_response_data_o(conv_activation_read_data),
+    .compute_weight_read_request_valid_i(conv_weight_request_valid),
+    .compute_weight_read_request_ready_o(conv_weight_request_ready),
+    .compute_weight_read_bank_i(conv_weight_read_bank),
+    .compute_weight_read_address_i(conv_weight_read_address),
+    .compute_weight_read_response_valid_o(conv_weight_response_valid),
+    .compute_weight_read_response_ready_i(conv_weight_response_ready),
+    .compute_weight_read_response_data_o(conv_weight_read_data),
+    .compute_output_write_valid_i(conv_output_write_valid),
+    .compute_output_write_ready_o(conv_output_write_ready),
+    .compute_output_write_bank_i(conv_output_write_bank),
+    .compute_output_write_address_i(conv_output_write_address),
+    .compute_output_write_data_i(conv_output_write_data),
+    .compute_output_write_strobe_i(conv_output_write_strobe),
     .collision_stall_o(scratchpad_collision_stall_o));
 
 endmodule

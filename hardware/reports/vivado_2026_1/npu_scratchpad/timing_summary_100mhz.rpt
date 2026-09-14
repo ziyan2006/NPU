@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 -----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
-| Date         : Tue Sep 15 00:32:46 2026
+| Date         : Tue Sep 15 01:16:05 2026
 | Host         : RAW2332 running 64-bit major release  (build 9200)
 | Command      : report_timing_summary -delay_type max -max_paths 20 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_scratchpad/timing_summary_100mhz.rpt
 | Design       : npu_scratchpad
@@ -58,8 +58,8 @@ Table of Contents
 2. checking constant_clock (0)
 3. checking pulse_width_clock (0)
 4. checking unconstrained_internal_endpoints (0)
-5. checking no_input_delay (781)
-6. checking no_output_delay (580)
+5. checking no_input_delay (1158)
+6. checking no_output_delay (1224)
 7. checking multiple_clock (0)
 8. checking generated_clocks (0)
 9. checking loops (0)
@@ -89,16 +89,16 @@ Table of Contents
  There are 0 pins that are not constrained for maximum delay due to constant clock.
 
 
-5. checking no_input_delay (781)
---------------------------------
- There are 781 input ports with no input delay specified. (HIGH)
+5. checking no_input_delay (1158)
+---------------------------------
+ There are 1158 input ports with no input delay specified. (HIGH)
 
  There are 0 input ports with no input delay but user has a false path constraint.
 
 
-6. checking no_output_delay (580)
----------------------------------
- There are 580 ports with no output delay specified. (HIGH)
+6. checking no_output_delay (1224)
+----------------------------------
+ There are 1224 ports with no output delay specified. (HIGH)
 
  There are 0 ports with no output delay but user has a false path constraint
 
@@ -143,7 +143,7 @@ Table of Contents
 
     WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
     -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-      5.360        0.000                      0                 2220        4.500        0.000                       0                   708  
+      4.568        0.000                      0                 3116        4.500        0.000                       0                  1356  
 
 
 All user specified timing constraints are met.
@@ -166,7 +166,7 @@ core_clk  {0.000 5.000}      10.000          100.000
 
 Clock             WNS(ns)      TNS(ns)  TNS Failing Endpoints  TNS Total Endpoints     WPWS(ns)     TPWS(ns)  TPWS Failing Endpoints  TPWS Total Endpoints  
 -----             -------      -------  ---------------------  -------------------     --------     --------  ----------------------  --------------------  
-core_clk            5.360        0.000                      0                 2220        4.500        0.000                       0                   708  
+core_clk            4.568        0.000                      0                 3116        4.500        0.000                       0                  1356  
 
 
 ------------------------------------------------------------------------------------------------
@@ -197,7 +197,7 @@ Path Group    From Clock    To Clock          WNS(ns)      TNS(ns)  TNS Failing 
 From Clock:  core_clk
   To Clock:  core_clk
 
-Setup :            0  Failing Endpoints,  Worst Slack        5.360ns,  Total Violation        0.000ns
+Setup :            0  Failing Endpoints,  Worst Slack        4.568ns,  Total Violation        0.000ns
 Hold  :           NA  Failing Endpoints,  Worst Slack           NA  ,  Total Violation           NA
 PW    :            0  Failing Endpoints,  Worst Slack        4.500ns,  Total Violation        0.000ns
 ---------------------------------------------------------------------------------------------------
@@ -205,16 +205,16 @@ PW    :            0  Failing Endpoints,  Worst Slack        4.500ns,  Total Vio
 
 Max Delay Paths
 --------------------------------------------------------------------------------------
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKBWRCLK
+Slack (MET) :             4.568ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[0].bank/g_memory_lane[0].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[11]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.905ns  (logic 1.309ns (26.689%)  route 3.596ns (73.311%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -230,45 +230,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[3])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/DOBDO[3]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[11]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[11]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[11]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[11]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[11]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[11]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[11]
-                         FDRE                                         r  dma_output_data_q_reg[11]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 f  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_4/O
+                         net (fo=2, unplaced)         0.430     3.904    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_3
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.028 r  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_1/O
+                         net (fo=4, unplaced)         0.926     4.954    g_weight[0].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.078 r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg_i_1/O
+                         net (fo=8, unplaced)         0.800     5.878    g_weight[0].bank/g_memory_lane[0].lane/accept_read
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[0].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[11]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[0].bank/g_memory_lane[0].lane/clk_i
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[0].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[11]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[0].bank/g_memory_lane[0].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.878    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.568    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKBWRCLK
+Slack (MET) :             4.568ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[0].bank/g_memory_lane[1].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[13]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.905ns  (logic 1.309ns (26.689%)  route 3.596ns (73.311%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -284,45 +288,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[5])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/DOBDO[5]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[13]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[13]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[13]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[13]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[13]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[13]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[13]
-                         FDRE                                         r  dma_output_data_q_reg[13]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 f  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_4/O
+                         net (fo=2, unplaced)         0.430     3.904    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_3
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.028 r  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_1/O
+                         net (fo=4, unplaced)         0.926     4.954    g_weight[0].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.078 r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg_i_1/O
+                         net (fo=8, unplaced)         0.800     5.878    g_weight[0].bank/g_memory_lane[1].lane/accept_read
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[1].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[13]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[0].bank/g_memory_lane[1].lane/clk_i
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[1].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[13]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[0].bank/g_memory_lane[1].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.878    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.568    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKBWRCLK
+Slack (MET) :             4.568ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[0].bank/g_memory_lane[2].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[15]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.905ns  (logic 1.309ns (26.689%)  route 3.596ns (73.311%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -338,45 +346,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[7])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_1/DOBDO[7]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[15]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[15]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[15]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[15]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[15]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[15]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[15]
-                         FDRE                                         r  dma_output_data_q_reg[15]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 f  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_4/O
+                         net (fo=2, unplaced)         0.430     3.904    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_3
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.028 r  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_1/O
+                         net (fo=4, unplaced)         0.926     4.954    g_weight[0].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.078 r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg_i_1/O
+                         net (fo=8, unplaced)         0.800     5.878    g_weight[0].bank/g_memory_lane[2].lane/accept_read
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[2].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[15]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[0].bank/g_memory_lane[2].lane/clk_i
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[2].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[15]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[0].bank/g_memory_lane[2].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.878    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.568    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
+Slack (MET) :             4.568ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[0].bank/g_memory_lane[3].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[17]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.905ns  (logic 1.309ns (26.689%)  route 3.596ns (73.311%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -392,45 +404,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[1])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/DOBDO[1]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[17]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[17]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[17]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[17]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[17]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[17]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[17]
-                         FDRE                                         r  dma_output_data_q_reg[17]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 f  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_4/O
+                         net (fo=2, unplaced)         0.430     3.904    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_3
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.028 r  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_1/O
+                         net (fo=4, unplaced)         0.926     4.954    g_weight[0].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.078 r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg_i_1/O
+                         net (fo=8, unplaced)         0.800     5.878    g_weight[0].bank/g_memory_lane[3].lane/accept_read
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[3].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[17]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[0].bank/g_memory_lane[3].lane/clk_i
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[3].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[17]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[0].bank/g_memory_lane[3].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.878    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.568    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
+Slack (MET) :             4.568ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[0].bank/g_memory_lane[4].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[19]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.905ns  (logic 1.309ns (26.689%)  route 3.596ns (73.311%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -446,45 +462,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[3])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/DOBDO[3]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[19]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[19]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[19]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[19]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[19]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[19]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[19]
-                         FDRE                                         r  dma_output_data_q_reg[19]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 f  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_4/O
+                         net (fo=2, unplaced)         0.430     3.904    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_3
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.028 r  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_1/O
+                         net (fo=4, unplaced)         0.926     4.954    g_weight[0].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.078 r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg_i_1/O
+                         net (fo=8, unplaced)         0.800     5.878    g_weight[0].bank/g_memory_lane[4].lane/accept_read
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[4].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[19]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[0].bank/g_memory_lane[4].lane/clk_i
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[4].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[19]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[0].bank/g_memory_lane[4].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.878    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.568    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/CLKBWRCLK
+Slack (MET) :             4.568ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[0].bank/g_memory_lane[5].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[1]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.905ns  (logic 1.309ns (26.689%)  route 3.596ns (73.311%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -500,45 +520,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[1])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/DOBDO[1]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[1]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[1]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[1]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[1]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[1]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[1]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[1]
-                         FDRE                                         r  dma_output_data_q_reg[1]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 f  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_4/O
+                         net (fo=2, unplaced)         0.430     3.904    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_3
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.028 r  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_1/O
+                         net (fo=4, unplaced)         0.926     4.954    g_weight[0].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.078 r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg_i_1/O
+                         net (fo=8, unplaced)         0.800     5.878    g_weight[0].bank/g_memory_lane[5].lane/accept_read
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[5].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[1]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[0].bank/g_memory_lane[5].lane/clk_i
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[5].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[1]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[0].bank/g_memory_lane[5].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.878    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.568    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
+Slack (MET) :             4.568ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[0].bank/g_memory_lane[6].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[21]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.905ns  (logic 1.309ns (26.689%)  route 3.596ns (73.311%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -554,45 +578,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[5])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/DOBDO[5]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[21]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[21]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[21]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[21]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[21]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[21]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[21]
-                         FDRE                                         r  dma_output_data_q_reg[21]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 f  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_4/O
+                         net (fo=2, unplaced)         0.430     3.904    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_3
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.028 r  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_1/O
+                         net (fo=4, unplaced)         0.926     4.954    g_weight[0].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.078 r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg_i_1/O
+                         net (fo=8, unplaced)         0.800     5.878    g_weight[0].bank/g_memory_lane[6].lane/accept_read
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[6].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[21]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[0].bank/g_memory_lane[6].lane/clk_i
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[6].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[21]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[0].bank/g_memory_lane[6].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.878    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.568    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
+Slack (MET) :             4.568ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[0].bank/g_memory_lane[7].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[23]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.905ns  (logic 1.309ns (26.689%)  route 3.596ns (73.311%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -608,45 +636,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[7])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_2/DOBDO[7]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[23]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[23]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[23]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[23]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[23]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[23]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[23]
-                         FDRE                                         r  dma_output_data_q_reg[23]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 f  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_4/O
+                         net (fo=2, unplaced)         0.430     3.904    g_weight[0].bank/g_memory_lane[7].lane/dma_read_bank_i_3
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.028 r  g_weight[0].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_1/O
+                         net (fo=4, unplaced)         0.926     4.954    g_weight[0].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.078 r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg_i_1/O
+                         net (fo=8, unplaced)         0.800     5.878    g_weight[0].bank/g_memory_lane[7].lane/accept_read
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[23]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[0].bank/g_memory_lane[7].lane/clk_i
+                         RAMB36E1                                     r  g_weight[0].bank/g_memory_lane[7].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[23]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[0].bank/g_memory_lane[7].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.878    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.568    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
+Slack (MET) :             4.576ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[1].bank/g_memory_lane[0].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[25]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.897ns  (logic 1.301ns (26.569%)  route 3.596ns (73.431%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -662,45 +694,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[1])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/DOBDO[1]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[25]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[25]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[25]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[25]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[25]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[25]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[25]
-                         FDRE                                         r  dma_output_data_q_reg[25]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[1].bank/g_memory_lane[7].lane/memory_reg_6
+                         LUT5 (Prop_lut5_I1_O)        0.116     3.466 f  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_7/O
+                         net (fo=2, unplaced)         0.430     3.896    g_weight[1].bank/g_memory_lane[7].lane/dma_read_bank_i_0
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.020 r  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_2/O
+                         net (fo=4, unplaced)         0.926     4.946    g_weight[1].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.070 r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg_i_1__4/O
+                         net (fo=8, unplaced)         0.800     5.870    g_weight[1].bank/g_memory_lane[0].lane/accept_read
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[0].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[25]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[1].bank/g_memory_lane[0].lane/clk_i
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[0].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[25]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[1].bank/g_memory_lane[0].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.870    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.576    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
+Slack (MET) :             4.576ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[1].bank/g_memory_lane[1].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[27]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.897ns  (logic 1.301ns (26.569%)  route 3.596ns (73.431%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -716,45 +752,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[3])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/DOBDO[3]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[27]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[27]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[27]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[27]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[27]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[27]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[27]
-                         FDRE                                         r  dma_output_data_q_reg[27]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[1].bank/g_memory_lane[7].lane/memory_reg_6
+                         LUT5 (Prop_lut5_I1_O)        0.116     3.466 f  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_7/O
+                         net (fo=2, unplaced)         0.430     3.896    g_weight[1].bank/g_memory_lane[7].lane/dma_read_bank_i_0
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.020 r  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_2/O
+                         net (fo=4, unplaced)         0.926     4.946    g_weight[1].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.070 r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg_i_1__4/O
+                         net (fo=8, unplaced)         0.800     5.870    g_weight[1].bank/g_memory_lane[1].lane/accept_read
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[1].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[27]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[1].bank/g_memory_lane[1].lane/clk_i
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[1].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[27]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[1].bank/g_memory_lane[1].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.870    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.576    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
+Slack (MET) :             4.576ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[1].bank/g_memory_lane[2].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[29]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.897ns  (logic 1.301ns (26.569%)  route 3.596ns (73.431%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -770,45 +810,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[5])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/DOBDO[5]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[29]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[29]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[29]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[29]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[29]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[29]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[29]
-                         FDRE                                         r  dma_output_data_q_reg[29]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[1].bank/g_memory_lane[7].lane/memory_reg_6
+                         LUT5 (Prop_lut5_I1_O)        0.116     3.466 f  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_7/O
+                         net (fo=2, unplaced)         0.430     3.896    g_weight[1].bank/g_memory_lane[7].lane/dma_read_bank_i_0
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.020 r  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_2/O
+                         net (fo=4, unplaced)         0.926     4.946    g_weight[1].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.070 r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg_i_1__4/O
+                         net (fo=8, unplaced)         0.800     5.870    g_weight[1].bank/g_memory_lane[2].lane/accept_read
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[2].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[29]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[1].bank/g_memory_lane[2].lane/clk_i
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[2].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[29]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[1].bank/g_memory_lane[2].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.870    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.576    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
+Slack (MET) :             4.576ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[1].bank/g_memory_lane[3].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[31]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.897ns  (logic 1.301ns (26.569%)  route 3.596ns (73.431%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -824,45 +868,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[7])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_3/DOBDO[7]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[31]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[31]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[31]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[31]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[31]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[31]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[31]
-                         FDRE                                         r  dma_output_data_q_reg[31]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[1].bank/g_memory_lane[7].lane/memory_reg_6
+                         LUT5 (Prop_lut5_I1_O)        0.116     3.466 f  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_7/O
+                         net (fo=2, unplaced)         0.430     3.896    g_weight[1].bank/g_memory_lane[7].lane/dma_read_bank_i_0
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.020 r  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_2/O
+                         net (fo=4, unplaced)         0.926     4.946    g_weight[1].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.070 r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg_i_1__4/O
+                         net (fo=8, unplaced)         0.800     5.870    g_weight[1].bank/g_memory_lane[3].lane/accept_read
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[3].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[31]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[1].bank/g_memory_lane[3].lane/clk_i
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[3].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[31]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[1].bank/g_memory_lane[3].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.870    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.576    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
+Slack (MET) :             4.576ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[1].bank/g_memory_lane[4].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[33]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.897ns  (logic 1.301ns (26.569%)  route 3.596ns (73.431%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -878,45 +926,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[1])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/DOBDO[1]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[33]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[33]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[33]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[33]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[33]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[33]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[33]
-                         FDRE                                         r  dma_output_data_q_reg[33]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[1].bank/g_memory_lane[7].lane/memory_reg_6
+                         LUT5 (Prop_lut5_I1_O)        0.116     3.466 f  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_7/O
+                         net (fo=2, unplaced)         0.430     3.896    g_weight[1].bank/g_memory_lane[7].lane/dma_read_bank_i_0
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.020 r  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_2/O
+                         net (fo=4, unplaced)         0.926     4.946    g_weight[1].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.070 r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg_i_1__4/O
+                         net (fo=8, unplaced)         0.800     5.870    g_weight[1].bank/g_memory_lane[4].lane/accept_read
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[4].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[33]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[1].bank/g_memory_lane[4].lane/clk_i
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[4].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[33]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[1].bank/g_memory_lane[4].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.870    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.576    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
+Slack (MET) :             4.576ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[1].bank/g_memory_lane[5].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[35]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.897ns  (logic 1.301ns (26.569%)  route 3.596ns (73.431%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -932,45 +984,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[3])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/DOBDO[3]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[35]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[35]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[35]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[35]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[35]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[35]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[35]
-                         FDRE                                         r  dma_output_data_q_reg[35]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[1].bank/g_memory_lane[7].lane/memory_reg_6
+                         LUT5 (Prop_lut5_I1_O)        0.116     3.466 f  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_7/O
+                         net (fo=2, unplaced)         0.430     3.896    g_weight[1].bank/g_memory_lane[7].lane/dma_read_bank_i_0
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.020 r  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_2/O
+                         net (fo=4, unplaced)         0.926     4.946    g_weight[1].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.070 r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg_i_1__4/O
+                         net (fo=8, unplaced)         0.800     5.870    g_weight[1].bank/g_memory_lane[5].lane/accept_read
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[5].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[35]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[1].bank/g_memory_lane[5].lane/clk_i
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[5].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[35]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[1].bank/g_memory_lane[5].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.870    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.576    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
+Slack (MET) :             4.576ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[1].bank/g_memory_lane[6].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[37]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.897ns  (logic 1.301ns (26.569%)  route 3.596ns (73.431%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -986,45 +1042,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[5])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/DOBDO[5]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[37]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[37]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[37]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[37]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[37]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[37]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[37]
-                         FDRE                                         r  dma_output_data_q_reg[37]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[1].bank/g_memory_lane[7].lane/memory_reg_6
+                         LUT5 (Prop_lut5_I1_O)        0.116     3.466 f  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_7/O
+                         net (fo=2, unplaced)         0.430     3.896    g_weight[1].bank/g_memory_lane[7].lane/dma_read_bank_i_0
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.020 r  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_2/O
+                         net (fo=4, unplaced)         0.926     4.946    g_weight[1].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.070 r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg_i_1__4/O
+                         net (fo=8, unplaced)         0.800     5.870    g_weight[1].bank/g_memory_lane[6].lane/accept_read
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[6].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[37]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[1].bank/g_memory_lane[6].lane/clk_i
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[6].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[37]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[1].bank/g_memory_lane[6].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.870    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.576    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
+Slack (MET) :             4.576ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_weight[1].bank/g_memory_lane[7].lane/memory_reg/ENARDEN
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[39]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.897ns  (logic 1.301ns (26.569%)  route 3.596ns (73.431%))
+  Logic Levels:           5  (LUT2=1 LUT4=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -1040,45 +1100,49 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[7])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_4/DOBDO[7]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[39]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[39]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[39]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[39]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[39]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[39]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[39]
-                         FDRE                                         r  dma_output_data_q_reg[39]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 r  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_weight[1].bank/g_memory_lane[7].lane/memory_reg_6
+                         LUT5 (Prop_lut5_I1_O)        0.116     3.466 f  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_7/O
+                         net (fo=2, unplaced)         0.430     3.896    g_weight[1].bank/g_memory_lane[7].lane/dma_read_bank_i_0
+                         LUT4 (Prop_lut4_I0_O)        0.124     4.020 r  g_weight[1].bank/g_memory_lane[7].lane/compute_weight_read_request_ready_o_INST_0_i_2/O
+                         net (fo=4, unplaced)         0.926     4.946    g_weight[1].bank/g_memory_lane[7].lane/b_read_ready[0]
+                         LUT6 (Prop_lut6_I1_O)        0.124     5.070 r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg_i_1__4/O
+                         net (fo=8, unplaced)         0.800     5.870    g_weight[1].bank/g_memory_lane[7].lane/accept_read
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg/ENARDEN
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[39]/C
+                         net (fo=1355, unset)         0.924    10.924    g_weight[1].bank/g_memory_lane[7].lane/clk_i
+                         RAMB36E1                                     r  g_weight[1].bank/g_memory_lane[7].lane/memory_reg/CLKARDCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[39]
+                         RAMB36E1 (Setup_ramb36e1_CLKARDCLK_ENARDEN)
+                                                     -0.443    10.446    g_weight[1].bank/g_memory_lane[7].lane/memory_reg
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.446    <hidden>
+                         arrival time                          -5.870    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.576    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/CLKBWRCLK
+Slack (MET) :             4.967ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/ADDRBWRADDR[10]
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[3]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.383ns  (logic 1.185ns (27.038%)  route 3.198ns (72.962%))
+  Logic Levels:           4  (LUT2=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -1094,45 +1158,47 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[3])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0/DOBDO[3]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[3]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[3]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[3]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[3]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[3]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[3]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[3]
-                         FDRE                                         r  dma_output_data_q_reg[3]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 f  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_activation[0].bank/g_memory_lane[1].lane/memory_reg_7_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 r  g_activation[0].bank/g_memory_lane[1].lane/compute_activation_read_request_ready_o_INST_0_i_2/O
+                         net (fo=17, unplaced)        0.958     4.432    g_activation[0].bank/g_memory_lane[1].lane/dma_read_bank_i_0
+                         LUT6 (Prop_lut6_I2_O)        0.124     4.556 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0_i_19/O
+                         net (fo=16, unplaced)        0.800     5.356    g_activation[0].bank/g_memory_lane[0].lane/ADDRBWRADDR[7]
+                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/ADDRBWRADDR[10]
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[3]/C
+                         net (fo=1355, unset)         0.924    10.924    g_activation[0].bank/g_memory_lane[0].lane/clk_i
+                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/CLKBWRCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[3]
+                         RAMB36E1 (Setup_ramb36e1_CLKBWRCLK_ADDRBWRADDR[10])
+                                                     -0.566    10.323    g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.323    <hidden>
+                         arrival time                          -5.356    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.967    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKBWRCLK
+Slack (MET) :             4.967ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/ADDRBWRADDR[11]
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[41]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.383ns  (logic 1.185ns (27.038%)  route 3.198ns (72.962%))
+  Logic Levels:           4  (LUT2=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -1148,45 +1214,47 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[1])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/DOBDO[1]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[41]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[41]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[41]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[41]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[41]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[41]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[41]
-                         FDRE                                         r  dma_output_data_q_reg[41]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 f  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_activation[0].bank/g_memory_lane[1].lane/memory_reg_7_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 r  g_activation[0].bank/g_memory_lane[1].lane/compute_activation_read_request_ready_o_INST_0_i_2/O
+                         net (fo=17, unplaced)        0.958     4.432    g_activation[0].bank/g_memory_lane[1].lane/dma_read_bank_i_0
+                         LUT6 (Prop_lut6_I2_O)        0.124     4.556 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0_i_18/O
+                         net (fo=16, unplaced)        0.800     5.356    g_activation[0].bank/g_memory_lane[0].lane/ADDRBWRADDR[8]
+                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/ADDRBWRADDR[11]
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[41]/C
+                         net (fo=1355, unset)         0.924    10.924    g_activation[0].bank/g_memory_lane[0].lane/clk_i
+                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/CLKBWRCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[41]
+                         RAMB36E1 (Setup_ramb36e1_CLKBWRCLK_ADDRBWRADDR[11])
+                                                     -0.566    10.323    g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.323    <hidden>
+                         arrival time                          -5.356    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.967    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKBWRCLK
+Slack (MET) :             4.967ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/ADDRBWRADDR[12]
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[43]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.383ns  (logic 1.185ns (27.038%)  route 3.198ns (72.962%))
+  Logic Levels:           4  (LUT2=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -1202,45 +1270,47 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[3])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/DOBDO[3]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[43]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[43]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[43]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[43]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[43]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[43]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[43]
-                         FDRE                                         r  dma_output_data_q_reg[43]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 f  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_activation[0].bank/g_memory_lane[1].lane/memory_reg_7_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 r  g_activation[0].bank/g_memory_lane[1].lane/compute_activation_read_request_ready_o_INST_0_i_2/O
+                         net (fo=17, unplaced)        0.958     4.432    g_activation[0].bank/g_memory_lane[1].lane/dma_read_bank_i_0
+                         LUT6 (Prop_lut6_I2_O)        0.124     4.556 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0_i_17/O
+                         net (fo=16, unplaced)        0.800     5.356    g_activation[0].bank/g_memory_lane[0].lane/ADDRBWRADDR[9]
+                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/ADDRBWRADDR[12]
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[43]/C
+                         net (fo=1355, unset)         0.924    10.924    g_activation[0].bank/g_memory_lane[0].lane/clk_i
+                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/CLKBWRCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[43]
+                         RAMB36E1 (Setup_ramb36e1_CLKBWRCLK_ADDRBWRADDR[12])
+                                                     -0.566    10.323    g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.323    <hidden>
+                         arrival time                          -5.356    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.967    <hidden>
 
-Slack (MET) :             5.360ns  (required time - arrival time)
-  Source:                 g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKBWRCLK
+Slack (MET) :             4.967ns  (required time - arrival time)
+  Source:                 dma_output_valid_q_reg/C
+                            (rising edge-triggered cell FDCE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
+  Destination:            g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/ADDRBWRADDR[13]
                             (rising edge-triggered cell RAMB36E1 clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
-  Destination:            dma_output_data_q_reg[45]/D
-                            (rising edge-triggered cell FDRE clocked by core_clk  {rise@0.000ns fall@5.000ns period=10.000ns})
   Path Group:             core_clk
   Path Type:              Setup (Max at Slow Process Corner)
   Requirement:            10.000ns  (core_clk rise@10.000ns - core_clk rise@0.000ns)
-  Data Path Delay:        4.669ns  (logic 2.967ns (63.551%)  route 1.702ns (36.449%))
-  Logic Levels:           3  (LUT3=1 LUT6=1 MUXF7=1)
+  Data Path Delay:        4.383ns  (logic 1.185ns (27.038%)  route 3.198ns (72.962%))
+  Logic Levels:           4  (LUT2=1 LUT5=1 LUT6=2)
   Clock Path Skew:        -0.049ns (DCD - SCD + CPR)
     Destination Clock Delay (DCD):    0.924ns = ( 10.924 - 10.000 ) 
     Source Clock Delay      (SCD):    0.973ns
@@ -1256,34 +1326,36 @@ Slack (MET) :             5.360ns  (required time - arrival time)
                          (clock core_clk rise edge)
                                                       0.000     0.000 r  <hidden>
                                                       0.000     0.000 r  clk_i
-                         net (fo=707, unset)          0.973     0.973    g_activation[0].bank/g_memory_lane[1].lane/clk_i
-                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/CLKBWRCLK
+                         net (fo=1355, unset)         0.973     0.973    clk_i
+                         FDCE                                         r  dma_output_valid_q_reg/C
   -------------------------------------------------------------------    -------------------
-                         RAMB36E1 (Prop_ramb36e1_CLKBWRCLK_DOBDO[5])
-                                                      2.454     3.427 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_5/DOBDO[5]
-                         net (fo=2, unplaced)         0.800     4.227    g_activation[0].bank/g_memory_lane[1].lane/b_response_data[0]__0[45]
-                         LUT3 (Prop_lut3_I0_O)        0.148     4.375 r  g_activation[0].bank/g_memory_lane[1].lane/dma_output_data_q[45]_i_7/O
-                         net (fo=1, unplaced)         0.902     5.277    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[45]_1
-                         LUT6 (Prop_lut6_I5_O)        0.124     5.401 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[45]_i_2/O
-                         net (fo=1, unplaced)         0.000     5.401    g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q[45]_i_2_n_0
-                         MUXF7 (Prop_muxf7_I0_O)      0.241     5.642 r  g_weight[1].bank/g_memory_lane[3].lane/dma_output_data_q_reg[45]_i_1/O
-                         net (fo=1, unplaced)         0.000     5.642    a_response_data[45]
-                         FDRE                                         r  dma_output_data_q_reg[45]/D
+                         FDCE (Prop_fdce_C_Q)         0.518     1.491 f  dma_output_valid_q_reg/Q
+                         net (fo=4, unplaced)         0.494     1.985    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o
+                         LUT2 (Prop_lut2_I0_O)        0.295     2.280 f  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3/O
+                         net (fo=1, unplaced)         0.449     2.729    g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0_i_3_n_0
+                         LUT6 (Prop_lut6_I4_O)        0.124     2.853 r  g_weight[0].bank/g_memory_lane[7].lane/dma_read_request_ready_o_INST_0/O
+                         net (fo=12, unplaced)        0.497     3.350    g_activation[0].bank/g_memory_lane[1].lane/memory_reg_7_1
+                         LUT5 (Prop_lut5_I1_O)        0.124     3.474 r  g_activation[0].bank/g_memory_lane[1].lane/compute_activation_read_request_ready_o_INST_0_i_2/O
+                         net (fo=17, unplaced)        0.958     4.432    g_activation[0].bank/g_memory_lane[1].lane/dma_read_bank_i_0
+                         LUT6 (Prop_lut6_I2_O)        0.124     4.556 r  g_activation[0].bank/g_memory_lane[1].lane/memory_reg_0_i_16/O
+                         net (fo=16, unplaced)        0.800     5.356    g_activation[0].bank/g_memory_lane[0].lane/ADDRBWRADDR[10]
+                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/ADDRBWRADDR[13]
   -------------------------------------------------------------------    -------------------
 
                          (clock core_clk rise edge)
                                                      10.000    10.000 r  <hidden>
                                                       0.000    10.000 r  clk_i
-                         net (fo=707, unset)          0.924    10.924    clk_i
-                         FDRE                                         r  dma_output_data_q_reg[45]/C
+                         net (fo=1355, unset)         0.924    10.924    g_activation[0].bank/g_memory_lane[0].lane/clk_i
+                         RAMB36E1                                     r  g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0/CLKBWRCLK
                          clock pessimism              0.000    10.924    <hidden>
                          clock uncertainty           -0.035    10.889    <hidden>
-                         FDRE (Setup_fdre_C_D)        0.113    11.002    dma_output_data_q_reg[45]
+                         RAMB36E1 (Setup_ramb36e1_CLKBWRCLK_ADDRBWRADDR[13])
+                                                     -0.566    10.323    g_activation[0].bank/g_memory_lane[0].lane/memory_reg_0
   -------------------------------------------------------------------
-                         required time                         11.002    <hidden>
-                         arrival time                          -5.642    <hidden>
+                         required time                         10.323    <hidden>
+                         arrival time                          -5.356    <hidden>
   -------------------------------------------------------------------
-                         slack                                  5.360    <hidden>
+                         slack                                  4.967    <hidden>
 
 
 

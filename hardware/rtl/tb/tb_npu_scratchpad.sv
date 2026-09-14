@@ -35,6 +35,26 @@ module tb_npu_scratchpad;
   logic accelerator_read_response_valid_o;
   logic accelerator_read_response_ready_i = 1'b0;
   logic [511:0] accelerator_read_response_data_o;
+  logic compute_activation_read_request_valid_i = 1'b0;
+  logic compute_activation_read_request_ready_o;
+  logic compute_activation_read_bank_i = 1'b0;
+  logic [31:0] compute_activation_read_address_i = '0;
+  logic compute_activation_read_response_valid_o;
+  logic compute_activation_read_response_ready_i = 1'b0;
+  logic [127:0] compute_activation_read_response_data_o;
+  logic compute_weight_read_request_valid_i = 1'b0;
+  logic compute_weight_read_request_ready_o;
+  logic compute_weight_read_bank_i = 1'b0;
+  logic [31:0] compute_weight_read_address_i = '0;
+  logic compute_weight_read_response_valid_o;
+  logic compute_weight_read_response_ready_i = 1'b0;
+  logic [511:0] compute_weight_read_response_data_o;
+  logic compute_output_write_valid_i = 1'b0;
+  logic compute_output_write_ready_o;
+  logic compute_output_write_bank_i = 1'b0;
+  logic [31:0] compute_output_write_address_i = '0;
+  logic [255:0] compute_output_write_data_i = '0;
+  logic [31:0] compute_output_write_strobe_i = '0;
   logic collision_stall_o;
   logic [63:0] held_data;
 
@@ -317,6 +337,64 @@ module tb_npu_scratchpad;
     accelerator_write_valid_i = 1'b0;
     dma_read_check(NPU_SPAD_O, 1'b0, 32'd128,
                    64'h2222_2222_2222_2222);
+
+    // Dedicated A and W compute ports accept and return the paired token in
+    // the same cycles even though the bank widths differ.
+    @(negedge clk_i);
+    compute_activation_read_bank_i = 1'b0;
+    compute_activation_read_address_i = 32'd16;
+    compute_activation_read_request_valid_i = 1'b1;
+    compute_weight_read_bank_i = 1'b1;
+    compute_weight_read_address_i = 32'd64;
+    compute_weight_read_request_valid_i = 1'b1;
+    @(posedge clk_i);
+    if (!compute_activation_read_request_ready_o
+        || !compute_weight_read_request_ready_o)
+      $fatal(1, "paired A/W compute request did not issue together");
+    @(negedge clk_i);
+    compute_activation_read_request_valid_i = 1'b0;
+    compute_weight_read_request_valid_i = 1'b0;
+    do @(negedge clk_i);
+    while (!compute_activation_read_response_valid_o
+           || !compute_weight_read_response_valid_o);
+    if (compute_activation_read_response_data_o
+        !== {64'h99aa_bbcc_ddee_ff00, 64'h1122_3344_eeff_7788})
+      $fatal(1, "dedicated activation response mismatch");
+    if (compute_weight_read_response_data_o
+        !== {64'h7777_7777_7777_7777, 64'h6666_6666_6666_6666,
+             64'h5555_5555_5555_5555, 64'h4444_4444_4444_4444,
+             64'h3333_3333_3333_3333, 64'h2222_2222_2222_2222,
+             64'h1111_1111_1111_1111, 64'hdead_beef_1234_5678})
+      $fatal(1, "dedicated weight response mismatch");
+    compute_activation_read_response_ready_i = 1'b1;
+    compute_weight_read_response_ready_i = 1'b1;
+    @(posedge clk_i);
+    @(negedge clk_i);
+    compute_activation_read_response_ready_i = 1'b0;
+    compute_weight_read_response_ready_i = 1'b0;
+
+    // Four 64-bit lanes make one 256-bit O row, matching one 8xINT32 MAC
+    // result without a serialization cycle.
+    compute_output_write_bank_i = 1'b0;
+    compute_output_write_address_i = 32'd256;
+    compute_output_write_data_i
+      = {64'hdddd_dddd_dddd_dddd, 64'hcccc_cccc_cccc_cccc,
+         64'hbbbb_bbbb_bbbb_bbbb, 64'haaaa_aaaa_aaaa_aaaa};
+    compute_output_write_strobe_i = 32'hffff_ffff;
+    compute_output_write_valid_i = 1'b1;
+    @(posedge clk_i);
+    if (!compute_output_write_ready_o)
+      $fatal(1, "256-bit output write was not accepted");
+    @(negedge clk_i);
+    compute_output_write_valid_i = 1'b0;
+    dma_read_check(NPU_SPAD_O, 1'b0, 32'd256,
+                   64'haaaa_aaaa_aaaa_aaaa);
+    dma_read_check(NPU_SPAD_O, 1'b0, 32'd264,
+                   64'hbbbb_bbbb_bbbb_bbbb);
+    dma_read_check(NPU_SPAD_O, 1'b0, 32'd272,
+                   64'hcccc_cccc_cccc_cccc);
+    dma_read_check(NPU_SPAD_O, 1'b0, 32'd280,
+                   64'hdddd_dddd_dddd_dddd);
 
     $display("npu_scratchpad: PASS");
     $finish;

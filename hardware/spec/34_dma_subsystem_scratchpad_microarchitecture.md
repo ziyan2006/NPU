@@ -1,9 +1,10 @@
 # DMA 子系统与 Scratchpad 微架构规格
 
-文档版本：`0.2-draft`
+文档版本：`0.3-draft`
 
-状态：P4 可综合集成原型；lane-striped 计算宽口已通过 Vivado 2026.1 OOC
-资源与 200 MHz 时序验证，尚未经过完整计算集成、真实 Zynq HP 端口和 post-route 验证
+状态：P4 可综合集成原型；DMA、lane-striped Scratchpad、CONV2D controller 和
+8x8 MAC 已完成直接集成并通过 100 MHz Vivado 2026.1 OOC 综合，尚未经过真实
+Zynq HP 端口和 post-route 验证
 
 ## 1. 已打通的数据路径
 
@@ -21,6 +22,12 @@ DMA AGU -> npu_dma_request_t -> AXI DMA Engine
                           +---------+---------+
                           v                   v
                     64-bit AXI4          A/W/O Scratchpad
+                                             |
+                              128-bit A + 512-bit W
+                                             v
+                                CONV2D controller + 8x8 MAC
+                                             |
+                                  2-entry 256-bit O FIFO
 ```
 
 `npu_dma_frontend.sv`、`npu_dma_engine.sv` 和 `npu_scratchpad.sv` 由
@@ -59,7 +66,7 @@ Operator -> source Tensor -> destination Tensor -> Quant -> Segment
 |---|---:|---:|---:|---:|---:|
 | `A0/A1` | 2 | 64 KiB | `2 × 4096 × 64` | 128 bit | 16 |
 | `W0/W1` | 2 | 32 KiB | `8 × 512 × 64` | 512 bit | 8 |
-| `O0/O1` | 2 | 16 KiB | `2 × 1024 × 64` | 128 bit | 4 |
+| `O0/O1` | 2 | 16 KiB | `4 × 512 × 64` | 256 bit | 4 |
 | **合计** | **6** | **224 KiB** | - | - | **56** |
 
 每条 lane 使用 simple-dual-port BRAM：一个物理方向写、另一个物理方向读。仲裁器允许
@@ -67,8 +74,9 @@ Operator -> source Tensor -> destination Tensor -> Quant -> Segment
 的双写或双读由 DMA 优先，同一行的交叉读写也暂停 compute 并产生
 `collision_stall`。不同 bank 可并行访问。两侧均保留逐 byte write strobe。
 
-计算侧使用统一 512-bit 接口，访问 A/O 时只有低 128 bit 有效。计算地址必须按行宽
-对齐：A/O 为 16 byte，W 为 64 byte；lane 0 位于总线最低位并对应最低字节地址。
+计算侧保留统一 512-bit debug/vector 接口，并新增可并行工作的独立 CONV2D 端口：
+A 读 128 bit、W 读 512 bit、O 写 256 bit。计算地址必须按行宽对齐：A 为 16 byte、
+W 为 64 byte、O 为 32 byte；lane 0 位于总线最低位并对应最低字节地址。
 读请求经过 bank BRAM 输出与顶层 response register 两级，稳态在 consumer ready 时
 仍可每拍接收一个请求并返回一个响应。顶层 pending selector 明确记录响应 bank，
 避免通过六 bank valid OR 推断响应归属。
@@ -77,18 +85,25 @@ Vivado 2026.1 在参考 `xc7z020clg400-1` 上把 24 条 lane 全部识别为
 simple-dual-port block RAM，并实际映射为 56 个 RAMB36E1。W bank 的 16 条
 `512 × 64` lane 各使用一个 RAMB36；宽口没有复制 tensor 容量。
 
-## 4. 计算端口边界
+## 4. CONV2D 集成与反压
 
-lane-striped 端口每拍提供 128-bit activation 和 512-bit weight，已经满足 8x8 MAC
-单 token 的供数宽度。该结构关闭了 BRAM 复制与 Scratchpad 单体 200 MHz 风险；
-CONV2D 控制器仍需证明 A/W 双请求的调度、地址对应关系和整条计算路径时序。
+lane-striped 端口每拍提供 128-bit activation 和 512-bit weight，满足 8x8 MAC 单
+token 的供数宽度。A/W bank 各自仲裁，join 逻辑允许其中一侧先被接受并记账；只有
+两侧请求均被接受后，controller 才推进到下一地址，避免 DMA 冲突造成 A/W 错配。
+
+MAC 每次返回完整 `8 × INT32`，O bank 用 256-bit 行在一拍内写入，不做串行拆分。
+MAC 和 O bank 之间有 2-entry 写回 FIFO，它把 O bank 冲突反压从 MAC、A/W response
+和 controller 计数器的组合路径上隔离。controller 发出内部 done 后，子系统先锁存
+event，等待写回 FIFO 完全排空，再对外产生 `conv_done_pulse` 和 `conv_event_set`；
+因此外部看到完成时，O bank 数据已经可读。
 
 ## 5. 完成、错误与复位
 
 - Engine 成功完成时把命令的 event mask 输出给 Command Processor；
 - front-end error 来源编号为 1，Engine error 来源编号为 2；
 - 错误同时返回 reason/detail、原始 command PC 和 tag；
-- 子系统 `busy` 是 front-end 与 Engine busy 的或；
+- DMA `busy` 是 front-end 与 Engine busy 的或，CONV2D 另有包含 controller、待完成
+  event 和写回 FIFO 的 `conv_busy`；
 - `soft_reset` 一旦有效，子系统立即禁止接收新命令；若已有事务则继续排空，整体
   `busy=0` 后才把 reset 传入内部状态机。因此外层应保持或在 idle 后重发 reset，不能
   用 soft reset 取消已经越过 AXI ready/valid 边界的事务。
@@ -105,20 +120,23 @@ Icarus 回归已覆盖：
 - 一条端到端 activation load 从命令和描述符开始，经 AXI read 写入 A0，再从
   accelerator port 读回；
 - AXI read error 返回正确的 source/reason/PC/tag。
+- 独立 A/W 宽读可同拍请求并正确配对；
+- 256-bit O 行可一次写入并由 64-bit DMA/debug 路径逐 lane 读回；
+- 最小 `1x1` CONV2D 已覆盖 A/W 写入、宽读、MAC、O FIFO、O bank 落地和完成事件。
 
-尚未覆盖真实 HP interconnect、描述符/payload AXI 仲裁、MAC 与 A/W 双宽口的
-完整集成、CDC 和 post-route Fmax。
+尚未覆盖真实 HP interconnect、描述符/payload AXI 仲裁、post pipeline、CDC 和
+post-route Fmax。
 
 ## 7. Vivado OOC 结果
 
-| 项目 | `npu_scratchpad` | `npu_dma_subsystem`（旧 64-bit 口基线） |
+| 项目 | `npu_scratchpad` | `npu_dma_subsystem`（含 CONV2D/MAC） |
 |---|---:|---:|
-| Slice LUT | 3,147 | 7,546 |
-| Slice Register | 596 | 7,144 |
+| Slice LUT | 5,668 | 17,707 |
+| Slice Register | 1,244 | 10,993 |
 | RAMB36E1 | 56 | 56 |
-| DSP48E1 | 0 | 0 |
-| 100 MHz WNS | `+5.360 ns` | `+1.888 ns` |
-| 200 MHz WNS | `+0.360 ns` | `-3.112 ns` |
+| DSP48E1 | 0 | 64 |
+| 100 MHz WNS | `+4.568 ns` | `+0.484 ns` |
+| 200 MHz WNS | `-0.432 ns` | 未作为当前退出门槛 |
 
 这是综合后 OOC 结果：没有最终 clock source、input/output delay、PS interconnect 和
 布局布线。Vivado 仍提示部分 BRAM 输出寄存器未合并，完整集成后需结合布局继续检查。
@@ -126,7 +144,6 @@ Icarus 回归已覆盖：
 
 ## 8. 下一步
 
-实现 8x8 Tensor MAC 的 CONV2D loop controller，先验证单个真实 `1×1` tile 的
-A/W 宽读地址、lane mask、`first/last` 和 INT32 结果，再扩展 `1×3/3×3`、stride、
-padding、bias/requant/RNE 与 O bank 写回。完整顶层 place/route 前不把 OOC WNS
-当作最终 Fmax。
+实现 bias、per-channel requant、signed RNE、clamp 与 activation post pipeline，
+然后接入 `VEC_ADD`、`UPSAMPLE2X` 和完整 Command Processor。完整顶层 place/route
+前不把 OOC WNS 当作最终 Fmax。

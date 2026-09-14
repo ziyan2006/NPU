@@ -1,7 +1,7 @@
 Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
 ---------------------------------------------------------------------------------------------------------------------------------------------
 | Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
-| Date         : Tue Sep 15 00:32:44 2026
+| Date         : Tue Sep 15 01:16:02 2026
 | Host         : RAW2332 running 64-bit major release  (build 9200)
 | Command      : report_methodology -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_scratchpad/methodology.rpt
 | Design       : npu_scratchpad
@@ -195,42 +195,42 @@ Related violations: <none>
 
 SYNTH-6#33 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance g_output[0].bank/g_memory_lane[0].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance g_output[0].bank/g_memory_lane[0].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#34 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance g_output[0].bank/g_memory_lane[0].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance g_output[0].bank/g_memory_lane[1].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#35 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance g_output[0].bank/g_memory_lane[1].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance g_output[0].bank/g_memory_lane[2].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#36 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance g_output[0].bank/g_memory_lane[1].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance g_output[0].bank/g_memory_lane[3].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#37 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance g_output[1].bank/g_memory_lane[0].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance g_output[1].bank/g_memory_lane[0].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#38 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance g_output[1].bank/g_memory_lane[0].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance g_output[1].bank/g_memory_lane[1].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#39 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance g_output[1].bank/g_memory_lane[1].lane/memory_reg_0, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance g_output[1].bank/g_memory_lane[2].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#40 Warning
 Timing of a RAM block might be sub-optimal  
-The timing for the instance g_output[1].bank/g_memory_lane[1].lane/memory_reg_1, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
+The timing for the instance g_output[1].bank/g_memory_lane[3].lane/memory_reg, implemented as a RAM block, might be sub-optimal as no output register was merged into the block.
 Related violations: <none>
 
 SYNTH-6#41 Warning
