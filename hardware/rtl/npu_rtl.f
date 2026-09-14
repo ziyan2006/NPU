@@ -10,4 +10,5 @@ hardware/rtl/npu_scratchpad_bank.sv
 hardware/rtl/npu_scratchpad.sv
 hardware/rtl/npu_dma_subsystem.sv
 hardware/rtl/npu_tensor_mac_8x8.sv
+hardware/rtl/npu_requant_post.sv
 hardware/rtl/npu_conv2d_controller.sv

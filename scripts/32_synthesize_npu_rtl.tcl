@@ -22,6 +22,7 @@ set valid_tops {
   npu_scratchpad
   npu_dma_subsystem
   npu_tensor_mac_8x8
+  npu_requant_post
   npu_conv2d_controller
 }
 if {[lsearch -exact $valid_tops $top] < 0} {
@@ -43,6 +44,7 @@ set source_files [list \
   [file join $rtl_dir npu_scratchpad.sv] \
   [file join $rtl_dir npu_dma_subsystem.sv] \
   [file join $rtl_dir npu_tensor_mac_8x8.sv] \
+  [file join $rtl_dir npu_requant_post.sv] \
   [file join $rtl_dir npu_conv2d_controller.sv]]
 
 read_verilog -sv $source_files

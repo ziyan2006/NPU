@@ -13,6 +13,7 @@
 - `npu_scratchpad_bank.sv` / `npu_scratchpad.sv`：A/W/O 六 bank 的 lane-striped simple-dual-port BRAM、独立 128-bit A/512-bit W 读口、256-bit O 写口与冲突仲裁；
 - `npu_dma_subsystem.sv`：把 fetch/cache/AGU/Engine/Scratchpad/CONV2D/MAC 接成数据链路，并用 2-entry FIFO 隔离 O 写回反压；
 - `npu_tensor_mac_8x8.sv`：64-lane signed INT16xINT8 DSP 阵列、三级加法树、INT32 累加和结果反压；
+- `npu_requant_post.sv`：按 lane 复用的 bias、Q31 requant、signed RNE、clamp、ReLU/LeakyReLU/tanh LUT；
 - `npu_conv2d_controller.sv`：解析 Operator descriptor，生成真实 tile 的 A/W 地址、首尾/尾 lane，并驱动 8x8 MAC；
 - `include/npu_dma_pkg.sv`：DMA 内部接口类型。
 
