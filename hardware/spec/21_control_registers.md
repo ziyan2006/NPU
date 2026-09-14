@@ -51,6 +51,19 @@
 - `ERROR_CODE/PC/INST_TAG` 锁存首错，直到 W1C 清错或 soft reset；
 - 64-bit 只读计数器需要 snapshot 语义，避免 LO/HI 跨越；具体采用“读 LO 锁存 HI”或显式 snapshot bit 在 P4 冻结。
 
+### 首批公共错误码
+
+| Code | 名称 | 来源 |
+|---:|---|---|
+| `0x0000` | `NONE` | 无错误 |
+| `0x0001` | `ILLEGAL_OPCODE` | Command decoder |
+| `0x0002` | `ILLEGAL_FLAGS` | Command decoder |
+| `0x0003` | `ILLEGAL_FIELDS` | Command/descriptor 前置校验 |
+| `0x0004` | `EXECUTION_ERROR` | 执行端未给出更细错误时的兜底 |
+| `0x0005` | `WATCHDOG` | 任务超过 `WATCHDOG_LIMIT` |
+
+编码由 `scripts/npu_isa.py` 生成到 RTL/C 头文件；后续 DMA、descriptor、bank 等错误只追加新值，不复用已有值。
+
 ## 3. soft reset 语义
 
 `CONTROL.soft_reset` 写 1 后：

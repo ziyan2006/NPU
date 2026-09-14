@@ -24,6 +24,7 @@ from npu_isa import (  # noqa: E402
     Command,
     CommandFlag,
     DType,
+    ErrorCode,
     Event,
     Layout,
     Opcode,
@@ -72,6 +73,7 @@ for prefix, enum_type in (
     ("NPU_DTYPE", DType),
     ("NPU_LAYOUT", Layout),
     ("NPU_POST", PostOp),
+    ("NPU_ERR", ErrorCode),
 ):
     expected = {item.name: int(item) for item in enum_type}
     assert parse_c_defines(c_text, prefix) == expected

@@ -177,3 +177,5 @@ P0 回归失败、未解释的 bit mismatch、负时序、资源超限或 deadli
 4. 实现张量生命周期/tiling/DDR 流量报告；
 5. 选择网络 B 并验证 P0 算子覆盖；
 6. 再开始 MAC、requant 和 DMA 的 RTL/HLS 单元原型。
+
+当前增量：Command Processor 已完成 directed RTL 仿真，并已接受网络 A 的 1,869 条真实 tile 命令流；这覆盖 V2/V3 的取指边界之后、执行单元之前的控制切片。DMA/compute stub 只模拟握手和完成延迟，不计入数值或 AXI 协议覆盖。

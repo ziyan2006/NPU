@@ -76,6 +76,15 @@ class Event(enum.IntFlag):
     S1_DONE = 1 << 7
 
 
+class ErrorCode(enum.IntEnum):
+    NONE = 0x0000
+    ILLEGAL_OPCODE = 0x0001
+    ILLEGAL_FLAGS = 0x0002
+    ILLEGAL_FIELDS = 0x0003
+    EXECUTION_ERROR = 0x0004
+    WATCHDOG = 0x0005
+
+
 class DType(enum.IntEnum):
     INT8 = 1
     INT12_IN_INT16 = 2

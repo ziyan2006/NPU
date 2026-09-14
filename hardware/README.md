@@ -10,9 +10,10 @@
 4. `spec/20_programming_model_isa.md`：命令流、描述符、算子和数值语义；
 5. `spec/21_control_registers.md`：通用 NPU AXI4-Lite 控制接口草案；
 6. `spec/30_microarchitecture_budget.md`：MAC、DMA、BRAM、周期与资源预算；
-7. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
-8. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
-9. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
+7. `spec/31_command_processor_microarchitecture.md`：命令控制核心的接口、状态机和异常；
+8. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
+9. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
+10. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
 RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 开始；前者说明如何引用生成的 SystemVerilog package，后者给出算子到指令序列及逐指令执行契约。
 
@@ -39,4 +40,5 @@ python scripts/29_generate_npu_isa_headers.py --check
 python scripts/_test_npu_isa.py
 python scripts/_test_npu_tile_schedule.py
 python scripts/_test_npu_isa_headers.py
+python scripts/_test_npu_rtl.py
 ```

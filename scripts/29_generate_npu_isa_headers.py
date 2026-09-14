@@ -16,6 +16,7 @@ from npu_isa import (
     TENSOR_STRUCT,
     CommandFlag,
     DType,
+    ErrorCode,
     Event,
     Layout,
     Opcode,
@@ -57,6 +58,7 @@ def render_sv() -> str:
     lines = [
         f"// {NOTICE}",
         "// P3 draft interface: binary-compatible changes are not yet frozen.",
+        "`timescale 1ns/1ps",
         "package npu_isa_pkg;",
         "",
         f"  localparam int unsigned NPU_ISA_MAJOR = {ISA_MAJOR};",
@@ -90,6 +92,10 @@ def render_sv() -> str:
         "",
         *[f"  localparam logic [7:0] NPU_EVENT_{item.name} = 8'h{int(item):02x};"
           for item in Event],
+        "",
+        "  typedef enum logic [15:0] {",
+        *enum_sv("NPU_ERR", ErrorCode, 16),
+        "  } npu_error_code_e;",
         "",
         f"  localparam int unsigned NPU_IMM_EVENT_LSB = {IMM_EVENT_LSB};",
         f"  localparam int unsigned NPU_IMM_EVENT_WIDTH = {IMM_EVENT_WIDTH};",
@@ -229,6 +235,9 @@ def render_c() -> str:
         "",
         *[f"#define NPU_EVENT_{item.name} 0x{int(item):02x}u"
           for item in Event],
+        "",
+        *[f"#define NPU_ERR_{item.name} 0x{int(item):04x}u"
+          for item in ErrorCode],
         "",
         f"#define NPU_IMM_EVENT_LSB {IMM_EVENT_LSB}u",
         f"#define NPU_IMM_EVENT_WIDTH {IMM_EVENT_WIDTH}u",
