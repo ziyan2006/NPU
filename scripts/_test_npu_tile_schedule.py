@@ -46,6 +46,10 @@ assert all(row["overlap_elements"] == 0 for row in analysis["coverage"])
 assert analysis["bank_capacity_pass"]
 assert analysis["bank_conflict_count"] == 0
 assert analysis["cycles"]["compute"] == 1_986_560
+assert analysis["cycles"]["activation_clear"] == 155_832
+assert analysis["cycles"]["dma_read"] == 539_976
+assert analysis["cycles"]["dma_write"] == 569_344
+assert analysis["cycles"]["total"] == 2_485_596
 assert analysis["cycles"]["total"] < analysis["cycles"]["budget"]
 assert analysis["cycles"]["hidden_by_overlap"] > 0
 assert analysis["memory"]["scheduled_ddr_bytes"] == 3_512_000

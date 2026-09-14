@@ -59,8 +59,8 @@ out = mix_delay − g · vocal_est
 - ✅ 算法定义、规格、量化方案、延迟账、训练权重、评测结论：**已定稿**
 - ✅ INT8/INT12 量化方案与精度损失：**已实测**
 - ✅ NPU ISA、描述符、tile 编译器、bank/周期模型：**已有可执行提案**
-- 🚧 PL 侧 RTL：**P4 原型进行中**，已有 Command Processor、Descriptor Cache、DMA AGU
-- 🔜 AXI DMA engine、MAC/Vector 数据通路、SoC 集成和端到端上板实测：**未完成**
+- 🚧 PL 侧 RTL：**P4 原型进行中**，已有 Command Processor、Descriptor Cache、DMA AGU、AXI DMA Engine
+- 🔜 Scratchpad、MAC/Vector 数据通路、SoC 集成和端到端上板实测：**未完成**
 
 ---
 

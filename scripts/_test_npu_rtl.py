@@ -197,7 +197,18 @@ with tempfile.TemporaryDirectory() as temporary:
     ])
     assert f"PASS ({len(dma_plan['requests'])} requests)" in output
 
+    dma_engine_image = temp / "tb_npu_dma_engine.vvp"
+    output = run([
+        iverilog, "-g2012", "-Wall", "-s", "tb_npu_dma_engine",
+        "-o", str(dma_engine_image),
+        str(RTL / "include" / "npu_dma_pkg.sv"),
+        str(RTL / "npu_dma_engine.sv"),
+        str(RTL / "tb" / "tb_npu_dma_engine.sv"),
+    ])
+    output += run([vvp, str(dma_engine_image)])
+    assert "npu_dma_engine: PASS" in output
+
     run([iverilog, "-g2012", "-Wall", "-tnull", "-f",
          str(RTL / "npu_rtl.f")])
 
-print("NPU command processor, descriptor cache, and DMA AGU RTL tests: PASS")
+print("NPU command processor and DMA front-end/execution RTL tests: PASS")

@@ -178,4 +178,4 @@ P0 回归失败、未解释的 bit mismatch、负时序、资源超限或 deadli
 5. 选择网络 B 并验证 P0 算子覆盖；
 6. 再开始 MAC、requant 和 DMA 的 RTL/HLS 单元原型。
 
-当前增量：Command Processor 已完成 directed RTL 仿真，并已接受网络 A 的 1,869 条真实 tile 命令流；Descriptor Cache 已覆盖 miss/hit、四类 record、back-end error、非法索引和 reset；DMA AGU 已覆盖普通 activation、O8I8 weight、bias、两类 quant、segmented concat、尾通道 store 和越界拒绝。软件 reference 对全部 1,078 条 DMA 请求完成 allocation/scratchpad 边界检查，RTL 输出已与这些请求逐 bit 比较一致。尚未覆盖 AXI burst、4 KiB 拆分、真实 scratchpad 端口和数值计算。
+当前增量：Command Processor 已完成 directed RTL 仿真，并已接受网络 A 的 1,869 条真实 tile 命令流；Descriptor Cache 已覆盖 miss/hit、四类 record、back-end error、非法索引和 reset；DMA AGU 已覆盖普通 activation、O8I8 weight、bias、两类 quant、segmented concat、尾通道 store 和越界拒绝。软件 reference 对全部 1,078 条 DMA 请求完成 allocation/scratchpad 边界检查，RTL 输出已逐 bit 一致。AXI DMA Engine 已覆盖 4 KiB/256-beat 拆分、窄尾部、三维 stride、双向 back-pressure、错误收尾和 busy reset；全网 45,664 个 burst 已静态审计。尚未覆盖真实 HP interconnect、真实 BRAM wrapper、多个 outstanding 和数值计算。

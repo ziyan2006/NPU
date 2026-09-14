@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "status": "P4-proposal",
+  "request_count": 1078,
+  "row_count": 44940,
+  "payload_bytes": 3020480,
+  "burst_count": 45664,
+  "burst_count_by_direction": {
+    "read": 13920,
+    "write": 31744
+  },
+  "beat_count": 378696,
+  "beat_count_by_direction": {
+    "read": 317256,
+    "write": 61440
+  },
+  "assumed_burst_overhead_cycles": 16,
+  "estimated_axi_cycles": {
+    "read": 539976,
+    "write": 569344,
+    "total": 1109320
+  },
+  "narrow_burst_count": 2272,
+  "four_kib_split_count": 374,
+  "maximum_bursts_per_request": 495,
+  "maximum_axi_beats_per_burst": 256,
+  "alignment_pass": true,
+  "payload_exact_pass": true
+}

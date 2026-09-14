@@ -66,6 +66,35 @@ def dma_cycles(byte_counts: list[int]) -> int:
     )
 
 
+def axi_dma_cycles(address: int, x_bytes: int, y_count: int = 1,
+                   z_count: int = 1, y_stride: int = 0,
+                   z_stride: int = 0) -> int:
+    """Cycles for the implemented 64-bit, 256-beat, 4-KiB-safe engine."""
+    cycles = 0
+    for z_index in range(z_count):
+        for y_index in range(y_count):
+            cursor = address + z_index * z_stride + y_index * y_stride
+            remaining = x_bytes
+            while remaining:
+                if remaining >= 8:
+                    beat_bytes, row_beats = 8, remaining // 8
+                elif remaining >= 4:
+                    beat_bytes, row_beats = 4, 1
+                elif remaining >= 2:
+                    beat_bytes, row_beats = 2, 1
+                else:
+                    beat_bytes, row_beats = 1, 1
+                boundary_beats = (4096 - cursor % 4096) // beat_bytes
+                beats = min(row_beats, boundary_beats, 256)
+                if beats <= 0 or cursor % beat_bytes:
+                    raise ValueError(f"unsupported AXI row at {cursor:#x}")
+                cycles += beats + BURST_OVERHEAD_CYCLES
+                transferred = beats * beat_bytes
+                cursor += transferred
+                remaining -= transferred
+    return cycles
+
+
 def pack_operator(row: dict[str, Any]) -> bytes:
     fields16 = (
         row["src_td"], row["dst_td"], row["weight_td"], row["bias_td"],
@@ -419,6 +448,7 @@ def simulate(program: dict[str, Any], manifest: dict[str, Any],
     accesses: list[dict[str, Any]] = []
     elapsed = 0
     total_compute = total_vector = total_dma_read = total_dma_write = 0
+    total_activation_clear = 0
     total_upsample = 0
     bank_reuse_stall = 0
     layer_rows = []
@@ -457,8 +487,23 @@ def simulate(program: dict[str, Any], manifest: dict[str, Any],
                 unconstrained = max(read_free, release)
                 load_start = max(unconstrained, activation_read_until[aid])
                 bank_reuse_stall += load_start - unconstrained
-                input_sizes = [part["bytes"] for part in tile["input_parts"]]
-                input_end = load_start + dma_cycles(input_sizes)
+                clear_cycles = math.ceil(
+                    tile["bytes"]["activation_bank_footprint"] / BUS_BYTES)
+                input_dma_cycles = 0
+                for part in tile["input_parts"]:
+                    tensor = tensors[part["tensor"]]
+                    input_dma_cycles += axi_dma_cycles(
+                        int(tensor["base_offset"])
+                        + tile["input_region"]["h_start"]
+                        * int(tensor["strides"][1])
+                        + tile["input_region"]["w_start"]
+                        * int(tensor["strides"][2]),
+                        part["channels"] * ACTIVATION_BYTES,
+                        tile["input_region"]["w_count"],
+                        tile["input_region"]["h_count"],
+                        int(tensor["strides"][2]),
+                        int(tensor["strides"][1]))
+                input_end = load_start + clear_cycles + input_dma_cycles
                 accesses.append({
                     "bank": f"A{aid}", "mode": "write", "kind": "dma_load",
                     "start": load_start, "end": input_end,
@@ -466,16 +511,42 @@ def simulate(program: dict[str, Any], manifest: dict[str, Any],
                 })
                 read_free = input_end
                 input_ready[tile["spatial_index"]] = input_end
-                total_dma_read += input_end - load_start
+                total_activation_clear += clear_cycles
+                total_dma_read += input_dma_cycles
             else:
                 input_end = input_ready[tile["spatial_index"]]
 
             unconstrained = max(read_free, release)
             weight_start = max(unconstrained, weight_read_until[wid])
             bank_reuse_stall += weight_start - unconstrained
-            weight_sizes = [tile["bytes"][key] for key in
-                            ("weight", "bias", "quant", "vector_quant")]
-            weight_end = weight_start + dma_cycles(weight_sizes)
+            weight_tensor = tensors[tile["weight_td"]]
+            bias_tensor = tensors[tile["bias_td"]]
+            # O8I8 output blocks are contiguous; derive the block size from
+            # the tile's full input-channel and kernel geometry.
+            descriptor = program["operators"][tile["layer_index"]]
+            weight_block_bytes = (align_up(int(descriptor["input_channel_count"]), 8)
+                                  * int(descriptor["kh"])
+                                  * int(descriptor["kw"]) * 8)
+            weight_address = (int(weight_tensor["base_offset"])
+                              + (tile["origin"]["cout"] // 8)
+                              * weight_block_bytes)
+            weight_dma_cycles = axi_dma_cycles(
+                weight_address, tile["bytes"]["weight"])
+            weight_dma_cycles += axi_dma_cycles(
+                int(bias_tensor["base_offset"])
+                + tile["origin"]["cout"] * 4,
+                tile["bytes"]["bias"])
+            quant = program["quantization"][tile["quant_desc"]]
+            weight_dma_cycles += axi_dma_cycles(
+                int(quant["param_offset"])
+                + tile["origin"]["cout"] * 16,
+                tile["bytes"]["quant"])
+            if tile["residual"]:
+                vector_quant = program["quantization"][tile["vector_quant_desc"]]
+                weight_dma_cycles += axi_dma_cycles(
+                    int(vector_quant["param_offset"]),
+                    tile["bytes"]["vector_quant"])
+            weight_end = weight_start + weight_dma_cycles
             accesses.append({
                 "bank": f"W{wid}", "mode": "write", "kind": "dma_load",
                 "start": weight_start, "end": weight_end,
@@ -512,8 +583,17 @@ def simulate(program: dict[str, Any], manifest: dict[str, Any],
             ])
 
             store_start = max(write_free, vector_end)
-            store_end = store_start + dma_cycles(
-                [tile["bytes"]["output_store"]])
+            output_tensor = tensors[tile["dst_td"]]
+            store_cycles = axi_dma_cycles(
+                int(output_tensor["base_offset"])
+                + tile["origin"]["h"] * int(output_tensor["strides"][1])
+                + tile["origin"]["w"] * int(output_tensor["strides"][2])
+                + tile["origin"]["cout"] * int(output_tensor["strides"][3]),
+                tile["shape"]["cout"] * ACTIVATION_BYTES,
+                tile["shape"]["w"], tile["shape"]["h"],
+                int(output_tensor["strides"][2]),
+                int(output_tensor["strides"][1]))
+            store_end = store_start + store_cycles
             accesses.append({
                 "bank": f"O{oid}", "mode": "read", "kind": "dma_store",
                 "start": store_start, "end": store_end,
@@ -558,13 +638,15 @@ def simulate(program: dict[str, Any], manifest: dict[str, Any],
                     conflicts.append({"bank": bank, "first": first, "second": second})
 
     command_cycles = command_count * COMMAND_OVERHEAD_CYCLES
-    no_overlap = (total_compute + total_vector + total_dma_read
+    no_overlap = (total_compute + total_vector + total_activation_clear
+                  + total_dma_read
                   + total_dma_write + total_upsample + command_cycles)
     total = elapsed + command_cycles
     cycle_report = {
         "compute": total_compute,
         "vector": total_vector,
         "upsample_including_ddr": total_upsample,
+        "activation_clear": total_activation_clear,
         "dma_read": total_dma_read,
         "dma_write": total_dma_write,
         "command": command_cycles,

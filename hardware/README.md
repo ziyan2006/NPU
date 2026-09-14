@@ -1,6 +1,6 @@
 # STEM NPU
 
-本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Cache 和 DMA AGU 可综合模块。
+本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Cache、DMA AGU 和 AXI DMA Engine 可综合模块。
 
 建议按以下顺序阅读：
 
@@ -12,9 +12,10 @@
 6. `spec/30_microarchitecture_budget.md`：MAC、DMA、BRAM、周期与资源预算；
 7. `spec/31_command_processor_microarchitecture.md`：命令控制核心的接口、状态机和异常；
 8. `spec/32_dma_frontend_microarchitecture.md`：描述符缓存、三维 DMA 请求和地址规则；
-9. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
-10. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
-11. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
+9. `spec/33_axi_dma_engine_microarchitecture.md`：AXI burst、4 KiB 拆分和错误行为；
+10. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
+11. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
+12. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
 RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 开始；前者说明如何引用生成的 SystemVerilog package，后者给出算子到指令序列及逐指令执行契约。
 
@@ -38,10 +39,12 @@ python scripts/25_export_npu_package.py
 python scripts/26_compile_npu_program.py
 python scripts/28_schedule_npu_tiles.py
 python scripts/30_plan_npu_dma.py
+python scripts/31_plan_axi_dma.py
 python scripts/29_generate_npu_isa_headers.py --check
 python scripts/_test_npu_isa.py
 python scripts/_test_npu_tile_schedule.py
 python scripts/_test_npu_dma.py
+python scripts/_test_npu_axi_dma.py
 python scripts/_test_npu_isa_headers.py
 python scripts/_test_npu_rtl.py
 ```

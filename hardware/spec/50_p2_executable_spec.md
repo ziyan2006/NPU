@@ -34,9 +34,10 @@ hardware/generated/bott2_mir1k_v1_program/
     tile_analysis.json     覆盖、冲突、容量和重叠周期报告
     dma_plan.json          每条 DMA command 的 3D 地址请求
     dma_analysis.json      DMA 类型、流量与边界检查摘要
+    axi_dma_analysis.json  全网 AXI burst 拆分与周期摘要
 ```
 
-`scripts/npu_isa.py` 是指令编码和定点原语的单一事实来源。`scripts/28_schedule_npu_tiles.py` 展开 tile 并执行资源时序模拟；`scripts/30_plan_npu_dma.py` 生成逐 DMA 地址 reference；对应回归检查覆盖、描述符、bank、周期、边界和可复现性。
+`scripts/npu_isa.py` 是指令编码和定点原语的单一事实来源。`scripts/28_schedule_npu_tiles.py` 展开 tile 并执行资源时序模拟；`scripts/30_plan_npu_dma.py` 生成逐 DMA 地址 reference；`scripts/31_plan_axi_dma.py` 用 RTL 相同规则拆分 burst；对应回归检查覆盖、描述符、bank、周期、边界和可复现性。
 
 ## 2. 暂定二进制结构
 
@@ -147,17 +148,18 @@ hardware/generated/bott2_mir1k_v1_program/
 | Tensor MAC | 1,986,560 |
 | residual vector | 1,024 |
 | upsample（含其 DDR 读写） | 93,696 |
-| tile DMA read | 365,432 |
-| tile DMA write | 69,632 |
+| activation bank 清零 | 155,832 |
+| tile DMA read | 539,976 |
+| tile DMA write | 569,344 |
 | 1,869 条命令开销 | 7,476 |
-| 全部不重叠 | 2,523,820 |
-| 被重叠隐藏 | 377,716 |
-| bank reuse stall | 0 |
-| **调度总周期** | **2,146,104** |
+| 全部不重叠 | 3,353,908 |
+| 被重叠隐藏 | 868,312 |
+| bank reuse stall | 45,732 |
+| **调度总周期** | **2,485,596** |
 
-调度总周期对应 10.73 ms@200 MHz、21.46 ms@100 MHz；逐 tile DDR 流量为 3,512,000 B，其中 upsample 流量 491,520 B。DMA AGU 只搬逻辑输入/尾输出通道，NHWC8 尾 lane 和卷积 padding 在 A bank 清零，因此流量略低于早期把 padded lane 全部计入的结果。它仍高于层级估算，因为显式计入按空间 tile 重载权重、bias、量化参数、residual rescale 参数以及 upsample 的 DDR 往返。
+调度总周期对应 12.43 ms@200 MHz、24.86 ms@100 MHz；逐 tile DDR 流量为 3,512,000 B，其中 upsample 流量 491,520 B。新模型不再把每个 tile 当成连续大块，而是计入 44,940 个 strided row、45,664 个实际 burst 和 1,246,656 B 片上清零，因此比上一版估算增加约 34 万 cycle，但仍有明显实时余量。
 
-模型假设 AXI 读写通道可以并行、同方向 transaction 串行、64-bit 每周期一拍，并按每 1 KiB burst 增加 16 cycle。真实 HP 口竞争、4 KiB 拆分、back-pressure、pipeline fill/flush 尚未测量，所以 2,146,104 是架构估算而非板级保证。
+模型假设 AXI 读写通道可以并行、同方向 transaction 串行、64-bit 每周期一拍，并为每个实际 burst 增加 16 cycle。4 KiB 和 256-beat 拆分已精确计入；真实 HP 口竞争、back-pressure、pipeline fill/flush 尚未测量，所以 2,485,596 是架构估算而非板级保证。
 
 ## 7. tanh 标定结果
 
@@ -195,9 +197,11 @@ tile 命令的 16-bit `imm` 暂定为：bits `[7:0]` completion event mask，bit
 python scripts/26_compile_npu_program.py
 python scripts/28_schedule_npu_tiles.py
 python scripts/30_plan_npu_dma.py
+python scripts/31_plan_axi_dma.py
 python scripts/_test_npu_isa.py
 python scripts/_test_npu_tile_schedule.py
 python scripts/_test_npu_dma.py
+python scripts/_test_npu_axi_dma.py
 ```
 
 若更换权重或量化校准集，先重新采集 tanh 前范围：

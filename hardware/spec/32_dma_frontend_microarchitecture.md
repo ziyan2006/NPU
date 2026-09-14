@@ -2,7 +2,7 @@
 
 文档版本：`0.1-draft`
 
-状态：P4 可综合原型；网络 A 的 1,078 条 DMA 请求已由软件 reference 全部做地址与容量检查，AXI burst engine 尚未实现
+状态：P4 可综合原型；网络 A 的 1,078 条 DMA 请求已由软件 reference 全部做地址与容量检查，后级 AXI burst engine 已有单 outstanding 原型
 
 ## 1. 模块边界
 
@@ -134,15 +134,8 @@ AGU 在发出请求前检查：
 
 生成的 `dma_plan.json` 是逐命令可审计 reference；`dma_analysis.json` 是摘要。当前结果证明地址语义自洽，不证明 AXI 协议、吞吐或 Vivado 时序已闭合。
 
-## 8. 下一步
+## 8. 后续集成
 
-实现一个消费 `npu_dma_request_t` 的 DMA execution engine：
+上述 `npu_dma_request_t` 已由 `npu_dma_engine.sv` 消费并实现 scratchpad clear、z/y 展开、256-beat/4 KiB 拆分、尾部 strobe、completion event 和 AXI error 收尾，详见 `33_axi_dma_engine_microarchitecture.md`。
 
-1. 先执行可选的 scratchpad clear；
-2. 展开 z/y 行请求；
-3. 按 AXI 最大 burst 和 4 KiB 边界拆分；
-4. 正确生成尾 beat `WSTRB`；
-5. 在最后一个响应/写响应后设置 completion event；
-6. AXI error 时停止新 burst但排空已握手 transaction。
-
-随后把 descriptor fetch sequencer、cache、AGU 和 engine 接到 Command Processor，形成第一条端到端 `DMA_LOAD → event → WAIT` RTL 路径。
+下一步把 descriptor fetch sequencer、cache、AGU、engine 和真实 BRAM wrapper 接到 Command Processor，形成第一条端到端 `DMA_LOAD → event → WAIT` RTL 路径。

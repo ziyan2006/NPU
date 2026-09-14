@@ -7,9 +7,10 @@
 - `npu_command_processor.sv`：命令校验、分派、PC、event、WAIT/END、watchdog 和首错锁存；
 - `npu_descriptor_cache.sv`：四类固定描述符的 4-line read-only cache；
 - `npu_dma_agu.sv`：把 DMA command/descriptor 转换为带独立 DDR/SP stride 的三维请求，并检查边界；
+- `npu_dma_engine.sv`：执行清零和 AXI4 read/write burst，处理 4 KiB、窄尾部、back-pressure 与错误；
 - `include/npu_dma_pkg.sv`：DMA 内部接口类型。
 
-逐接口语义见 `../spec/31_command_processor_microarchitecture.md` 和 `../spec/32_dma_frontend_microarchitecture.md`。
+逐接口语义见 `../spec/31_command_processor_microarchitecture.md`、`../spec/32_dma_frontend_microarchitecture.md` 和 `../spec/33_axi_dma_engine_microarchitecture.md`。
 
 从仓库根目录读取 `npu_rtl.f` 可获得当前可综合源文件顺序；package 必须先于使用它的模块编译。
 

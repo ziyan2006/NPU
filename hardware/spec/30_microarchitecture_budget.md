@@ -168,7 +168,7 @@ DMA 必须检查 4 KiB 边界并拆 burst；片上 FIFO 吸收 AXI back-pressure
 
 `1,986,560 cycle` 只计 MAC 调度，不含命令、DMA stall、bank conflict、requant 和 pipeline 边界。因此规格采用 4,000,000 cycle 的完整任务目标，不能把纯计算下界当成最终性能。
 
-当前逐 tile transaction 模型生成 248 个计算 tile 和 1,869 条命令。按 64-bit 理想 AXI、1 KiB burst/16-cycle 开销、读写通道可重叠、跨层不重叠的假设，总计 2,146,104 cycle；软件访问区间中 bank conflict 为 0。DMA AGU reference 已进一步把 1,078 条 DMA 命令解析为 3D 请求并验证 allocation/bank 边界。该结果关闭了“当前静态分配必然冲突、越界或超 4M cycle”的软件风险，但没有关闭 AXI 实效、BRAM 端口数或 post-route Fmax 风险。
+当前逐 tile transaction 模型生成 248 个计算 tile和 1,869 条命令。按已实现的 64-bit AXI、最大 256 beat、4 KiB 拆分、每 burst 16-cycle 保守开销、读写通道可重叠及跨层不重叠的假设，总计 2,485,596 cycle；软件访问区间中 bank conflict 为 0。DMA reference 把 1,078 条命令解析为 45,664 个 burst，并验证 allocation、bank、对齐和边界。该结果关闭了“当前静态分配必然冲突、越界或超 4M cycle”的软件风险，但没有关闭真实 AXI 实效、BRAM 端口数或 post-route Fmax 风险。
 
 周期模型至少拆分为：
 
