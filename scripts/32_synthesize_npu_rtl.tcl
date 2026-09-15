@@ -20,6 +20,10 @@ set output_dir [expr {$argc >= 4
 
 set valid_tops {
   npu_scratchpad
+  npu_axi_block_reader
+  npu_task_loader
+  npu_command_fetch
+  npu_execution_frontend
   npu_dma_subsystem
   npu_tensor_mac_8x8
   npu_requant_post
@@ -38,7 +42,12 @@ set rtl_dir [file join $repo_root hardware rtl]
 set source_files [list \
   [file join $rtl_dir include npu_isa_pkg.sv] \
   [file join $rtl_dir include npu_dma_pkg.sv] \
+  [file join $rtl_dir npu_axi_block_reader.sv] \
+  [file join $rtl_dir npu_task_loader.sv] \
+  [file join $rtl_dir npu_memory_arbiter4.sv] \
+  [file join $rtl_dir npu_command_fetch.sv] \
   [file join $rtl_dir npu_descriptor_cache.sv] \
+  [file join $rtl_dir npu_execution_frontend.sv] \
   [file join $rtl_dir npu_u32_mul_iter.sv] \
   [file join $rtl_dir npu_dma_agu.sv] \
   [file join $rtl_dir npu_dma_frontend.sv] \

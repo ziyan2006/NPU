@@ -1,0 +1,12 @@
+tool=Vivado 2026.1
+top=npu_task_loader
+part=xc7z020clg400-1
+clock_period_ns=10.0
+cells=4996
+luts=2400
+flip_flops=2226
+ramb36e1=0
+ramb18e1=0
+dsp48e1=0
+target_post_synth_wns_ns=1.022
+baseline_100mhz_post_synth_wns_ns=1.022

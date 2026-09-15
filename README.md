@@ -18,7 +18,7 @@
 | **延迟** | 通路 **133.5 ms**（恒定）· 按键响应 **≈30 ms** · 冷启动 **≈110 ms** |
 | **训练** | 无标注音乐 + HTDemucs 蒸馏（教师 80 MB 已就绪）；v1→v4 四轮 + 3 个损失探针 + K 片段实验 |
 | **出货权重** | **`models/student_k3s_model.pt`** + 推理期 `<250 Hz` 掩码置 0 |
-| **NPU RTL** | DMA/Scratchpad/CONV2D 已集成；8x8 MAC 为 64 DSP；完整计算子系统在 100 MHz OOC 综合后 WNS `+0.484 ns`；post 尚未完成 |
+| **NPU RTL** | DMA/Scratchpad/CONV2D/post 已集成，VEC_ADD 与 UPSAMPLE2X 已通过真实向量；完整数据子系统 100 MHz OOC 为 19,035 LUT / 13,856 FF / 58 BRAM36 / 68 DSP，WNS `+0.197 ns`；task loader/command fetch/执行前端已完成，正在接完整 AXI/CSR 顶层 |
 
 ---
 
@@ -59,8 +59,8 @@ out = mix_delay − g · vocal_est
 - ✅ 算法定义、规格、量化方案、延迟账、训练权重、评测结论：**已定稿**
 - ✅ INT8/INT12 量化方案与精度损失：**已实测**
 - ✅ NPU ISA、描述符、tile 编译器、bank/周期模型：**已有可执行提案**
-- 🚧 PL 侧 RTL：**P4/P6 并行原型**，已有 Command Processor、端到端 DMA/Scratchpad、CONV2D tile controller 和 8x8 Tensor MAC；完整计算子系统通过 100 MHz OOC
-- 🔜 bias/requant/activation、Vector/UPSAMPLE、完整命令顶层、SoC AXI 集成和端到端上板实测：**未完成**
+- 🚧 PL 侧 RTL：已有 Command Processor、task loader/fetch、端到端 DMA/Scratchpad、CONV2D+post、VEC_ADD、UPSAMPLE2X 和执行 descriptor 前端；真实 1,869-command task image 已形成
+- 🔜 共享 AXI 仲裁、CSR/完整命令顶层、整程序位精确仿真、参考器件布局布线和端到端上板实测：**未完成**
 
 ---
 

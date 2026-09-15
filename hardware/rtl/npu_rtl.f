@@ -1,7 +1,12 @@
 hardware/rtl/include/npu_isa_pkg.sv
 hardware/rtl/include/npu_dma_pkg.sv
 hardware/rtl/npu_command_processor.sv
+hardware/rtl/npu_axi_block_reader.sv
+hardware/rtl/npu_task_loader.sv
+hardware/rtl/npu_memory_arbiter4.sv
+hardware/rtl/npu_command_fetch.sv
 hardware/rtl/npu_descriptor_cache.sv
+hardware/rtl/npu_execution_frontend.sv
 hardware/rtl/npu_u32_mul_iter.sv
 hardware/rtl/npu_dma_agu.sv
 hardware/rtl/npu_dma_frontend.sv

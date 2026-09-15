@@ -5,7 +5,11 @@
 当前 P4 RTL 包含：
 
 - `npu_command_processor.sv`：命令校验、分派、PC、event、WAIT/END、watchdog 和首错锁存；
+- `npu_axi_block_reader.sv` / `npu_memory_arbiter4.sv`：为 task header、命令和描述符提供共享的单 outstanding AXI block-read 边界；
+- `npu_task_loader.sv`：校验 256-byte task header、生成各 section 基址并从真实镜像预载 4096 项 tanh LUT；
+- `npu_command_fetch.sv`：有界顺序取出 128-bit 命令，并检查 END 必须位于命令区末尾；
 - `npu_descriptor_cache.sv`：四类固定描述符的 4-line read-only cache；
+- `npu_execution_frontend.sv`：为 CONV2D/VEC_ADD/UPSAMPLE2X 取 descriptor，驱动异步/同步执行完成协议；
 - `npu_u32_mul_iter.sv`：供控制路径复用的 16-cycle radix-4 无 DSP 乘法器；
 - `npu_dma_agu.sv`：把 DMA command/descriptor 转换为带独立 DDR/SP stride 的三维请求，并检查边界；
 - `npu_dma_frontend.sv`：按命令取回所需描述符并驱动 AGU；

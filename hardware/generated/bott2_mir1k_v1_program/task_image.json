@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "format": {
+    "major": 1,
+    "minor": 0
+  },
+  "isa": {
+    "major": 1,
+    "minor": 0,
+    "command_bytes": 16
+  },
+  "magic_ascii": "STEMNPU",
+  "header_bytes": 256,
+  "total_bytes": 1851712,
+  "alignment_bytes": 64,
+  "command_count": 1869,
+  "entry": {
+    "input_tensor": 0,
+    "output_tensor": 41
+  },
+  "payload_crc32": "2017aa44",
+  "header_crc32": "527a8c59",
+  "sha256": "8be5d254b05d3db6369f1472aeb71bd8acb4d2ef335398e64bb639f18625743a",
+  "source_manifest_sha256": "2f54a990fb7663e5578e1f4a228da0d597ce3bd22f354fd0cdea53787926d1dc",
+  "sections": {
+    "commands": {
+      "offset": 256,
+      "bytes": 29904,
+      "mutable": false,
+      "source": "tile_commands.bin",
+      "sha256": "330236927150a6a75fb2cf6aed4998352d29048ffa047750dc158956a5df0e83"
+    },
+    "tensor_desc": {
+      "offset": 30208,
+      "bytes": 2688,
+      "mutable": false,
+      "source": "tensor_desc.bin",
+      "sha256": "d11cbd90ff4e25413b6fb5e1cc704d813438d59d5716ffccd49ac304457baa32"
+    },
+    "operator_desc": {
+      "offset": 32896,
+      "bytes": 15872,
+      "mutable": false,
+      "source": "tile_operator_desc.bin",
+      "sha256": "a78fb2dfe7d022685af82692fd03679418449ab559a8ba598d94a214d4ae633c"
+    },
+    "quant_desc": {
+      "offset": 48768,
+      "bytes": 416,
+      "mutable": false,
+      "source": "quant_desc.bin",
+      "sha256": "21e5aae65c01fdfdbbf7c1b612a795ceae0e70412187ef8221750b611e1e52de"
+    },
+    "segments": {
+      "offset": 49216,
+      "bytes": 48,
+      "mutable": false,
+      "source": "segments.bin",
+      "sha256": "a80350f154e0951c561fd9c3991d12160772774a27df623b51d0cbff29f6bf7f"
+    },
+    "activation": {
+      "offset": 49280,
+      "bytes": 950272,
+      "mutable": true,
+      "source": "zero-initialized activation arena",
+      "sha256": "ac544f86598320c46d60424c25a7e6a2c6e01375d8d5d40179b677c30a8fdd3a"
+    },
+    "weights": {
+      "offset": 999552,
+      "bytes": 825856,
+      "mutable": false,
+      "source": "weights_o8i8.bin",
+      "sha256": "b8e54a0f78bfea3f3368d7b98a84d71aff5855a404bef333e8012a64c4c2ba7d"
+    },
+    "bias": {
+      "offset": 1825408,
+      "bytes": 3600,
+      "mutable": false,
+      "source": "bias_int32.bin",
+      "sha256": "fd0907301459be1a09ba274a40b307d09d936d90e74bedf329ff22c314be2457"
+    },
+    "quant_params": {
+      "offset": 1829056,
+      "bytes": 14432,
+      "mutable": false,
+      "source": "quant_params.bin",
+      "sha256": "8d4077eefba8b80e9e535dae3a48cab6a67c425aa805a62bd78831726886f499"
+    },
+    "tanh_lut": {
+      "offset": 1843520,
+      "bytes": 8192,
+      "mutable": false,
+      "source": "tanh_lut_int12.bin",
+      "sha256": "1889e2a52843791b5107301f4fe52071e919328affefd44b958d10c3c5ba3ca8"
+    }
+  }
+}

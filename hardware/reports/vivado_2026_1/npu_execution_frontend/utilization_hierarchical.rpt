@@ -1,0 +1,30 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Tue Sep 15 08:59:18 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -hierarchical_depth 4 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_execution_frontend/utilization_hierarchical.rpt
+| Design       : npu_execution_frontend
+| Device       : xc7z020clg400-1
+| Speed File   : -1
+| Design State : Synthesized
+-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++----------------------------+----------------------+------------+------------+---------+------+------+--------+--------+------------+
+|          Instance          |        Module        | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++----------------------------+----------------------+------------+------------+---------+------+------+--------+--------+------------+
+| npu_execution_frontend     |                (top) |       1312 |       1312 |       0 |    0 | 4483 |      0 |      0 |          0 |
+|   (npu_execution_frontend) |                (top) |        100 |        100 |       0 |    0 | 1755 |      0 |      0 |          0 |
+|   descriptor_cache         | npu_descriptor_cache |       1212 |       1212 |       0 |    0 | 2728 |      0 |      0 |          0 |
++----------------------------+----------------------+------------+------------+---------+------+------+--------+--------+------------+
+
+
