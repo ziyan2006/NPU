@@ -16,6 +16,8 @@
 - `npu_requant_post.sv`：按 lane 复用的 bias、Q31 requant、signed RNE、clamp、ReLU/LeakyReLU/tanh LUT；
 - `npu_conv2d_controller.sv`：解析 Operator descriptor，生成真实 tile 的 A/W 地址、首尾/尾 lane，并驱动 8x8 MAC；
 - `npu_conv2d_pipeline.sv`：从 W bank 预取 bias/quant 参数，串接 CONV2D、requant/post 并生成 128-bit O-bank 结果；
+- `npu_vec_add.sv`：读取 O/A/W bank，执行 residual scalar requant、INT12 饱和相加并原位写回 O；
+- `npu_upsample2x.sv`：使用 1 KiB BRAM 行缓冲在 DDR Tensor 间执行最近邻 2×，带完整 AXI 错误检查；
 - `include/npu_dma_pkg.sv`：DMA 内部接口类型。
 
 逐接口语义见 `../spec/31_command_processor_microarchitecture.md`、`../spec/32_dma_frontend_microarchitecture.md`、`../spec/33_axi_dma_engine_microarchitecture.md`、`../spec/34_dma_subsystem_scratchpad_microarchitecture.md` 和 `../spec/35_tensor_mac_microarchitecture.md`。

@@ -17,9 +17,11 @@
 11. `spec/35_tensor_mac_microarchitecture.md`：64-lane MAC 数值语义、流水线、资源和供数边界；
 12. `spec/36_conv2d_controller_microarchitecture.md`：CONV2D tile 循环、地址和真实数据验证；
 13. `spec/37_requant_post_microarchitecture.md`：bias、Q31/RNE、clamp 和激活后处理；
-14. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
-15. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
-16. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
+14. `spec/38_vec_add_microarchitecture.md`：residual 重标定、饱和相加和 O-bank 写回；
+15. `spec/39_upsample2x_microarchitecture.md`：DDR 行缓冲最近邻 2× 与 AXI 行为；
+16. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
+17. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
+18. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
 RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 开始；前者说明如何引用生成的 SystemVerilog package，后者给出算子到指令序列及逐指令执行契约。
 
@@ -53,6 +55,8 @@ python scripts/_test_npu_isa_headers.py
 python scripts/_test_npu_rtl.py
 python scripts/_test_npu_conv2d.py
 python scripts/_test_npu_post.py
+python scripts/_test_npu_vec_add.py
+python scripts/_test_npu_upsample.py
 ```
 
 Vivado 2026.1 OOC 综合当前 DMA/CONV2D 集成子系统：
@@ -86,3 +90,7 @@ WNS `+1.701 ns`。当前 lane-striped Scratchpad 使用 5,668 Slice LUT、1,244 
 Requant/post 单元按 lane 复用 Q31 通路，使用 2,702 LUT、1,639 FF、4 DSP、
 2 RAMB36，100 MHz OOC WNS `+0.197 ns`；详见
 `spec/37_requant_post_microarchitecture.md`。
+
+Residual `VEC_ADD` 单元为 2,716 LUT、1,525 FF、4 DSP，100 MHz WNS
+`+1.426 ns`；流式 `UPSAMPLE2X` 单元为 1,626 LUT、798 FF、1 RAMB36，100 MHz
+WNS `+0.425 ns`。两者均已使用真实命令/descriptor 和数值数据回归。

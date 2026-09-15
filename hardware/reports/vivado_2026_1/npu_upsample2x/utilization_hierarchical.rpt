@@ -1,0 +1,30 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Tue Sep 15 08:39:27 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -hierarchical_depth 4 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_upsample2x/utilization_hierarchical.rpt
+| Design       : npu_upsample2x
+| Device       : xc7z020clg400-1
+| Speed File   : -1
+| Design State : Synthesized
+-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++--------------------+------------------+------------+------------+---------+------+-----+--------+--------+------------+
+|      Instance      |      Module      | Total LUTs | Logic LUTs | LUTRAMs | SRLs | FFs | RAMB36 | RAMB18 | DSP Blocks |
++--------------------+------------------+------------+------------+---------+------+-----+--------+--------+------------+
+| npu_upsample2x     |            (top) |       1236 |       1236 |       0 |    0 | 798 |      1 |      0 |          0 |
+|   (npu_upsample2x) |            (top) |        264 |        264 |       0 |    0 | 582 |      1 |      0 |          0 |
+|   row_multiplier   | npu_u32_mul_iter |        972 |        972 |       0 |    0 | 216 |      0 |      0 |          0 |
++--------------------+------------------+------------+------------+---------+------+-----+--------+--------+------------+
+
+

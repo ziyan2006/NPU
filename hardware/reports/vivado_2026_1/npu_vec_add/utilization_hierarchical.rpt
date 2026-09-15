@@ -1,0 +1,31 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Tue Sep 15 02:34:06 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -hierarchical_depth 4 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_vec_add/utilization_hierarchical.rpt
+| Design       : npu_vec_add
+| Device       : xc7z020clg400-1
+| Speed File   : -1
+| Design State : Synthesized
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++--------------------+------------------+------------+------------+---------+------+------+--------+--------+------------+
+|      Instance      |      Module      | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs | RAMB36 | RAMB18 | DSP Blocks |
++--------------------+------------------+------------+------------+---------+------+------+--------+--------+------------+
+| npu_vec_add        |            (top) |       2042 |       2042 |       0 |    0 | 1525 |      0 |      0 |          4 |
+|   (npu_vec_add)    |            (top) |         99 |         99 |       0 |    0 |  670 |      0 |      0 |          0 |
+|   residual_requant | npu_requant_post |       1640 |       1640 |       0 |    0 |  721 |      0 |      0 |          4 |
+|   setup_multiplier | npu_u32_mul_iter |        303 |        303 |       0 |    0 |  134 |      0 |      0 |          0 |
++--------------------+------------------+------------+------------+---------+------+------+--------+--------+------------+
+
+

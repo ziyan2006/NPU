@@ -303,6 +303,8 @@ with tempfile.TemporaryDirectory() as temporary:
         str(RTL / "npu_requant_post.sv"),
         str(RTL / "npu_conv2d_controller.sv"),
         str(RTL / "npu_conv2d_pipeline.sv"),
+        str(RTL / "npu_vec_add.sv"),
+        str(RTL / "npu_upsample2x.sv"),
         str(RTL / "npu_dma_subsystem.sv"),
         str(RTL / "tb" / "tb_npu_dma_subsystem.sv"),
     ])
