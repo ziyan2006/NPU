@@ -2,7 +2,7 @@
 
 文档版本：`0.1-draft`
 
-规格状态：需求基线草案，尚未冻结 ISA 和微架构
+规格状态：网络 A 的 v1 ISA、CSR 和功能微架构已形成实现基线；板级集成约束待具体板卡确认
 
 目标器件：`XC7Z020-1`
 
@@ -39,22 +39,22 @@
 | 阶段 | 主要输出 | 退出条件 | 当前状态 |
 |---|---|---|---|
 | P0 概念与用例 | 使用场景、器件、边界、非目标 | 项目目标无歧义 | 已完成 |
-| P1 需求基线 | 带编号的功能、性能、接口、资源要求 | 每个 P0 要求有验证方法 | **进行中** |
+| P1 需求基线 | 带编号的功能、性能、接口、资源要求 | 每个 P0 要求有验证方法 | 网络 A 已完成，板级项待确认 |
 | P2 工作负载分析 | 算子覆盖、张量尺寸、MAC/带宽/生命周期 | 当前模型和第二模型均可映射 | 部分完成 |
-| P3 架构/ISA 探索 | 数据流、存储层次、ISA、周期模型 | 性能和 BRAM 预算闭合 | **进行中，网络 A 已有 tile 证据** |
-| P4 微架构规格 | 模块接口、流水线、时序、异常行为 | RTL 接口和逐周期行为可实现 | **进行中：控制、宽口 DMA/SP、CONV2D、MAC 和 post** |
-| P5 可执行参考 | 图编译器、位精确模拟器、测试向量 | 所有 P0 指令有 golden | **进行中：ISA/DMA golden 已完成** |
-| P6 RTL/HLS 实现 | 可综合模块和软件驱动 | 模块仿真通过 | **进行中：控制、DMA/SP、MAC 和 post slice 已实现** |
-| P7 集成验证 | SoC、DMA、中断、CDC、回归 | 覆盖率和需求回归闭合 | 未开始 |
-| P8 实现收敛 | 综合、布局布线、时序、功耗 | 资源和时钟满足规格 | **部分开始：DMA 与 MAC 已做 OOC 综合** |
+| P3 架构/ISA 探索 | 数据流、存储层次、ISA、周期模型 | 性能和 BRAM 预算闭合 | 网络 A 已完成，网络 B 待验证 |
+| P4 微架构规格 | 模块接口、流水线、时序、异常行为 | RTL 接口和逐周期行为可实现 | 网络 A 功能路径已完成 |
+| P5 可执行参考 | 图编译器、位精确模拟器、测试向量 | 所有 P0 指令有 golden | 网络 A 完整 task golden 已完成 |
+| P6 RTL/HLS 实现 | 可综合模块和软件驱动 | 模块仿真通过 | 功能 RTL 完成，驱动进行中 |
+| P7 集成验证 | SoC、DMA、中断、CDC、回归 | 覆盖率和需求回归闭合 | 完整 RTL task bit-exact，SoC 待接入 |
+| P8 实现收敛 | 综合、布局布线、时序、功耗 | 资源和时钟满足规格 | 完整 top 综合已过 100 MHz，P&R 进行中 |
 | P9 上板验收 | 长稳、实时性、音频效果 | 所有 P0 板级测试通过 | 未开始 |
 
-P4/P5/P6 当前按垂直切片并行推进。DMA/Scratchpad 切片已有软件 golden、RTL
-回归和 OOC 综合证据，lane-striped 计算口在 56 BRAM36 下通过 200 MHz；8x8 Tensor
-MAC 算术切片也已 bit-exact 并通过 200 MHz OOC。CONV2D loop 已完成真实
-`1x1/1x3/3x3` tile 的 INT32 累加验证；requant/post 单元已对齐 Q31/RNE 和真实
-tanh LUT，并通过 100 MHz OOC。仍需把 bias/quant 片上读取接入 CONV2D，然后实现
-Vector/UPSAMPLE 和完整 SoC 集成。
+P4/P5/P6 已完成网络 A 的第一条完整垂直路径：真实 task image 经 AXI4-Lite
+doorbell 启动，task loader、Command Processor、DMA/Scratchpad、CONV2D/post、
+VEC_ADD、UPSAMPLE2X 和共享 AXI 协同执行。1,869 条命令对 32,768-byte 输出与独立
+整数参考模型逐字节一致，需 3,253,529 cycle（32.54 ms @100 MHz）。完整 `npu_top`
+在临时 `xc7z020clg400-1` 上综合为 31,186 LUT、24,362 FF、61 BRAM36、72 DSP，
+100 MHz post-synthesis WNS `+0.058 ns`。下一阶段是 post-route、软件驱动与 SoC 集成。
 
 ## 4. 系统边界
 
@@ -137,6 +137,7 @@ v1 的 NPU 输入/输出是量化张量。PCM、STFT/iSTFT、滤波器组、OLA�
 | `35_tensor_mac_microarchitecture.md` | 8x8 Tensor MAC 数值语义、流水线、反压、资源和 row-buffer 输入 |
 | `36_conv2d_controller_microarchitecture.md` | CONV2D tile 循环、地址、descriptor 检查、位精确验证和综合证据 |
 | `37_requant_post_microarchitecture.md` | bias、Q31/RNE、clamp、激活、tanh LUT、资源和周期取舍 |
+| `41_npu_top_microarchitecture.md` | 完整 core/top、AXI/CSR、任务生命周期、验证和综合基线 |
 | `40_verification_plan.md` | 从位精确模型到板级长稳的验证闭环 |
 | `50_p2_executable_spec.md` | 当前模型的指令编译、整数语义、存储与周期结果 |
 | `90_decision_log.md` | 已决定事项、开放问题和需要补做的实验 |

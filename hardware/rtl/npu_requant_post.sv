@@ -76,7 +76,8 @@ module npu_requant_post (
   logic shift_valid;
   logic clamp_valid;
   logic input_clamp_valid;
-  integer lane;
+  integer config_lane;
+  integer load_lane;
 
   (* ram_style = "block" *) logic signed [15:0] tanh_lut [0:4095];
 
@@ -147,15 +148,16 @@ module npu_requant_post (
     shift_valid = 1'b1;
     clamp_valid = 1'b1;
     input_clamp_valid = 1'b1;
-    for (lane = 0; lane < 8; lane = lane + 1) begin
-      if (lane_mask_i[lane]) begin
-        if (quant_params_i[lane*128 + 32 +: 8] > 63)
+    for (config_lane = 0; config_lane < 8;
+         config_lane = config_lane + 1) begin
+      if (lane_mask_i[config_lane]) begin
+        if (quant_params_i[config_lane*128 + 32 +: 8] > 63)
           shift_valid = 1'b0;
-        if ($signed(quant_params_i[lane*128 + 64 +: 32])
-            > $signed(quant_params_i[lane*128 + 96 +: 32]))
+        if ($signed(quant_params_i[config_lane*128 + 64 +: 32])
+            > $signed(quant_params_i[config_lane*128 + 96 +: 32]))
           clamp_valid = 1'b0;
-        if ($signed(quant_params_i[lane*128 + 64 +: 32]) < -32'sd2048
-            || $signed(quant_params_i[lane*128 + 96 +: 32]) > 32'sd2047)
+        if ($signed(quant_params_i[config_lane*128 + 64 +: 32]) < -32'sd2048
+            || $signed(quant_params_i[config_lane*128 + 96 +: 32]) > 32'sd2047)
           input_clamp_valid = 1'b0;
       end
     end
@@ -277,14 +279,14 @@ module npu_requant_post (
       post_op_q <= post_op_i;
       lane_mask_q <= lane_mask_i;
       output_data_q <= '0;
-      for (lane = 0; lane < 8; lane = lane + 1) begin
-        biased_q[lane]
-          <= $signed(accumulator_i[lane*32 +: 32])
-           + $signed(bias_i[lane*32 +: 32]);
-        multiplier_q[lane] <= quant_params_i[lane*128 +: 32];
-        shift_q[lane] <= quant_params_i[lane*128 + 32 +: 8];
-        clamp_min_q[lane] <= quant_params_i[lane*128 + 64 +: 32];
-        clamp_max_q[lane] <= quant_params_i[lane*128 + 96 +: 32];
+      for (load_lane = 0; load_lane < 8; load_lane = load_lane + 1) begin
+        biased_q[load_lane]
+          <= $signed(accumulator_i[load_lane*32 +: 32])
+           + $signed(bias_i[load_lane*32 +: 32]);
+        multiplier_q[load_lane] <= quant_params_i[load_lane*128 +: 32];
+        shift_q[load_lane] <= quant_params_i[load_lane*128 + 32 +: 8];
+        clamp_min_q[load_lane] <= quant_params_i[load_lane*128 + 64 +: 32];
+        clamp_max_q[load_lane] <= quant_params_i[load_lane*128 + 96 +: 32];
       end
     end
     if (state_q == POST_MULTIPLY)

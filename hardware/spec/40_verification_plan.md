@@ -171,30 +171,27 @@
 
 P0 回归失败、未解释的 bit mismatch、负时序、资源超限或 deadline miss 都是发布阻断项。
 
-## 10. 下一步验证优先级
+## 10. 当前闭环与下一步验证优先级
 
-1. 实现并验证 bias/requant/signed RNE/clamp/activation post pipeline；
-2. 实现 `VEC_ADD` 和 `UPSAMPLE2X` 数值通路；
-3. 把 Command Processor、DMA 和 compute 接成完整任务顶层；
-4. 用网络 A 的 1,869 条真实命令逐层对齐位精确解释器；
-5. 选择网络 B 并验证 P0 算子覆盖；
-6. 完成 SoC wrapper、驱动、实现检查与上板前交付包。
+已完成的网络 A 闭环：
 
-当前增量：Command Processor 已接受网络 A 的 1,869 条真实 tile 命令流；
-Descriptor Cache/Fetch/AGU 已让全部 1,078 条 DMA command 的 RTL 请求与软件
-reference 逐 bit 一致。AXI DMA Engine 已覆盖 4 KiB/256-beat 拆分、窄尾部、三维
-stride、双向 back-pressure、错误收尾和 busy reset；全网 45,664 个 burst 已静态
-审计。A/W/O Scratchpad 已覆盖六 bank 路由、byte strobe、response back-pressure、
-并行访问、冲突仲裁、独立 128-bit A/512-bit W 读和 256-bit O 写；集成子系统已完成
-命令到 AXI read、BRAM 落地、event 以及错误 PC/tag 的端到端测试。
+- 所有 1,078 条 DMA command 的 RTL 请求与软件 reference 逐 bit 一致，全网
+  45,664 个 burst 已静态审计；
+- CONV2D 用真实 descriptor/O8I8 权重核对 9,472 对地址和 672 个 8-lane INT32
+  结果，post 对齐 bias、Q31、signed RNE、clamp、ReLU/LeakyReLU/tanh；
+- VEC_ADD、UPSAMPLE2X、CSR 和共享 AXI arbiter 均有 directed/back-pressure/error
+  回归；
+- 独立 `npu_task_reference.py` 与完整 `npu_top` 执行同一非零随机输入、1,869 条
+  真实命令，对最终 32,768 byte 输出逐字节一致；
+- 完整任务 3,253,529 cycle（32.54 ms @100 MHz），通过 `<46 ms` 门槛；
+- XC7Z020 完整 top post-synthesis 使用 31,186 LUT、24,362 FF、61 BRAM36、72 DSP，
+  100 MHz WNS `+0.058 ns`。
 
-CONV2D 控制器增量已用真实 binary descriptor 和 O8I8 权重逐项核对 9,472 对
-activation/weight 地址、672 个 8-lane INT32 结果，并覆盖随机双向反压、三类非法
-descriptor 和 soft reset 恢复。其 OOC 综合只占 MAC 的 64 DSP，100 MHz WNS
-`+2.660 ns`；200 MHz WNS `-2.340 ns`，因此当前完整集成频率基线仍为 100 MHz。
+下一步按阻断优先级执行：
 
-Scratchpad/CONV2D 集成增量已覆盖独立 A/W 宽口的同拍配对、256-bit O 行写回、
-O bank 读回以及“写回 FIFO 排空后才产生完成 event”的语义；原有 DMA load、
-soft-reset 排空和 AXI 错误上下文回归保持通过。完整集成 top 在临时
-`xc7z020clg400-1` 上使用 17,707 LUT、10,993 FF、56 RAMB36 和 64 DSP，100 MHz
-综合后 OOC WNS `+0.484 ns`。下一数值验证阻断项是 bias/requant/RNE/clamp/activation。
+1. 完成 `npu_top` OOC place/route、DRC、methodology、时钟和功耗估算；
+2. 完成可移植 PS 驱动、CSR/task image 提交与 cache maintenance 接口；
+3. 完成 Vivado IP packaging、Zynq PS block-design 接入脚本和上板前 checklist；
+4. 补充 CSR 错误/中断/恢复、AXI fault 与长随机 back-pressure 顶层回归；
+5. 选择网络 B 并验证“不换 RTL 只换模型包”的通用性；
+6. 得到具体板卡型号后完成 PS preset、DDR/IRQ/address map、引脚约束和板级验收。

@@ -1,6 +1,7 @@
 # RTL ISA 交付入口
 
-状态：`P3 draft`，可用于 RTL 原型和联调，不代表 ISA 已冻结。
+状态：`P4 integrated`，当前网络所需 P0 指令已形成可综合完整顶层；ISA 仍按 v1.0
+兼容性规则管理，不代表后续扩展 opcode 已冻结。
 
 当前 P4 RTL 包含：
 
@@ -22,6 +23,10 @@
 - `npu_conv2d_pipeline.sv`：从 W bank 预取 bias/quant 参数，串接 CONV2D、requant/post 并生成 128-bit O-bank 结果；
 - `npu_vec_add.sv`：读取 O/A/W bank，执行 residual scalar requant、INT12 饱和相加并原位写回 O；
 - `npu_upsample2x.sv`：使用 1 KiB BRAM 行缓冲在 DDR Tensor 间执行最近邻 2×，带完整 AXI 错误检查；
+- `npu_axi_read_arbiter3.sv` / `npu_axi_write_arbiter2.sv`：分别仲裁 block reader、DMA、UPSAMPLE 的读事务和 DMA、UPSAMPLE 的写事务，事务期间保持 owner；
+- `npu_csr.sv`：32-bit AXI4-Lite 控制、doorbell、IRQ、首错上下文和性能计数器窗口；
+- `npu_core.sv`：连接 task/command/descriptor 前端、执行单元、共享 AXI 和任务生命周期；
+- `npu_top.sv`：板级无关的 AXI4-Lite slave、64-bit AXI4 master 与 IRQ 边界；
 - `include/npu_dma_pkg.sv`：DMA 内部接口类型。
 
 逐接口语义见 `../spec/31_command_processor_microarchitecture.md`、`../spec/32_dma_frontend_microarchitecture.md`、`../spec/33_axi_dma_engine_microarchitecture.md`、`../spec/34_dma_subsystem_scratchpad_microarchitecture.md` 和 `../spec/35_tensor_mac_microarchitecture.md`。
@@ -68,3 +73,19 @@ python scripts/_test_npu_rtl.py
 ```
 
 修改编码时只编辑 `scripts/npu_isa.py` 和生成器；直接编辑生成的 `.sv`/`.h` 会被 `--check` 回归拒绝。
+
+## 完整任务回归与综合基线
+
+`scripts/npu_task_reference.py` 是独立于 RTL 的位精确任务解释器。完整回归会给
+task image 注入固定种子 `0x4e505531` 的非零 INT12 输入，分别执行软件解释器和
+`npu_top`，最后比对完整输出 allocation：
+
+```powershell
+python scripts/_test_npu_top_task.py
+```
+
+当前 `bott2_mir1k_v1_program` 结果为 1,869 条命令、32,768 个输出 byte 全部一致，
+RTL 为 3,253,529 cycle，即 32.54 ms @100 MHz。Vivado 2026.1 对
+`xc7z020clg400-1` 的 post-synthesis 结果为 31,186 LUT、24,362 FF、61 RAMB36E1、
+72 DSP48E1，100 MHz WNS `+0.058 ns`。这是板级无关 OOC 基线；最终时序仍以接入
+具体 Zynq PS block design 后的 post-route 结果为准。

@@ -49,6 +49,7 @@ module npu_command_processor (
   typedef enum logic [3:0] {
     CP_IDLE,
     CP_RUN,
+    CP_DISPATCH,
     CP_WAIT_EVENT,
     CP_WAIT_VECTOR,
     CP_WAIT_END,
@@ -57,6 +58,8 @@ module npu_command_processor (
 
   cp_state_e state_q;
   npu_command_t command;
+  logic [127:0] command_bits_q;
+  logic [31:0] dispatch_pc_q;
   logic opcode_supported;
   logic flags_valid;
   logic fields_valid;
@@ -67,15 +70,18 @@ module npu_command_processor (
   logic [31:0] wait_pc_q;
   logic [15:0] wait_tag_q;
   logic [7:0] event_clear_mask;
-  logic command_accept;
+  logic command_capture;
+  logic command_dispatch;
+  logic dispatch_ready;
 
-  assign command = npu_command_t'(command_bits_i);
-  assign dma_command_bits_o = command_bits_i;
-  assign compute_command_bits_o = command_bits_i;
-  assign vector_command_bits_o = command_bits_i;
+  assign command = npu_command_t'(command_bits_q);
+  assign dma_command_bits_o = command_bits_q;
+  assign compute_command_bits_o = command_bits_q;
+  assign vector_command_bits_o = command_bits_q;
   assign busy_o = (state_q != CP_IDLE) && (state_q != CP_ERROR);
   assign error_o = (state_q == CP_ERROR);
-  assign command_accept = command_valid_i && command_ready_o;
+  assign command_capture = command_valid_i && command_ready_o;
+  assign command_dispatch = state_q == CP_DISPATCH && dispatch_ready;
 
   always @* begin
     opcode_supported = 1'b1;
@@ -200,25 +206,26 @@ module npu_command_processor (
   end
 
   always @* begin
-    command_ready_o = 1'b0;
+    command_ready_o = state_q == CP_RUN;
     dma_command_valid_o = 1'b0;
     compute_command_valid_o = 1'b0;
     vector_command_valid_o = 1'b0;
+    dispatch_ready = 1'b0;
 
-    if (state_q == CP_RUN && command_valid_i) begin
+    if (state_q == CP_DISPATCH) begin
       if (!command_validated) begin
-        command_ready_o = 1'b1;
+        dispatch_ready = 1'b1;
       end else begin
         case (command.opcode)
           NPU_OP_DMA_LOAD,
           NPU_OP_DMA_STORE: begin
             dma_command_valid_o = 1'b1;
-            command_ready_o = dma_command_ready_i;
+            dispatch_ready = dma_command_ready_i;
           end
 
           NPU_OP_CONV2D: begin
             compute_command_valid_o = 1'b1;
-            command_ready_o = compute_command_ready_i;
+            dispatch_ready = compute_command_ready_i;
           end
 
           NPU_OP_VEC_ADD,
@@ -226,10 +233,10 @@ module npu_command_processor (
           NPU_OP_REQUANT,
           NPU_OP_UPSAMPLE2X: begin
             vector_command_valid_o = 1'b1;
-            command_ready_o = vector_command_ready_i;
+            dispatch_ready = vector_command_ready_i;
           end
 
-          default: command_ready_o = 1'b1;
+          default: dispatch_ready = 1'b1;
         endcase
       end
     end
@@ -237,7 +244,7 @@ module npu_command_processor (
 
   always @* begin
     event_clear_mask = 8'h00;
-    if (command_accept && command_validated
+    if (command_dispatch && command_validated
         && ((command.flags & NPU_FLAG_ASYNC) != 8'h00))
       event_clear_mask = npu_imm_event_mask(command.imm);
   end
@@ -245,6 +252,8 @@ module npu_command_processor (
   always_ff @(posedge clk_i or negedge rst_ni) begin
     if (!rst_ni) begin
       state_q <= CP_IDLE;
+      command_bits_q <= '0;
+      dispatch_pc_q <= '0;
       wait_mask_q <= 8'h00;
       pending_irq_q <= 1'b0;
       wait_pc_q <= 32'h0000_0000;
@@ -260,6 +269,8 @@ module npu_command_processor (
       event_state_o <= 8'h00;
     end else if (soft_reset_i) begin
       state_q <= CP_IDLE;
+      command_bits_q <= '0;
+      dispatch_pc_q <= '0;
       wait_mask_q <= 8'h00;
       pending_irq_q <= 1'b0;
       wait_pc_q <= 32'h0000_0000;
@@ -295,9 +306,12 @@ module npu_command_processor (
             || state_q == CP_WAIT_END) begin
           error_pc_o <= wait_pc_q;
           error_inst_tag_o <= wait_tag_q;
+        end else if (state_q == CP_DISPATCH) begin
+          error_pc_o <= dispatch_pc_q;
+          error_inst_tag_o <= command.tag;
         end else begin
           error_pc_o <= command_pc_o;
-          error_inst_tag_o <= command_valid_i ? command.tag : 16'h0000;
+          error_inst_tag_o <= 16'h0000;
         end
       end else begin
         case (state_q)
@@ -319,22 +333,31 @@ module npu_command_processor (
           end
 
           CP_RUN: begin
-            if (command_accept) begin
+            if (command_capture) begin
+              command_bits_q <= command_bits_i;
+              dispatch_pc_q <= command_pc_o;
+              command_pc_o <= command_pc_o + NPU_COMMAND_BYTES;
+              state_q <= CP_DISPATCH;
+            end
+          end
+
+          CP_DISPATCH: begin
+            if (command_dispatch) begin
               if (!command_validated) begin
                 state_q <= CP_ERROR;
                 error_code_o <= decode_error_code;
-                error_pc_o <= command_pc_o;
+                error_pc_o <= dispatch_pc_q;
                 error_inst_tag_o <= command.tag;
               end else begin
-                command_pc_o <= command_pc_o + NPU_COMMAND_BYTES;
                 case (command.opcode)
                   NPU_OP_WAIT: begin
                     if (((event_state_o | event_set_i) & command.imm[7:0])
                         == command.imm[7:0]) begin
                       commands_retired_o <= commands_retired_o + 1'b1;
+                      state_q <= CP_RUN;
                     end else begin
                       wait_mask_q <= command.imm[7:0];
-                      wait_pc_q <= command_pc_o;
+                      wait_pc_q <= dispatch_pc_q;
                       wait_tag_q <= command.tag;
                       state_q <= CP_WAIT_EVENT;
                     end
@@ -348,7 +371,7 @@ module npu_command_processor (
                       irq_pulse_o <= ((command.flags & NPU_FLAG_IRQ) != 8'h00);
                       state_q <= CP_IDLE;
                     end else begin
-                      wait_pc_q <= command_pc_o;
+                      wait_pc_q <= dispatch_pc_q;
                       wait_tag_q <= command.tag;
                       state_q <= CP_WAIT_END;
                     end
@@ -357,22 +380,27 @@ module npu_command_processor (
                   NPU_OP_DMA_LOAD,
                   NPU_OP_DMA_STORE: begin
                     commands_retired_o <= commands_retired_o + 1'b1;
+                    state_q <= CP_RUN;
                   end
 
                   NPU_OP_CONV2D: begin
                     commands_retired_o <= commands_retired_o + 1'b1;
+                    state_q <= CP_RUN;
                   end
 
                   NPU_OP_VEC_ADD,
                   NPU_OP_ACT,
                   NPU_OP_REQUANT,
                   NPU_OP_UPSAMPLE2X: begin
-                    wait_pc_q <= command_pc_o;
+                    wait_pc_q <= dispatch_pc_q;
                     wait_tag_q <= command.tag;
                     state_q <= CP_WAIT_VECTOR;
                   end
 
-                  default: commands_retired_o <= commands_retired_o + 1'b1;
+                  default: begin
+                    commands_retired_o <= commands_retired_o + 1'b1;
+                    state_q <= CP_RUN;
+                  end
                 endcase
               end
             end

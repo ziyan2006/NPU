@@ -59,8 +59,13 @@ module tb_npu_upsample2x;
   logic write_active_q = 1'b0;
   integer read_row_q = 0;
   integer read_beat_q = 0;
+  integer read_burst_beat_q = 0;
+  integer read_burst_beats_q = 0;
   integer write_row_q = 0;
   integer write_beat_q = 0;
+  integer write_burst_beat_q = 0;
+  integer write_burst_beats_q = 0;
+  logic write_burst_completed_row_q = 1'b0;
   integer source_row_beats;
   integer destination_row_beats;
   integer source_total_beats;
@@ -68,6 +73,8 @@ module tb_npu_upsample2x;
   integer b_delay_q = 0;
   logic b_pending_q = 1'b0;
   integer cycles_q = 0;
+  integer expected_burst_beats;
+  integer boundary_beats;
   string command_hex;
   string source_desc_hex;
   string destination_desc_hex;
@@ -84,7 +91,7 @@ module tb_npu_upsample2x;
     = source_memory[read_row_q * source_row_beats + read_beat_q];
   assign m_axi_rresp_i = 2'b00;
   assign m_axi_rlast_i = read_active_q
-    && read_beat_q + 1 == source_row_beats;
+    && read_burst_beat_q + 1 == read_burst_beats_q;
   assign m_axi_awready_i = !write_active_q && !m_axi_bvalid_i && lfsr_q[2];
   assign m_axi_wready_i = write_active_q && lfsr_q[3];
 
@@ -117,8 +124,13 @@ module tb_npu_upsample2x;
       write_active_q <= 1'b0;
       read_row_q <= 0;
       read_beat_q <= 0;
+      read_burst_beat_q <= 0;
+      read_burst_beats_q <= 0;
       write_row_q <= 0;
       write_beat_q <= 0;
+      write_burst_beat_q <= 0;
+      write_burst_beats_q <= 0;
+      write_burst_completed_row_q <= 1'b0;
       m_axi_bvalid_i <= 1'b0;
       b_pending_q <= 1'b0;
       b_delay_q <= 0;
@@ -132,34 +144,54 @@ module tb_npu_upsample2x;
 
       if (m_axi_arvalid_o && m_axi_arready_i) begin
         if (m_axi_araddr_o != activation_base_i + source_desc.base_offset
-            + read_row_q * source_desc.stride_h)
+            + read_row_q * source_desc.stride_h + read_beat_q * 8)
           $fatal(1, "AR address mismatch at row %0d", read_row_q);
-        if (m_axi_arlen_o != source_row_beats - 1
+        boundary_beats = (4096 - (m_axi_araddr_o & 4095)) / 8;
+        expected_burst_beats = source_row_beats - read_beat_q;
+        if (expected_burst_beats > boundary_beats)
+          expected_burst_beats = boundary_beats;
+        if (expected_burst_beats > 256)
+          expected_burst_beats = 256;
+        if (m_axi_arlen_o != expected_burst_beats - 1
             || m_axi_arsize_o != 3 || m_axi_arburst_o != 2'b01)
           $fatal(1, "AR attributes mismatch");
         read_active_q <= 1'b1;
-        read_beat_q <= 0;
+        read_burst_beat_q <= 0;
+        read_burst_beats_q <= expected_burst_beats;
       end
       if (m_axi_rvalid_i && m_axi_rready_o) begin
-        if (read_beat_q + 1 == source_row_beats) begin
+        if (m_axi_rlast_i && read_beat_q + 1 == source_row_beats) begin
           read_active_q <= 1'b0;
           read_beat_q <= 0;
+          read_burst_beat_q <= 0;
           read_row_q <= read_row_q + 1;
+        end else if (m_axi_rlast_i) begin
+          read_active_q <= 1'b0;
+          read_beat_q <= read_beat_q + 1;
+          read_burst_beat_q <= 0;
         end else begin
           read_beat_q <= read_beat_q + 1;
+          read_burst_beat_q <= read_burst_beat_q + 1;
         end
       end
 
       if (m_axi_awvalid_o && m_axi_awready_i) begin
         if (m_axi_awaddr_o != activation_base_i
             + destination_desc.base_offset
-            + write_row_q * destination_desc.stride_h)
+            + write_row_q * destination_desc.stride_h + write_beat_q * 8)
           $fatal(1, "AW address mismatch at row %0d", write_row_q);
-        if (m_axi_awlen_o != destination_row_beats - 1
+        boundary_beats = (4096 - (m_axi_awaddr_o & 4095)) / 8;
+        expected_burst_beats = destination_row_beats - write_beat_q;
+        if (expected_burst_beats > boundary_beats)
+          expected_burst_beats = boundary_beats;
+        if (expected_burst_beats > 256)
+          expected_burst_beats = 256;
+        if (m_axi_awlen_o != expected_burst_beats - 1
             || m_axi_awsize_o != 3 || m_axi_awburst_o != 2'b01)
           $fatal(1, "AW attributes mismatch");
         write_active_q <= 1'b1;
-        write_beat_q <= 0;
+        write_burst_beat_q <= 0;
+        write_burst_beats_q <= expected_burst_beats;
       end
       if (m_axi_wvalid_o && m_axi_wready_i) begin
         if (!write_active_q)
@@ -169,17 +201,22 @@ module tb_npu_upsample2x;
           $fatal(1, "W data mismatch at row %0d beat %0d",
                  write_row_q, write_beat_q);
         if (m_axi_wstrb_o != 8'hff
-            || m_axi_wlast_o != (write_beat_q + 1
-                                 == destination_row_beats))
+            || m_axi_wlast_o != (write_burst_beat_q + 1
+                                 == write_burst_beats_q))
           $fatal(1, "W attributes mismatch at row %0d beat %0d",
                  write_row_q, write_beat_q);
         if (m_axi_wlast_o) begin
           write_active_q <= 1'b0;
-          write_beat_q <= 0;
+          write_burst_completed_row_q
+            <= write_beat_q + 1 == destination_row_beats;
+          if (write_beat_q + 1 != destination_row_beats)
+            write_beat_q <= write_beat_q + 1;
+          write_burst_beat_q <= 0;
           b_delay_q <= lfsr_q[5:4];
           b_pending_q <= 1'b1;
         end else begin
           write_beat_q <= write_beat_q + 1;
+          write_burst_beat_q <= write_burst_beat_q + 1;
         end
       end
 
@@ -190,7 +227,10 @@ module tb_npu_upsample2x;
       if (m_axi_bvalid_i && m_axi_bready_o) begin
         m_axi_bvalid_i <= 1'b0;
         b_pending_q <= 1'b0;
-        write_row_q <= write_row_q + 1;
+        if (write_burst_completed_row_q) begin
+          write_row_q <= write_row_q + 1;
+          write_beat_q <= 0;
+        end
       end
 
       if (error_pulse_o)

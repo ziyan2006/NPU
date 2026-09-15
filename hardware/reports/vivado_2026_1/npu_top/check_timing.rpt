@@ -1,0 +1,507 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Tue Sep 15 23:14:53 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : check_timing -verbose -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_top/check_timing.rpt
+| Design       : npu_top
+| Device       : 7z020-clg400
+| Speed File   : -1  PRODUCTION 1.12 2019-11-22
+| Design State : Synthesized
+---------------------------------------------------------------------------------------------------------------------------------------------
+
+
+check_timing report
+
+Table of Contents
+-----------------
+1. checking no_clock (0)
+2. checking constant_clock (0)
+3. checking pulse_width_clock (0)
+4. checking unconstrained_internal_endpoints (0)
+5. checking no_input_delay (140)
+6. checking no_output_delay (267)
+7. checking multiple_clock (0)
+8. checking generated_clocks (0)
+9. checking loops (0)
+10. checking partial_input_delay (0)
+11. checking partial_output_delay (0)
+12. checking latch_loops (0)
+
+1. checking no_clock (0)
+------------------------
+ There are 0 register/latch pins with no clock.
+
+
+2. checking constant_clock (0)
+------------------------------
+ There are 0 register/latch pins with constant_clock.
+
+
+3. checking pulse_width_clock (0)
+---------------------------------
+ There are 0 register/latch pins which need pulse_width check
+
+
+4. checking unconstrained_internal_endpoints (0)
+------------------------------------------------
+ There are 0 pins that are not constrained for maximum delay.
+
+ There are 0 pins that are not constrained for maximum delay due to constant clock.
+
+
+5. checking no_input_delay (140)
+--------------------------------
+ There are 140 input ports with no input delay specified. (HIGH)
+
+aresetn
+m_axi_mem_arready
+m_axi_mem_awready
+m_axi_mem_bresp[0]
+m_axi_mem_bresp[1]
+m_axi_mem_bvalid
+m_axi_mem_rdata[0]
+m_axi_mem_rdata[10]
+m_axi_mem_rdata[11]
+m_axi_mem_rdata[12]
+m_axi_mem_rdata[13]
+m_axi_mem_rdata[14]
+m_axi_mem_rdata[15]
+m_axi_mem_rdata[16]
+m_axi_mem_rdata[17]
+m_axi_mem_rdata[18]
+m_axi_mem_rdata[19]
+m_axi_mem_rdata[1]
+m_axi_mem_rdata[20]
+m_axi_mem_rdata[21]
+m_axi_mem_rdata[22]
+m_axi_mem_rdata[23]
+m_axi_mem_rdata[24]
+m_axi_mem_rdata[25]
+m_axi_mem_rdata[26]
+m_axi_mem_rdata[27]
+m_axi_mem_rdata[28]
+m_axi_mem_rdata[29]
+m_axi_mem_rdata[2]
+m_axi_mem_rdata[30]
+m_axi_mem_rdata[31]
+m_axi_mem_rdata[32]
+m_axi_mem_rdata[33]
+m_axi_mem_rdata[34]
+m_axi_mem_rdata[35]
+m_axi_mem_rdata[36]
+m_axi_mem_rdata[37]
+m_axi_mem_rdata[38]
+m_axi_mem_rdata[39]
+m_axi_mem_rdata[3]
+m_axi_mem_rdata[40]
+m_axi_mem_rdata[41]
+m_axi_mem_rdata[42]
+m_axi_mem_rdata[43]
+m_axi_mem_rdata[44]
+m_axi_mem_rdata[45]
+m_axi_mem_rdata[46]
+m_axi_mem_rdata[47]
+m_axi_mem_rdata[48]
+m_axi_mem_rdata[49]
+m_axi_mem_rdata[4]
+m_axi_mem_rdata[50]
+m_axi_mem_rdata[51]
+m_axi_mem_rdata[52]
+m_axi_mem_rdata[53]
+m_axi_mem_rdata[54]
+m_axi_mem_rdata[55]
+m_axi_mem_rdata[56]
+m_axi_mem_rdata[57]
+m_axi_mem_rdata[58]
+m_axi_mem_rdata[59]
+m_axi_mem_rdata[5]
+m_axi_mem_rdata[60]
+m_axi_mem_rdata[61]
+m_axi_mem_rdata[62]
+m_axi_mem_rdata[63]
+m_axi_mem_rdata[6]
+m_axi_mem_rdata[7]
+m_axi_mem_rdata[8]
+m_axi_mem_rdata[9]
+m_axi_mem_rlast
+m_axi_mem_rresp[0]
+m_axi_mem_rresp[1]
+m_axi_mem_rvalid
+m_axi_mem_wready
+s_axi_ctrl_araddr[0]
+s_axi_ctrl_araddr[10]
+s_axi_ctrl_araddr[11]
+s_axi_ctrl_araddr[1]
+s_axi_ctrl_araddr[2]
+s_axi_ctrl_araddr[3]
+s_axi_ctrl_araddr[4]
+s_axi_ctrl_araddr[5]
+s_axi_ctrl_araddr[6]
+s_axi_ctrl_araddr[7]
+s_axi_ctrl_araddr[8]
+s_axi_ctrl_araddr[9]
+s_axi_ctrl_arvalid
+s_axi_ctrl_awaddr[0]
+s_axi_ctrl_awaddr[10]
+s_axi_ctrl_awaddr[11]
+s_axi_ctrl_awaddr[1]
+s_axi_ctrl_awaddr[2]
+s_axi_ctrl_awaddr[3]
+s_axi_ctrl_awaddr[4]
+s_axi_ctrl_awaddr[5]
+s_axi_ctrl_awaddr[6]
+s_axi_ctrl_awaddr[7]
+s_axi_ctrl_awaddr[8]
+s_axi_ctrl_awaddr[9]
+s_axi_ctrl_awvalid
+s_axi_ctrl_bready
+s_axi_ctrl_rready
+s_axi_ctrl_wdata[0]
+s_axi_ctrl_wdata[10]
+s_axi_ctrl_wdata[11]
+s_axi_ctrl_wdata[12]
+s_axi_ctrl_wdata[13]
+s_axi_ctrl_wdata[14]
+s_axi_ctrl_wdata[15]
+s_axi_ctrl_wdata[16]
+s_axi_ctrl_wdata[17]
+s_axi_ctrl_wdata[18]
+s_axi_ctrl_wdata[19]
+s_axi_ctrl_wdata[1]
+s_axi_ctrl_wdata[20]
+s_axi_ctrl_wdata[21]
+s_axi_ctrl_wdata[22]
+s_axi_ctrl_wdata[23]
+s_axi_ctrl_wdata[24]
+s_axi_ctrl_wdata[25]
+s_axi_ctrl_wdata[26]
+s_axi_ctrl_wdata[27]
+s_axi_ctrl_wdata[28]
+s_axi_ctrl_wdata[29]
+s_axi_ctrl_wdata[2]
+s_axi_ctrl_wdata[30]
+s_axi_ctrl_wdata[31]
+s_axi_ctrl_wdata[3]
+s_axi_ctrl_wdata[4]
+s_axi_ctrl_wdata[5]
+s_axi_ctrl_wdata[6]
+s_axi_ctrl_wdata[7]
+s_axi_ctrl_wdata[8]
+s_axi_ctrl_wdata[9]
+s_axi_ctrl_wstrb[0]
+s_axi_ctrl_wstrb[1]
+s_axi_ctrl_wstrb[2]
+s_axi_ctrl_wstrb[3]
+s_axi_ctrl_wvalid
+
+ There are 0 input ports with no input delay but user has a false path constraint.
+
+
+6. checking no_output_delay (267)
+---------------------------------
+ There are 267 ports with no output delay specified. (HIGH)
+
+irq_o
+m_axi_mem_araddr[0]
+m_axi_mem_araddr[10]
+m_axi_mem_araddr[11]
+m_axi_mem_araddr[12]
+m_axi_mem_araddr[13]
+m_axi_mem_araddr[14]
+m_axi_mem_araddr[15]
+m_axi_mem_araddr[16]
+m_axi_mem_araddr[17]
+m_axi_mem_araddr[18]
+m_axi_mem_araddr[19]
+m_axi_mem_araddr[1]
+m_axi_mem_araddr[20]
+m_axi_mem_araddr[21]
+m_axi_mem_araddr[22]
+m_axi_mem_araddr[23]
+m_axi_mem_araddr[24]
+m_axi_mem_araddr[25]
+m_axi_mem_araddr[26]
+m_axi_mem_araddr[27]
+m_axi_mem_araddr[28]
+m_axi_mem_araddr[29]
+m_axi_mem_araddr[2]
+m_axi_mem_araddr[30]
+m_axi_mem_araddr[31]
+m_axi_mem_araddr[32]
+m_axi_mem_araddr[33]
+m_axi_mem_araddr[34]
+m_axi_mem_araddr[35]
+m_axi_mem_araddr[36]
+m_axi_mem_araddr[37]
+m_axi_mem_araddr[38]
+m_axi_mem_araddr[39]
+m_axi_mem_araddr[3]
+m_axi_mem_araddr[40]
+m_axi_mem_araddr[41]
+m_axi_mem_araddr[42]
+m_axi_mem_araddr[43]
+m_axi_mem_araddr[44]
+m_axi_mem_araddr[45]
+m_axi_mem_araddr[46]
+m_axi_mem_araddr[47]
+m_axi_mem_araddr[48]
+m_axi_mem_araddr[49]
+m_axi_mem_araddr[4]
+m_axi_mem_araddr[50]
+m_axi_mem_araddr[51]
+m_axi_mem_araddr[52]
+m_axi_mem_araddr[53]
+m_axi_mem_araddr[54]
+m_axi_mem_araddr[55]
+m_axi_mem_araddr[56]
+m_axi_mem_araddr[57]
+m_axi_mem_araddr[58]
+m_axi_mem_araddr[59]
+m_axi_mem_araddr[5]
+m_axi_mem_araddr[60]
+m_axi_mem_araddr[61]
+m_axi_mem_araddr[62]
+m_axi_mem_araddr[63]
+m_axi_mem_araddr[6]
+m_axi_mem_araddr[7]
+m_axi_mem_araddr[8]
+m_axi_mem_araddr[9]
+m_axi_mem_arburst[0]
+m_axi_mem_arlen[0]
+m_axi_mem_arlen[1]
+m_axi_mem_arlen[2]
+m_axi_mem_arlen[3]
+m_axi_mem_arlen[4]
+m_axi_mem_arlen[5]
+m_axi_mem_arlen[6]
+m_axi_mem_arlen[7]
+m_axi_mem_arsize[0]
+m_axi_mem_arsize[1]
+m_axi_mem_arvalid
+m_axi_mem_awaddr[0]
+m_axi_mem_awaddr[10]
+m_axi_mem_awaddr[11]
+m_axi_mem_awaddr[12]
+m_axi_mem_awaddr[13]
+m_axi_mem_awaddr[14]
+m_axi_mem_awaddr[15]
+m_axi_mem_awaddr[16]
+m_axi_mem_awaddr[17]
+m_axi_mem_awaddr[18]
+m_axi_mem_awaddr[19]
+m_axi_mem_awaddr[1]
+m_axi_mem_awaddr[20]
+m_axi_mem_awaddr[21]
+m_axi_mem_awaddr[22]
+m_axi_mem_awaddr[23]
+m_axi_mem_awaddr[24]
+m_axi_mem_awaddr[25]
+m_axi_mem_awaddr[26]
+m_axi_mem_awaddr[27]
+m_axi_mem_awaddr[28]
+m_axi_mem_awaddr[29]
+m_axi_mem_awaddr[2]
+m_axi_mem_awaddr[30]
+m_axi_mem_awaddr[31]
+m_axi_mem_awaddr[32]
+m_axi_mem_awaddr[33]
+m_axi_mem_awaddr[34]
+m_axi_mem_awaddr[35]
+m_axi_mem_awaddr[36]
+m_axi_mem_awaddr[37]
+m_axi_mem_awaddr[38]
+m_axi_mem_awaddr[39]
+m_axi_mem_awaddr[3]
+m_axi_mem_awaddr[40]
+m_axi_mem_awaddr[41]
+m_axi_mem_awaddr[42]
+m_axi_mem_awaddr[43]
+m_axi_mem_awaddr[44]
+m_axi_mem_awaddr[45]
+m_axi_mem_awaddr[46]
+m_axi_mem_awaddr[47]
+m_axi_mem_awaddr[48]
+m_axi_mem_awaddr[49]
+m_axi_mem_awaddr[4]
+m_axi_mem_awaddr[50]
+m_axi_mem_awaddr[51]
+m_axi_mem_awaddr[52]
+m_axi_mem_awaddr[53]
+m_axi_mem_awaddr[54]
+m_axi_mem_awaddr[55]
+m_axi_mem_awaddr[56]
+m_axi_mem_awaddr[57]
+m_axi_mem_awaddr[58]
+m_axi_mem_awaddr[59]
+m_axi_mem_awaddr[5]
+m_axi_mem_awaddr[60]
+m_axi_mem_awaddr[61]
+m_axi_mem_awaddr[62]
+m_axi_mem_awaddr[63]
+m_axi_mem_awaddr[6]
+m_axi_mem_awaddr[7]
+m_axi_mem_awaddr[8]
+m_axi_mem_awaddr[9]
+m_axi_mem_awlen[0]
+m_axi_mem_awlen[1]
+m_axi_mem_awlen[2]
+m_axi_mem_awlen[3]
+m_axi_mem_awlen[4]
+m_axi_mem_awlen[5]
+m_axi_mem_awlen[6]
+m_axi_mem_awlen[7]
+m_axi_mem_awsize[0]
+m_axi_mem_awsize[1]
+m_axi_mem_awvalid
+m_axi_mem_bready
+m_axi_mem_rready
+m_axi_mem_wdata[0]
+m_axi_mem_wdata[10]
+m_axi_mem_wdata[11]
+m_axi_mem_wdata[12]
+m_axi_mem_wdata[13]
+m_axi_mem_wdata[14]
+m_axi_mem_wdata[15]
+m_axi_mem_wdata[16]
+m_axi_mem_wdata[17]
+m_axi_mem_wdata[18]
+m_axi_mem_wdata[19]
+m_axi_mem_wdata[1]
+m_axi_mem_wdata[20]
+m_axi_mem_wdata[21]
+m_axi_mem_wdata[22]
+m_axi_mem_wdata[23]
+m_axi_mem_wdata[24]
+m_axi_mem_wdata[25]
+m_axi_mem_wdata[26]
+m_axi_mem_wdata[27]
+m_axi_mem_wdata[28]
+m_axi_mem_wdata[29]
+m_axi_mem_wdata[2]
+m_axi_mem_wdata[30]
+m_axi_mem_wdata[31]
+m_axi_mem_wdata[32]
+m_axi_mem_wdata[33]
+m_axi_mem_wdata[34]
+m_axi_mem_wdata[35]
+m_axi_mem_wdata[36]
+m_axi_mem_wdata[37]
+m_axi_mem_wdata[38]
+m_axi_mem_wdata[39]
+m_axi_mem_wdata[3]
+m_axi_mem_wdata[40]
+m_axi_mem_wdata[41]
+m_axi_mem_wdata[42]
+m_axi_mem_wdata[43]
+m_axi_mem_wdata[44]
+m_axi_mem_wdata[45]
+m_axi_mem_wdata[46]
+m_axi_mem_wdata[47]
+m_axi_mem_wdata[48]
+m_axi_mem_wdata[49]
+m_axi_mem_wdata[4]
+m_axi_mem_wdata[50]
+m_axi_mem_wdata[51]
+m_axi_mem_wdata[52]
+m_axi_mem_wdata[53]
+m_axi_mem_wdata[54]
+m_axi_mem_wdata[55]
+m_axi_mem_wdata[56]
+m_axi_mem_wdata[57]
+m_axi_mem_wdata[58]
+m_axi_mem_wdata[59]
+m_axi_mem_wdata[5]
+m_axi_mem_wdata[60]
+m_axi_mem_wdata[61]
+m_axi_mem_wdata[62]
+m_axi_mem_wdata[63]
+m_axi_mem_wdata[6]
+m_axi_mem_wdata[7]
+m_axi_mem_wdata[8]
+m_axi_mem_wdata[9]
+m_axi_mem_wlast
+m_axi_mem_wstrb[0]
+m_axi_mem_wstrb[1]
+m_axi_mem_wstrb[2]
+m_axi_mem_wstrb[3]
+m_axi_mem_wstrb[4]
+m_axi_mem_wstrb[5]
+m_axi_mem_wstrb[6]
+m_axi_mem_wstrb[7]
+m_axi_mem_wvalid
+s_axi_ctrl_arready
+s_axi_ctrl_awready
+s_axi_ctrl_bresp[1]
+s_axi_ctrl_bvalid
+s_axi_ctrl_rdata[0]
+s_axi_ctrl_rdata[10]
+s_axi_ctrl_rdata[11]
+s_axi_ctrl_rdata[12]
+s_axi_ctrl_rdata[13]
+s_axi_ctrl_rdata[14]
+s_axi_ctrl_rdata[15]
+s_axi_ctrl_rdata[16]
+s_axi_ctrl_rdata[17]
+s_axi_ctrl_rdata[18]
+s_axi_ctrl_rdata[19]
+s_axi_ctrl_rdata[1]
+s_axi_ctrl_rdata[20]
+s_axi_ctrl_rdata[21]
+s_axi_ctrl_rdata[22]
+s_axi_ctrl_rdata[23]
+s_axi_ctrl_rdata[24]
+s_axi_ctrl_rdata[25]
+s_axi_ctrl_rdata[26]
+s_axi_ctrl_rdata[27]
+s_axi_ctrl_rdata[28]
+s_axi_ctrl_rdata[29]
+s_axi_ctrl_rdata[2]
+s_axi_ctrl_rdata[30]
+s_axi_ctrl_rdata[31]
+s_axi_ctrl_rdata[3]
+s_axi_ctrl_rdata[4]
+s_axi_ctrl_rdata[5]
+s_axi_ctrl_rdata[6]
+s_axi_ctrl_rdata[7]
+s_axi_ctrl_rdata[8]
+s_axi_ctrl_rdata[9]
+s_axi_ctrl_rresp[1]
+s_axi_ctrl_rvalid
+s_axi_ctrl_wready
+
+ There are 0 ports with no output delay but user has a false path constraint
+
+ There are 0 ports with no output delay but with a timing clock defined on it or propagating through it
+
+
+7. checking multiple_clock (0)
+------------------------------
+ There are 0 register/latch pins with multiple clocks.
+
+
+8. checking generated_clocks (0)
+--------------------------------
+ There are 0 generated clocks that are not connected to a clock source.
+
+
+9. checking loops (0)
+---------------------
+ There are 0 combinational loops in the design.
+
+
+10. checking partial_input_delay (0)
+------------------------------------
+ There are 0 input ports with partial input delay specified.
+
+
+11. checking partial_output_delay (0)
+-------------------------------------
+ There are 0 ports with partial output delay specified.
+
+
+12. checking latch_loops (0)
+----------------------------
+ There are 0 combinational latch loops in the design through latch input
+
+

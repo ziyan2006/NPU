@@ -67,6 +67,9 @@ module tb_npu_command_processor;
       @(negedge clk_i);
       command_valid_i = 1'b0;
       command_bits_i = '0;
+      // CP_DISPATCH deliberately separates capture/decode from unit issue.
+      @(posedge clk_i);
+      @(negedge clk_i);
     end
   endtask
 
@@ -131,14 +134,16 @@ module tb_npu_command_processor;
       16'h0000, 16'h0000, NPU_NONE_INDEX, 16'h0000, NPU_NONE_INDEX,
       NPU_EVENT_A0_READY);
     command_valid_i = 1'b1;
+    @(posedge clk_i);
+    @(negedge clk_i);
+    command_valid_i = 1'b0;
+    command_bits_i = '0;
     #1;
     if (!dma_command_valid_o || command_ready_o)
       $fatal(1, "DMA back-pressure");
     dma_command_ready_i = 1'b1;
     @(posedge clk_i);
     @(negedge clk_i);
-    command_valid_i = 1'b0;
-    command_bits_i = '0;
     if (event_state_o != 0 || commands_retired_o != 3)
       $fatal(1, "DMA issue must clear stale event and retire");
     pulse_event(NPU_EVENT_A0_READY);
@@ -151,14 +156,16 @@ module tb_npu_command_processor;
       16'h0004, 16'h0003, 16'h0000, 16'h0001, 16'h0002, 16'h0003,
       NPU_EVENT_C0_DONE);
     command_valid_i = 1'b1;
+    @(posedge clk_i);
+    @(negedge clk_i);
+    command_valid_i = 1'b0;
+    command_bits_i = '0;
     #1;
     if (!compute_command_valid_o || command_ready_o)
       $fatal(1, "compute back-pressure");
     compute_command_ready_i = 1'b1;
     @(posedge clk_i);
     @(negedge clk_i);
-    command_valid_i = 1'b0;
-    command_bits_i = '0;
     if (commands_retired_o != 4) $fatal(1, "async CONV retirement");
     pulse_event(NPU_EVENT_C0_DONE);
 

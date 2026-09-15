@@ -91,6 +91,10 @@ module npu_upsample2x (
   logic output_row_copy_q;
   logic [8:0] read_beat_q;
   logic [8:0] write_beat_q;
+  logic [8:0] read_burst_beats_q;
+  logic [8:0] read_burst_beat_q;
+  logic [8:0] write_burst_beats_q;
+  logic [8:0] write_burst_beat_q;
   logic [7:0] buffer_index_q;
   logic [6:0] beat_in_pixel_q;
   logic horizontal_copy_q;
@@ -121,6 +125,15 @@ module npu_upsample2x (
   logic read_fire;
   logic write_fire;
   logic expected_read_last;
+  logic expected_write_last;
+  logic [63:0] read_burst_address;
+  logic [63:0] write_burst_address;
+  logic [8:0] read_remaining_beats;
+  logic [8:0] write_remaining_beats;
+  logic [9:0] read_boundary_beats;
+  logic [9:0] write_boundary_beats;
+  logic [8:0] planned_read_burst_beats;
+  logic [8:0] planned_write_burst_beats;
 
   assign start_command = npu_command_t'(command_bits_i);
   assign start_source_desc = npu_tensor_desc_t'(source_desc_bits_i);
@@ -181,30 +194,56 @@ module npu_upsample2x (
     .operand_b_i(pixel_bytes_q), .busy_o(mul_busy), .done_o(mul_done),
     .result_o(mul_result));
 
-  assign m_axi_araddr_o = source_row_address_q;
-  assign m_axi_arlen_o = source_row_beats_q[7:0] - 1'b1;
+  assign read_burst_address
+    = source_row_address_q + ({55'd0, read_beat_q} << 3);
+  assign write_burst_address
+    = destination_row_address_q + ({55'd0, write_beat_q} << 3);
+  assign read_remaining_beats = source_row_beats_q - read_beat_q;
+  assign write_remaining_beats = destination_row_beats_q - write_beat_q;
+  assign read_boundary_beats
+    = (13'd4096 - {1'b0, read_burst_address[11:0]}) >> 3;
+  assign write_boundary_beats
+    = (13'd4096 - {1'b0, write_burst_address[11:0]}) >> 3;
+
+  always_comb begin
+    planned_read_burst_beats = read_remaining_beats;
+    if (planned_read_burst_beats > read_boundary_beats)
+      planned_read_burst_beats = read_boundary_beats[8:0];
+    if (planned_read_burst_beats > 256)
+      planned_read_burst_beats = 256;
+    planned_write_burst_beats = write_remaining_beats;
+    if (planned_write_burst_beats > write_boundary_beats)
+      planned_write_burst_beats = write_boundary_beats[8:0];
+    if (planned_write_burst_beats > 256)
+      planned_write_burst_beats = 256;
+  end
+
+  assign m_axi_araddr_o = read_burst_address;
+  assign m_axi_arlen_o = planned_read_burst_beats[7:0] - 1'b1;
   assign m_axi_arsize_o = 3'd3;
   assign m_axi_arburst_o = 2'b01;
   assign m_axi_arvalid_o = state_q == UPSAMPLE_READ_ADDRESS;
   assign m_axi_rready_o = state_q == UPSAMPLE_READ_DATA;
   assign read_fire = m_axi_rvalid_i && m_axi_rready_o;
-  assign expected_read_last = read_beat_q + 1 == source_row_beats_q;
+  assign expected_read_last = read_burst_beat_q + 1 == read_burst_beats_q;
 
-  assign m_axi_awaddr_o = destination_row_address_q;
-  assign m_axi_awlen_o = destination_row_beats_q[7:0] - 1'b1;
+  assign m_axi_awaddr_o = write_burst_address;
+  assign m_axi_awlen_o = planned_write_burst_beats[7:0] - 1'b1;
   assign m_axi_awsize_o = 3'd3;
   assign m_axi_awburst_o = 2'b01;
   assign m_axi_awvalid_o = state_q == UPSAMPLE_WRITE_ADDRESS;
   assign m_axi_wdata_o = buffer_read_data_q;
   assign m_axi_wstrb_o = 8'hff;
-  assign m_axi_wlast_o = write_beat_q + 1 == destination_row_beats_q;
+  assign m_axi_wlast_o = write_burst_beat_q + 1 == write_burst_beats_q;
   assign m_axi_wvalid_o = state_q == UPSAMPLE_WRITE_DATA;
   assign write_fire = m_axi_wvalid_o && m_axi_wready_i;
   assign m_axi_bready_o = state_q == UPSAMPLE_WRITE_RESPONSE;
   assign row_buffer_read_enable = state_q == UPSAMPLE_WRITE_PREFETCH
     || (write_fire && !m_axi_wlast_o);
+  assign expected_write_last = write_burst_beat_q + 1
+    == write_burst_beats_q;
   assign row_buffer_read_address = state_q == UPSAMPLE_WRITE_PREFETCH
-    ? 8'd0 : next_buffer_index;
+    ? buffer_index_q : next_buffer_index;
 
   always_comb begin
     next_buffer_index = buffer_index_q + 1'b1;
@@ -303,6 +342,7 @@ module npu_upsample2x (
               destination_row_bytes_q <= mul_result[31:0] << 1;
               source_row_beats_q <= mul_result[11:3];
               destination_row_beats_q <= mul_result[10:2];
+              read_beat_q <= '0;
               state_q <= UPSAMPLE_READ_ADDRESS;
             end
           end
@@ -314,7 +354,8 @@ module npu_upsample2x (
             error_reason_o <= UPSAMPLE_ERROR_BOUNDS;
             state_q <= UPSAMPLE_ERROR;
           end else if (m_axi_arready_i) begin
-            read_beat_q <= '0;
+            read_burst_beats_q <= planned_read_burst_beats;
+            read_burst_beat_q <= '0;
             read_error_q <= 1'b0;
             state_q <= UPSAMPLE_READ_DATA;
           end
@@ -332,12 +373,20 @@ module npu_upsample2x (
               if (read_error_q || m_axi_rresp_i != 2'b00) begin
                 error_reason_o <= UPSAMPLE_ERROR_READ;
                 state_q <= UPSAMPLE_ERROR;
+              end else if (read_beat_q + 1 != source_row_beats_q) begin
+                read_beat_q <= read_beat_q + 1'b1;
+                state_q <= UPSAMPLE_READ_ADDRESS;
               end else begin
                 output_row_copy_q <= 1'b0;
+                write_beat_q <= '0;
+                buffer_index_q <= '0;
+                beat_in_pixel_q <= '0;
+                horizontal_copy_q <= 1'b0;
                 state_q <= UPSAMPLE_WRITE_ADDRESS;
               end
             end else begin
               read_beat_q <= read_beat_q + 1'b1;
+              read_burst_beat_q <= read_burst_beat_q + 1'b1;
             end
           end
         end
@@ -349,10 +398,8 @@ module npu_upsample2x (
             error_reason_o <= UPSAMPLE_ERROR_BOUNDS;
             state_q <= UPSAMPLE_ERROR;
           end else if (m_axi_awready_i) begin
-            write_beat_q <= '0;
-            buffer_index_q <= '0;
-            beat_in_pixel_q <= '0;
-            horizontal_copy_q <= 1'b0;
+            write_burst_beats_q <= planned_write_burst_beats;
+            write_burst_beat_q <= '0;
             state_q <= UPSAMPLE_WRITE_PREFETCH;
           end
         end
@@ -362,10 +409,20 @@ module npu_upsample2x (
         UPSAMPLE_WRITE_DATA: begin
           if (write_fire) begin
             bytes_written_o <= bytes_written_o + 8;
-            if (m_axi_wlast_o) begin
+            if (m_axi_wlast_o != expected_write_last) begin
+              error_reason_o <= UPSAMPLE_ERROR_PROTOCOL;
+              state_q <= UPSAMPLE_ERROR;
+            end else if (m_axi_wlast_o) begin
+              if (write_beat_q + 1 != destination_row_beats_q) begin
+                write_beat_q <= write_beat_q + 1'b1;
+                buffer_index_q <= next_buffer_index;
+                beat_in_pixel_q <= next_beat_in_pixel;
+                horizontal_copy_q <= next_horizontal_copy;
+              end
               state_q <= UPSAMPLE_WRITE_RESPONSE;
             end else begin
               write_beat_q <= write_beat_q + 1'b1;
+              write_burst_beat_q <= write_burst_beat_q + 1'b1;
               buffer_index_q <= next_buffer_index;
               beat_in_pixel_q <= next_beat_in_pixel;
               horizontal_copy_q <= next_horizontal_copy;
@@ -378,10 +435,16 @@ module npu_upsample2x (
             if (m_axi_bresp_i != 2'b00) begin
               error_reason_o <= UPSAMPLE_ERROR_WRITE;
               state_q <= UPSAMPLE_ERROR;
+            end else if (write_beat_q + 1 != destination_row_beats_q) begin
+              state_q <= UPSAMPLE_WRITE_ADDRESS;
             end else if (!output_row_copy_q) begin
               output_row_copy_q <= 1'b1;
               destination_row_address_q
                 <= destination_row_address_q + destination_desc_q.stride_h;
+              write_beat_q <= '0;
+              buffer_index_q <= '0;
+              beat_in_pixel_q <= '0;
+              horizontal_copy_q <= 1'b0;
               state_q <= UPSAMPLE_WRITE_ADDRESS;
             end else if (source_row_q + 1 == source_desc_q.shape_h) begin
               state_q <= UPSAMPLE_DONE;
@@ -391,6 +454,7 @@ module npu_upsample2x (
                 <= source_row_address_q + source_desc_q.stride_h;
               destination_row_address_q
                 <= destination_row_address_q + destination_desc_q.stride_h;
+              read_beat_q <= '0;
               state_q <= UPSAMPLE_READ_ADDRESS;
             end
           end

@@ -23,6 +23,9 @@ set valid_tops {
   npu_axi_block_reader
   npu_task_loader
   npu_command_fetch
+  npu_axi_read_arbiter3
+  npu_axi_write_arbiter2
+  npu_csr
   npu_execution_frontend
   npu_dma_subsystem
   npu_tensor_mac_8x8
@@ -31,6 +34,8 @@ set valid_tops {
   npu_conv2d_pipeline
   npu_vec_add
   npu_upsample2x
+  npu_core
+  npu_top
 }
 if {[lsearch -exact $valid_tops $top] < 0} {
   puts stderr "unsupported top '$top'; choose one of: $valid_tops"
@@ -42,10 +47,14 @@ set rtl_dir [file join $repo_root hardware rtl]
 set source_files [list \
   [file join $rtl_dir include npu_isa_pkg.sv] \
   [file join $rtl_dir include npu_dma_pkg.sv] \
+  [file join $rtl_dir npu_command_processor.sv] \
+  [file join $rtl_dir npu_csr.sv] \
   [file join $rtl_dir npu_axi_block_reader.sv] \
   [file join $rtl_dir npu_task_loader.sv] \
   [file join $rtl_dir npu_memory_arbiter4.sv] \
   [file join $rtl_dir npu_command_fetch.sv] \
+  [file join $rtl_dir npu_axi_read_arbiter3.sv] \
+  [file join $rtl_dir npu_axi_write_arbiter2.sv] \
   [file join $rtl_dir npu_descriptor_cache.sv] \
   [file join $rtl_dir npu_execution_frontend.sv] \
   [file join $rtl_dir npu_u32_mul_iter.sv] \
@@ -60,12 +69,15 @@ set source_files [list \
   [file join $rtl_dir npu_conv2d_controller.sv] \
   [file join $rtl_dir npu_conv2d_pipeline.sv] \
   [file join $rtl_dir npu_vec_add.sv] \
-  [file join $rtl_dir npu_upsample2x.sv]]
+  [file join $rtl_dir npu_upsample2x.sv] \
+  [file join $rtl_dir npu_core.sv] \
+  [file join $rtl_dir npu_top.sv]]
 
 read_verilog -sv $source_files
 synth_design -top $top -part $part -mode out_of_context \
   -flatten_hierarchy rebuilt
-create_clock -name core_clk -period $clock_period [get_ports clk_i]
+set clock_port [expr {$top eq "npu_top" ? "aclk" : "clk_i"}]
+create_clock -name core_clk -period $clock_period [get_ports $clock_port]
 
 report_utilization -hierarchical -hierarchical_depth 4 \
   -file [file join $output_dir utilization_hierarchical.rpt]
@@ -81,7 +93,7 @@ if {[llength $target_timing_paths] > 0} {
 report_methodology -file [file join $output_dir methodology.rpt]
 check_timing -verbose -file [file join $output_dir check_timing.rpt]
 
-create_clock -name core_clk -period $baseline_clock_period [get_ports clk_i]
+create_clock -name core_clk -period $baseline_clock_period [get_ports $clock_port]
 report_timing_summary -delay_type max -max_paths 20 \
   -file [file join $output_dir timing_summary_100mhz.rpt]
 set baseline_timing_paths [get_timing_paths -delay_type max -max_paths 1]

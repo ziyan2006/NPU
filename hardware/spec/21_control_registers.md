@@ -1,8 +1,8 @@
-# NPU v1 AXI4-Lite 控制接口草案
+# NPU v1 AXI4-Lite 控制接口
 
-文档版本：`0.1-draft`
+文档版本：`1.0-implemented`
 
-状态：寄存器语义提案，offset 尚未冻结
+状态：P4 RTL 已实现，v1 offset 冻结
 
 所有寄存器为 32 bit、小端、4-byte 对齐。64-bit 值由 LO/HI 两个寄存器组成；软件写入地址时先写 HI/LO，最后写 `DOORBELL`，硬件只在 doorbell 时原子采样提交字段。
 
@@ -23,7 +23,7 @@
 | `0x028` | `TASK_BASE_HI` | R/W | task header 物理地址高 32 bit |
 | `0x02c` | `TASK_BYTES` | R/W | task 可访问区总长度 |
 | `0x030` | `TASK_TAG` | R/W | 软件任务 tag |
-| `0x034` | `DOORBELL` | W | 写 1 提交，busy 时提交报错/忽略行为须冻结 |
+| `0x034` | `DOORBELL` | W | 写 1 提交；busy 时不提交并锁存 `0xf001` |
 | `0x038` | `COMPLETED_TAG` | R | 最近完成或失败的任务 tag |
 | `0x03c` | `ERROR_CODE` | R | 首个 fatal error |
 | `0x040` | `ERROR_PC` | R | 出错命令 byte offset/PC |
@@ -37,9 +37,9 @@
 | `0x070/74` | `CYCLES_BANK_STALL_LO/HI` | R | scratchpad bank stall 周期 |
 | `0x078/7c` | `BYTES_READ_LO/HI` | R | 最近任务 DDR 读字节数 |
 | `0x080/84` | `BYTES_WRITTEN_LO/HI` | R | 最近任务 DDR 写字节数 |
-| `0x088` | `FIFO_HIGH_WATER0` | R | 命令/读数据 FIFO 高水位 |
-| `0x08c` | `FIFO_HIGH_WATER1` | R | 写数据/结果 FIFO 高水位 |
+| `0x088/8c` | `READ_HIGH_WATER_LO/HI` | R | 最近任务读 burst 最大 beat 数 |
 | `0x090` | `ERROR_COUNT` | R | 复位以来失败任务计数 |
+| `0x094/98` | `WRITE_HIGH_WATER_LO/HI` | R | 最近任务写 burst 最大 beat 数 |
 
 ## 2. 提交约束
 
@@ -47,9 +47,11 @@
 - `TASK_BASE` 必须 64-byte 对齐，`TASK_BYTES` 必须覆盖 header 声明的全部区段；
 - 驱动提交前完成 CPU cache clean，读取输出前完成 invalidate；具体 API 取决于 Linux/bare-metal；
 - `DOORBELL` 是提交的唯一生效点，写其它字段不启动任务；
-- 成功或失败均更新 `COMPLETED_TAG`，并在使能时产生 IRQ；
-- `ERROR_CODE/PC/INST_TAG` 锁存首错，直到 W1C 清错或 soft reset；
-- 64-bit 只读计数器需要 snapshot 语义，避免 LO/HI 跨越；具体采用“读 LO 锁存 HI”或显式 snapshot bit 在 P4 冻结。
+- 成功时更新 `COMPLETED_TAG`；失败上下文使用 `TASK_TAG`、`ERROR_CODE/PC/INST_TAG`；
+- `ERROR_CODE/PC/INST_TAG` 在错误时锁存，下一次合法提交或 idle soft reset 清除；
+- `IRQ_STATUS[2:0]` 分别为 watchdog/error/done，写 1 清对应 sticky bit；
+- 64-bit 只读计数器是直接采样、没有硬件 snapshot。软件使用 `HI-LO-HI` 顺序读取，
+  两次 HI 不同时重读，或只在 `STATUS.busy=0` 后读取。
 
 ### 首批公共错误码
 
@@ -61,21 +63,17 @@
 | `0x0003` | `ILLEGAL_FIELDS` | Command/descriptor 前置校验 |
 | `0x0004` | `EXECUTION_ERROR` | 执行端未给出更细错误时的兜底 |
 | `0x0005` | `WATCHDOG` | 任务超过 `WATCHDOG_LIMIT` |
+| `0xf001` | `SUBMISSION_BUSY` | busy 时写 `DOORBELL=1`，任务保持运行 |
+| `0xf002` | `RESET_BUSY` | busy 时写 `CONTROL.soft_reset=1`，复位不执行 |
 
 编码由 `scripts/npu_isa.py` 生成到 RTL/C 头文件；后续 DMA、descriptor、bank 等错误只追加新值，不复用已有值。
 
 ## 3. soft reset 语义
 
-`CONTROL.soft_reset` 写 1 后：
-
-1. 停止取新命令；
-2. 不再发出新的 AXI transaction；
-3. 已握手 transaction 合法结束，禁止产生区间外写；
-4. 清空 event、FIFO、scoreboard 和任务状态；
-5. `resetting` 清除、`idle` 置位；
-6. capability/version 寄存器保持可读。
-
-若 AXI 永久无响应，外部 PS reset 是最终恢复手段；内部 soft reset 不得违反 AXI 协议强行截断已握手事务。
+`CONTROL.soft_reset` 只在 `STATUS.idle=1` 时接受，并产生一个周期的内部 reset pulse，
+清除 event、FIFO、任务错误和中断状态。busy 时请求被拒绝并锁存 `0xf002`，因此不会
+强行截断已握手 AXI transaction。若 AXI 永久无响应，外部 PS/PL reset 是最终恢复
+手段。当前 `STATUS.resetting` 位固定为 0，因为 idle reset 在单周期内完成。
 
 ## 4. 与历史寄存器表的关系
 
