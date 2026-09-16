@@ -2,7 +2,7 @@
 
 文档版本：`1.0-implemented`
 
-状态：网络 A 功能 RTL、整任务位精确验证和参考 XC7Z020 OOC post-route 已完成
+状态：网络 A 功能 RTL、整任务位精确验证、IP 封装与参考 Zynq SoC post-route 已完成
 
 ## 1. 外部边界
 
@@ -74,3 +74,19 @@ Vivado 2026.1、`xc7z020clg400-1`、10 ns OOC post-route 基线；约束包含
 所有可路由网络均已布通，critical DRC 为 0。该结果仍是无 PS/interconnect 和真实
 part-pin 位置的 PL core OOC 数据；发布上板 bitstream 前必须在具体板卡的完整 block
 design 中重新完成 post-route timing、DRC、CDC、地址映射和 PS 软件验收。
+
+## 6. 参考 Zynq SoC 实现
+
+`scripts/38_package_npu_ip.tcl` 将本 top 封装为
+`ziyan2006.github.io:npu:stem_npu:1.0`；`scripts/39_create_reference_zynq_soc.tcl`
+将其接入 PS7 GP0、HP0、FCLK0、reset 和 IRQ，CSR 地址为 `0x43C00000`；
+`scripts/40_implement_reference_zynq_soc.tcl` 执行到 post-route phys-opt。
+
+| Slice LUT | FF | BRAM36 | DSP48E1 | WNS | WHS | unrouted | critical DRC |
+|---:|---:|---:|---:|---:|---:|---:|---:|
+| 25,634 | 25,293 | 61 | 72 | +0.005 ns | +0.015 ns | 0 | 0 |
+
+该完整参考系统已证明 100 MHz 可实现，但 setup 余量很薄。实际板卡 preset 会改变
+PS 配置与布局，必须重新签核；必要时可回退 90 MHz，任务延迟约 36.16 ms。软件侧
+`software/src/npu_driver.c` 已覆盖版本探测、cache hook、提交、中断、轮询、错误和
+性能计数器，39 个 CSR 与 RTL 契约自动核对并通过 Vivado GCC `-Werror` 交叉编译。

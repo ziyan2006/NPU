@@ -1,8 +1,8 @@
 # STEM NPU
 
 本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。网络 A 的 v1 ISA、完整
-`npu_top`、位精确任务回归和参考器件 OOC post-route 已完成；当前进入 PS 驱动、
-Vivado IP packaging 与 SoC block-design 集成阶段。
+`npu_top`、位精确任务回归、可移植 PS 驱动、Vivado IP packaging、参考 Zynq Block
+Design 和完整 SoC post-route 已完成；当前只剩具体板卡配置与真实上板验收。
 
 建议按以下顺序阅读：
 
@@ -23,7 +23,8 @@ Vivado IP packaging 与 SoC block-design 集成阶段。
 15. `spec/39_upsample2x_microarchitecture.md`：DDR 行缓冲最近邻 2× 与 AXI 行为；
 16. `spec/40_verification_plan.md`：位精确模型、RTL、实现与上板验证；
 17. `spec/50_p2_executable_spec.md`：当前模型的可执行指令、整数语义和周期结果；
-18. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
+18. `spec/42_soc_integration_preboard.md`：IP/PS 集成、完整实现证据和上板清单；
+19. `spec/90_decision_log.md`：已接受方向、待批准提案和开放问题。
 
 RTL 开发者从 `rtl/README.md` 和 `spec/22_operator_instruction_contract.md` 开始；前者说明如何引用生成的 SystemVerilog package，后者给出算子到指令序列及逐指令执行契约。
 
@@ -60,6 +61,7 @@ python scripts/_test_npu_post.py
 python scripts/_test_npu_vec_add.py
 python scripts/_test_npu_upsample.py
 python scripts/_test_npu_top_task.py
+python scripts/_test_npu_driver.py
 ```
 
 完整任务回归执行 1,869 条真实命令，最终 32,768 byte 与独立整数解释器逐字节一致；
@@ -79,6 +81,19 @@ vivado -mode batch -source scripts/36_route_npu_checkpoint.tcl -tclargs `
 61 BRAM36、72 DSP，100 MHz WNS `+0.225 ns`、TNS `0`、WHS `+0.007 ns`；
 全部网络布通且 critical DRC 为 0。最终板级签核仍需具体板卡的 PS preset、
 SmartConnect/Protocol Converter、DDR/IRQ 地址映射和真实位置约束。
+
+生成 NPU IP、参考 Zynq SoC 并执行完整布局布线：
+
+```powershell
+vivado -mode batch -source scripts/38_package_npu_ip.tcl
+vivado -mode batch -source scripts/39_create_reference_zynq_soc.tcl
+vivado -mode batch -source scripts/40_implement_reference_zynq_soc.tcl
+python scripts/41_check_preboard.py
+```
+
+参考 SoC 使用 GP0 控制、HP0 数据、FCLK0 100 MHz 和 IRQ_F2P，CSR 地址固定为
+`0x43C00000`。post-route WNS `+0.005 ns`、WHS `+0.015 ns`，0 failing path、
+0 unrouted、0 critical DRC。详见 `spec/42_soc_integration_preboard.md`。
 
 Vivado 2026.1 OOC 综合当前 DMA/CONV2D 集成子系统：
 

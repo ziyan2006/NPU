@@ -44,9 +44,9 @@
 | P3 架构/ISA 探索 | 数据流、存储层次、ISA、周期模型 | 性能和 BRAM 预算闭合 | 网络 A 已完成，网络 B 待验证 |
 | P4 微架构规格 | 模块接口、流水线、时序、异常行为 | RTL 接口和逐周期行为可实现 | 网络 A 功能路径已完成 |
 | P5 可执行参考 | 图编译器、位精确模拟器、测试向量 | 所有 P0 指令有 golden | 网络 A 完整 task golden 已完成 |
-| P6 RTL/HLS 实现 | 可综合模块和软件驱动 | 模块仿真通过 | 功能 RTL 完成，驱动进行中 |
-| P7 集成验证 | SoC、DMA、中断、CDC、回归 | 覆盖率和需求回归闭合 | 完整 RTL task bit-exact，SoC 待接入 |
-| P8 实现收敛 | 综合、布局布线、时序、功耗 | 资源和时钟满足规格 | 参考 XC7Z020 OOC P&R 已过 100 MHz，SoC 实现待板卡确认 |
+| P6 RTL/HLS 实现 | 可综合模块和软件驱动 | 模块仿真通过 | 功能 RTL 与可移植驱动完成 |
+| P7 集成验证 | SoC、DMA、中断、CDC、回归 | 覆盖率和需求回归闭合 | task bit-exact，参考 PS/AXI/IRQ SoC 已综合 |
+| P8 实现收敛 | 综合、布局布线、时序、功耗 | 资源和时钟满足规格 | 通用 XC7Z020 完整 SoC 已过 100 MHz；板卡专用重跑待实物信息 |
 | P9 上板验收 | 长稳、实时性、音频效果 | 所有 P0 板级测试通过 | 未开始 |
 
 P4/P5/P6 已完成网络 A 的第一条完整垂直路径：真实 task image 经 AXI4-Lite
@@ -55,7 +55,10 @@ VEC_ADD、UPSAMPLE2X 和共享 AXI 协同执行。1,869 条命令对 32,768-byte
 整数参考模型逐字节一致，需 3,254,220 cycle（32.54 ms @100 MHz）。完整 `npu_top`
 在临时 `xc7z020clg400-1` 上 OOC 布局布线后使用 25,645 Slice LUT、24,894 FF、
 61 BRAM36、72 DSP；100 MHz WNS `+0.225 ns`、TNS `0`、WHS `+0.007 ns`，且
-0 条未布通网络、0 条 critical DRC。下一阶段是软件驱动、IP packaging 和 SoC 集成。
+0 条未布通网络、0 条 critical DRC。封装 IP 接入通用 PS7 参考系统后，完整 SoC
+post-route 为 25,634 LUT、25,293 FF、61 BRAM36、72 DSP，100 MHz WNS
+`+0.005 ns`、WHS `+0.015 ns`，0 unrouted、0 critical DRC。驱动 CSR 契约和交叉编译
+也已通过；下一阶段只剩实际板卡 preset、软件平台适配和板级验收。
 
 ## 4. 系统边界
 
@@ -139,6 +142,7 @@ v1 的 NPU 输入/输出是量化张量。PCM、STFT/iSTFT、滤波器组、OLA�
 | `36_conv2d_controller_microarchitecture.md` | CONV2D tile 循环、地址、descriptor 检查、位精确验证和综合证据 |
 | `37_requant_post_microarchitecture.md` | bias、Q31/RNE、clamp、激活、tanh LUT、资源和周期取舍 |
 | `41_npu_top_microarchitecture.md` | 完整 core/top、AXI/CSR、任务生命周期、验证和综合基线 |
+| `42_soc_integration_preboard.md` | Vivado IP、Zynq PS/AXI/IRQ 集成、完整 P&R 和上板前清单 |
 | `40_verification_plan.md` | 从位精确模型到板级长稳的验证闭环 |
 | `50_p2_executable_spec.md` | 当前模型的指令编译、整数语义、存储与周期结果 |
 | `90_decision_log.md` | 已决定事项、开放问题和需要补做的实验 |

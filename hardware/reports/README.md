@@ -27,3 +27,9 @@ FIFO 及 post：19,035 LUT、13,856 FF、58 RAMB36、68 DSP，100 MHz 综合后 
 72 DSP；WNS `+0.225 ns`、TNS `0`、WHS `+0.007 ns`，全部网络布通且 critical
 DRC 为 0。该结果关闭 PL core 的 100 MHz 实现风险，但不替代具体 Zynq PS block
 design 的最终实现签核。
+
+`reference_zynq_soc/` 是封装 IP 接入 PS7、GP0/HP0、FCLK/reset 和 IRQ 后的综合报告；
+`reference_zynq_soc_impl/` 是同一通用 XC7Z020 参考系统的 post-route 报告。完整 SoC
+post-route 使用 25,634 LUT、25,293 FF、61 BRAM36、72 DSP，100 MHz WNS
+`+0.005 ns`、WHS `+0.015 ns`，0 failing path、0 unrouted、0 critical DRC。该目录仍不
+包含实际开发板的 DDR/MIO preset，不能替代板卡专用实现。

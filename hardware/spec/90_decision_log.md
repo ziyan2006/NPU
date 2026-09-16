@@ -13,6 +13,8 @@
 | ADR-005 | 已接受 | 当前人声模型是首要基准，但不是硬编码图。 | 保留已验证质量和实时目标。 | 所有架构提案先用当前模型量化。 |
 | ADR-006 | 已接受 | 当前模型激活精度基线为 INT12、累加为 INT32。 | 已有量化实验显示 INT8 激活不足，INT32 覆盖 26-bit 最坏累加。 | 数据通路和存储不能按纯 INT8 设计。 |
 | ADR-007 | 已接受 | 完整 Tensor 结果以位精确整数解释器为规范真值。 | 消除 Python/RTL 对舍入和溢出的歧义。 | RTL 前必须先完成软件 golden。 |
+| ADR-021 | 已接受 | v1 SoC 基线使用 PS GP0 访问 AXI4-Lite CSR、PS HP0 承载 64-bit NPU AXI 数据、FCLK0 提供单一 PL 时钟、IRQ_F2P 报告完成/错误。 | Vivado IP-XACT、参考 Block Design、完整综合和 post-route 已验证该结构。 | CSR 参考地址为 `0x43C00000`；HP0 非一致，驱动必须维护 cache。 |
+| ADR-022 | 已接受 | 100 MHz 是当前实现基线，90 MHz 是板卡实现无法保住正 slack 时的首选回退档。 | 完整参考 SoC 100 MHz WNS 仅 `+0.005 ns`；90 MHz 下当前任务仍约 36.16 ms，小于 46 ms。 | 板卡 preset 导入后必须重跑实现，不得直接复用参考 checkpoint。 |
 
 ## 2. 待批准的架构提案
 
