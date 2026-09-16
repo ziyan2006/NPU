@@ -1,0 +1,41 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Wed Sep 16 14:04:34 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -hierarchical_depth 4 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/navigator_z7020_candidate_impl/utilization_hierarchical.rpt
+| Design       : npu_soc_wrapper
+| Device       : xc7z020clg400-2
+| Speed File   : -2
+| Design State : Physopt postRoute
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++----------------------+----------------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+|       Instance       |                 Module                 | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs  | RAMB36 | RAMB18 | DSP Blocks |
++----------------------+----------------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+| npu_soc_wrapper      |                                  (top) |      25436 |      25358 |      12 |   66 | 25293 |     61 |      0 |         72 |
+|   npu_soc_i          |                                npu_soc |      25436 |      25358 |      12 |   66 | 25293 |     61 |      0 |         72 |
+|     stem_npu_0       |                   npu_soc_stem_npu_0_0 |      24691 |      24686 |       0 |    5 | 24402 |     61 |      0 |         72 |
+|       (stem_npu_0)   |                   npu_soc_stem_npu_0_0 |          0 |          0 |       0 |    0 |     0 |      0 |      0 |          0 |
+|       inst           |           npu_soc_stem_npu_0_0_npu_top |      24691 |      24686 |       0 |    5 | 24402 |     61 |      0 |         72 |
+|         core         |          npu_soc_stem_npu_0_0_npu_core |      24412 |      24407 |       0 |    5 | 24057 |     61 |      0 |         72 |
+|         csr          |           npu_soc_stem_npu_0_0_npu_csr |        295 |        295 |       0 |    0 |   345 |      0 |      0 |          0 |
+|     axi_mem_intercon |             npu_soc_axi_mem_intercon_0 |        343 |        331 |      12 |    0 |   390 |      0 |      0 |          0 |
+|       s00_couplers   |               s00_couplers_imp_1BBEWUQ |        343 |        331 |      12 |    0 |   390 |      0 |      0 |          0 |
+|         auto_pc      | npu_soc_axi_mem_intercon_imp_auto_pc_0 |        343 |        331 |      12 |    0 |   390 |      0 |      0 |          0 |
+|     ps7_0_axi_periph |             npu_soc_ps7_0_axi_periph_0 |        386 |        326 |       0 |   60 |   468 |      0 |      0 |          0 |
+|       s00_couplers   |               s00_couplers_imp_1A0QHHS |        386 |        326 |       0 |   60 |   468 |      0 |      0 |          0 |
+|         auto_pc      | npu_soc_ps7_0_axi_periph_imp_auto_pc_0 |        386 |        326 |       0 |   60 |   468 |      0 |      0 |          0 |
++----------------------+----------------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

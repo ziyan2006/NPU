@@ -34,6 +34,7 @@ logs/
 vivado*.jou
 vivado*.log
 hardware/build/
+hardware/boards/**/board_confirmation.local.json
 clockInfo.txt
 tight_setup_hold_pins.txt
 

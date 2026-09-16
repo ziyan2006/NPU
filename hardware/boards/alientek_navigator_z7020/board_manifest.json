@@ -1,0 +1,47 @@
+{
+  "schema_version": 1,
+  "status": "provisional_pending_silkscreen_confirmation",
+  "vendor": "ALIENTEK / 正点原子",
+  "family": "Navigator / 领航者 ZYNQ",
+  "variant": "ZYNQ-7020 candidate",
+  "fpga_part": "xc7z020clg400-2",
+  "ps_clock_mhz": 33.333333,
+  "pl_oscillator_mhz": 50.0,
+  "ddr": {
+    "physical_part": "NT5CC256M16",
+    "device_count": 2,
+    "total_bytes": 1073741824,
+    "bus_width_bits": 32,
+    "vivado_compatible_part": "MT41J256M16 RE-125",
+    "trace_delays_confirmed": false
+  },
+  "uart": {
+    "instance": 0,
+    "rx_mio": 14,
+    "tx_mio": 15,
+    "baud": 115200
+  },
+  "storage_candidates": {
+    "qspi": "W25Q256, 32 MiB",
+    "emmc": "KLM8G1GETF, 8 GiB"
+  },
+  "revision_sensitive": {
+    "ethernet_phy": ["YT8521S", "RTL8211E-VL"],
+    "core_board_revision": null,
+    "base_board_revision": null
+  },
+  "npu_integration": {
+    "csr_base": "0x43c00000",
+    "csr_bytes": 4096,
+    "memory_port": "S_AXI_HP0, 64-bit, non-coherent",
+    "control_port": "M_AXI_GP0",
+    "pl_clock_mhz": 100.0,
+    "interrupt": "IRQ_F2P[0]"
+  },
+  "sources": [
+    "https://bbs.elecfans.com/jishu_1982244_1_1.html",
+    "https://m.ruidan.com/infomation/detail/144202",
+    "https://dl.21ic.com/download/zynq-741578.html",
+    "https://docs.amd.com/r/en-US/ug1165-zynq-embedded-design-tutorial/Integrating-AXI-CDMA-with-the-Zynq-SoC-PS-HP-Slave-Port"
+  ]
+}

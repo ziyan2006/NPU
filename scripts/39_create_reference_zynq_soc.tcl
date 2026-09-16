@@ -4,7 +4,7 @@
 # board preset before implementation.
 # Usage:
 #   vivado -mode batch -source scripts/39_create_reference_zynq_soc.tcl -- \
-#     ?part? ?ip_repository? ?project_directory?
+#     ?part? ?ip_repository? ?project_directory? ?board_profile? ?report_directory?
 
 set part [expr {$argc >= 1 ? [lindex $argv 0] : "xc7z020clg400-1"}]
 set script_dir [file dirname [file normalize [info script]]]
@@ -15,6 +15,13 @@ set ip_repository [expr {$argc >= 2
 set project_dir [expr {$argc >= 3
   ? [file normalize [lindex $argv 2]]
   : [file join $repo_root hardware build reference_zynq_soc]}]
+set board_profile [expr {$argc >= 4 && [lindex $argv 3] ne ""
+  ? [file normalize [lindex $argv 3]]
+  : ""}]
+set report_dir [expr {$argc >= 5
+  ? [file normalize [lindex $argv 4]]
+  : [file join $repo_root hardware reports vivado_2026_1 \
+      reference_zynq_soc]}]
 set component_xml [file join $ip_repository stem_npu_1_0 component.xml]
 if {![file exists $component_xml]} {
   error "packaged NPU IP missing; run scripts/38_package_npu_ip.tcl first"
@@ -39,6 +46,27 @@ set_property -dict [list \
   CONFIG.PCW_USE_FABRIC_INTERRUPT {1} \
   CONFIG.PCW_IRQ_F2P_INTR {1} \
 ] $ps
+
+# A board profile may add PS DDR/MIO settings after the common NPU ports have
+# been enabled.  Profiles are intentionally explicit Tcl files so that a
+# vendor-exported preset can replace the provisional profile without editing
+# the integration script.
+set profile_name "board_independent"
+if {$board_profile ne ""} {
+  if {![file exists $board_profile]} {
+    error "board profile does not exist: $board_profile"
+  }
+  source $board_profile
+  if {![llength [info procs npu_apply_board_ps]]} {
+    error "board profile must define npu_apply_board_ps"
+  }
+  npu_apply_board_ps $ps
+  if {[info exists ::npu_board_profile_name]} {
+    set profile_name $::npu_board_profile_name
+  } else {
+    set profile_name [file tail $board_profile]
+  }
+}
 
 set npu [create_bd_cell -type ip -vlnv \
   ziyan2006.github.io:npu:stem_npu:1.0 stem_npu_0]
@@ -65,6 +93,9 @@ assign_bd_address -force -offset 0x43C00000 -range 0x00001000 \
   -target_address_space [get_bd_addr_spaces $ps/Data] $csr_segments
 
 validate_bd_design
+if {$board_profile ne "" && [llength [info procs npu_validate_board_ps]]} {
+  npu_validate_board_ps $ps
+}
 save_bd_design
 set bd_file [get_files [file join $project_dir reference_zynq_soc.srcs \
   sources_1 bd npu_soc npu_soc.bd]]
@@ -82,8 +113,6 @@ if {$synth_status ne "synth_design Complete!"} {
 }
 
 open_run synth_1
-set report_dir [file join $repo_root hardware reports vivado_2026_1 \
-  reference_zynq_soc]
 file mkdir $report_dir
 report_utilization -file [file join $report_dir utilization_synth.rpt]
 report_clock_interaction -file [file join $report_dir clock_interaction.rpt]
@@ -94,5 +123,5 @@ set ctrl_interconnects [get_bd_cells -quiet -hierarchical -filter \
   {VLNV =~ "xilinx.com:ip:*connect*:*"}]
 set csr_mapping [get_bd_addr_segs -of_objects [get_bd_addr_spaces $ps/Data] \
   -filter {OFFSET == 0x43C00000}]
-puts "NPU_REFERENCE_SOC_RESULT part=$part status=$synth_status csr=$csr_mapping interconnects=$ctrl_interconnects project=$project_dir"
+puts "NPU_REFERENCE_SOC_RESULT part=$part profile=$profile_name status=$synth_status csr=$csr_mapping interconnects=$ctrl_interconnects project=$project_dir reports=$report_dir"
 close_project

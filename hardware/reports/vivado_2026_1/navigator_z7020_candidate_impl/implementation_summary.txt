@@ -1,0 +1,9 @@
+part=xc7z020clg400-2
+strategy=Performance_ExplorePostRoutePhysOpt
+status=phys_opt_design (Post-Route) Complete!
+wns_ns=0.461
+whs_ns=0.032
+failing_setup_paths=0
+failing_hold_paths=0
+unrouted_nets=0
+critical_drc=0

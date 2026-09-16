@@ -1,0 +1,13 @@
+{
+  "confirmed_by": null,
+  "confirmed_date": null,
+  "fpga_marking": null,
+  "core_board_revision": null,
+  "base_board_revision": null,
+  "ddr_marking": null,
+  "ethernet_phy_marking": null,
+  "boot_mode_for_first_test": "JTAG",
+  "vendor_ps7_preset_path": null,
+  "vendor_xdc_path": null,
+  "notes": null
+}

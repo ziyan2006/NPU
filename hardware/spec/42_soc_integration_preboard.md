@@ -2,7 +2,8 @@
 
 文档版本：`1.0-preboard`
 
-状态：通用 XC7Z020 参考系统已完成 IP 封装、综合和布局布线；真实板卡配置待输入
+状态：通用 XC7Z020 参考系统已完成 IP 封装、综合和布局布线；正点原子领航者
+ZYNQ-7020 的最小 JTAG 候选配置已建立，仍待实物丝印和厂商 preset 确认
 
 ## 1. 参考系统结构
 
@@ -98,3 +99,37 @@ Warning。板级复位必须只在 NPU idle 或 PS 初始化阶段动作，不�
 只有同时满足以下条件才允许称为“已上板”：板卡专用 bitstream 生成成功，100 MHz 或
 经批准的降频点 post-route 时序通过；软件可读 CSR 并完成 task；输出与 golden 一致；
 30 分钟长稳无错误；音频端到端实时且无 FIFO 溢出。参考设计通过不等价于这些板级结论。
+
+## 7. 领航者 ZYNQ-7020 候选配置
+
+公开资料指向 `XC7Z020CLG400-2`、2 × `NT5CC256M16`（1 GiB、32-bit）、
+33.333333 MHz PS 晶振和 UART0 MIO14/15。Vivado 中先使用教程给出的兼容 DDR 条目
+`MT41J256M16 RE-125`。该条目会生成正确的 1 GiB 地址空间，但不能替代板厂针对具体
+PCB 走线长度导出的 PS7 preset。
+
+候选配置位于 `hardware/boards/alientek_navigator_z7020/`。首测只启用 DDR、UART0、
+GP0、HP0、IRQ 和 FCLK；QSPI、eMMC、Ethernet 与音频暂不启用。原因是公开资料中的
+PHY 型号和 PCB 版本并不唯一，而它们都不是验证 NPU 主数据链路的前置条件。
+
+Vivado 2026.1 已对 `xc7z020clg400-2` 候选工程完成独立 post-route：
+
+| 项目 | 结果 |
+|---|---:|
+| LUT / FF | 25,436 / 25,293 |
+| BRAM36 / DSP48E1 | 61 / 72 |
+| 100 MHz setup / hold | WNS `+0.461 ns` / WHS `+0.032 ns` |
+| 失败路径 / 未路由 / critical DRC | 0 / 0 / 0 |
+| CDC | All paths are Safely Timed |
+
+相比通用 `xc7z020clg400-1` 的 WNS `+0.005 ns`，`-2` 器件提供了明显更健康的 setup
+余量。但 PS7 preset 仍可能改变布局，因此导入厂商 preset 后必须再次完整实现。
+
+离线验收使用：
+
+```powershell
+python scripts/42_check_navigator_z7020.py
+```
+
+`scripts/43_export_navigator_candidate.tcl` 在缺少
+`board_confirmation.local.json` 时会主动拒绝导出 bitstream/XSA。这个门槛保证拿到实物
+前不会把候选配置误标成可烧写发布配置。
