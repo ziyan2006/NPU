@@ -62,6 +62,8 @@ module npu_task_loader (
     TL_HEADER1_REQUEST,
     TL_HEADER1_RESPONSE,
     TL_VALIDATE,
+    TL_VALIDATE_SECTIONS,
+    TL_CONFIGURE,
     TL_LUT_REQUEST,
     TL_LUT_RESPONSE,
     TL_LUT_WRITE,
@@ -252,16 +254,31 @@ module npu_task_loader (
                        || command_bytes != (header_command_count << 4)) begin
             error_reason_q <= LOAD_ERROR_SIZE;
             state_q <= TL_ERROR;
-          end else if (!all_sections_valid
-                       || tensor_bytes[5:0] != 0
-                       || operator_bytes[5:0] != 0
-                       || quant_bytes[4:0] != 0
-                       || segment_bytes[2:0] != 0
-                       || quant_param_bytes[3:0] != 0
-                       || lut_bytes != 8192) begin
+          end else begin
+            state_q <= TL_VALIDATE_SECTIONS;
+          end
+        end
+
+        // Keep the wide section-bound checks off the clock-enable path of the
+        // 608-bit configuration register set.  This stage has no externally
+        // visible latency requirement and removes a 16-level, high-fanout
+        // validation path from the 100 MHz critical path.
+        TL_VALIDATE_SECTIONS: begin
+          if (!all_sections_valid
+              || tensor_bytes[5:0] != 0
+              || operator_bytes[5:0] != 0
+              || quant_bytes[4:0] != 0
+              || segment_bytes[2:0] != 0
+              || quant_param_bytes[3:0] != 0
+              || lut_bytes != 8192) begin
             error_reason_q <= LOAD_ERROR_SECTION;
             state_q <= TL_ERROR;
           end else begin
+            state_q <= TL_CONFIGURE;
+          end
+        end
+
+        TL_CONFIGURE: begin
             command_base_o <= task_base_q + command_offset;
             command_bytes_o <= command_bytes;
             command_count_o <= header_command_count;
@@ -277,7 +294,6 @@ module npu_task_loader (
             output_tensor_o <= header_output_tensor;
             lut_cursor_q <= 0;
             state_q <= TL_LUT_REQUEST;
-          end
         end
 
         TL_LUT_REQUEST: begin

@@ -31,6 +31,10 @@ AXI read/write 各只保留一个 outstanding burst。`RRESP/BRESP`、提前或�
 都会中止命令并产生错误。soft reset 不放弃已经握手的 AXI transaction；外层应先
 停止新命令并等待单元 idle。完成只在最后一个 B response 成功后产生。
 
+每次读写 burst 先进入独立 `PLAN_READ` / `PLAN_WRITE` 状态，计算并寄存 AXI 地址、
+4 KiB 边界和 burst 长度，下一拍才断言 ARVALID/AWVALID。这样 AXI 地址字段在反压
+期间保持稳定，并切断边界/剩余 beat 计算到 arbiter handshake 的长组合路径。
+
 ## 3. 验证与综合
 
 `scripts/_test_npu_upsample.py` 使用三条真实命令与 Tensor descriptor，覆盖：
@@ -52,3 +56,5 @@ Vivado 2026.1、参考 `xc7z020clg400-1`、100 MHz OOC：
 | DSP48E1 | 0 |
 | 100 MHz WNS | `+0.425 ns` |
 
+该表是单元级基线。上述 burst 规划流水化接入完整 `npu_top` 后，XC7Z020 OOC
+post-route 在 100 MHz 下为 WNS `+0.225 ns`、WHS `+0.007 ns`。

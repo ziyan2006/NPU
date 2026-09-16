@@ -37,6 +37,10 @@ module npu_axi_read_arbiter3 (
   read_arb_state_e state_q;
   logic [1:0] owner_q;
   logic [1:0] round_robin_q;
+  logic [63:0] address_q;
+  logic [7:0] length_q;
+  logic [2:0] size_q;
+  logic [1:0] burst_q;
   logic [1:0] selected;
   logic found;
   integer offset;
@@ -62,10 +66,10 @@ module npu_axi_read_arbiter3 (
     s_axi_rresp_o = '0;
     s_axi_rlast_o = '0;
     s_axi_rvalid_o = '0;
-    m_axi_araddr_o = s_axi_araddr_i[owner_q];
-    m_axi_arlen_o = s_axi_arlen_i[owner_q];
-    m_axi_arsize_o = s_axi_arsize_i[owner_q];
-    m_axi_arburst_o = s_axi_arburst_i[owner_q];
+    m_axi_araddr_o = address_q;
+    m_axi_arlen_o = length_q;
+    m_axi_arsize_o = size_q;
+    m_axi_arburst_o = burst_q;
     m_axi_arvalid_o = state_q == RA_ADDRESS
       && s_axi_arvalid_i[owner_q];
     m_axi_rready_o = state_q == RA_DATA && s_axi_rready_i[owner_q];
@@ -85,15 +89,27 @@ module npu_axi_read_arbiter3 (
       state_q <= RA_IDLE;
       owner_q <= 0;
       round_robin_q <= 0;
+      address_q <= 0;
+      length_q <= 0;
+      size_q <= 0;
+      burst_q <= 0;
     end else if (soft_reset_i) begin
       state_q <= RA_IDLE;
       owner_q <= 0;
       round_robin_q <= 0;
+      address_q <= 0;
+      length_q <= 0;
+      size_q <= 0;
+      burst_q <= 0;
     end else begin
       case (state_q)
         RA_IDLE: begin
           if (found) begin
             owner_q <= selected;
+            address_q <= s_axi_araddr_i[selected];
+            length_q <= s_axi_arlen_i[selected];
+            size_q <= s_axi_arsize_i[selected];
+            burst_q <= s_axi_arburst_i[selected];
             state_q <= RA_ADDRESS;
           end
         end

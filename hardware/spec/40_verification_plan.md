@@ -183,15 +183,16 @@ P0 回归失败、未解释的 bit mismatch、负时序、资源超限或 deadli
   回归；
 - 独立 `npu_task_reference.py` 与完整 `npu_top` 执行同一非零随机输入、1,869 条
   真实命令，对最终 32,768 byte 输出逐字节一致；
-- 完整任务 3,253,529 cycle（32.54 ms @100 MHz），通过 `<46 ms` 门槛；
-- XC7Z020 完整 top post-synthesis 使用 31,186 LUT、24,362 FF、61 BRAM36、72 DSP，
-  100 MHz WNS `+0.058 ns`。
+- 完整任务 3,254,220 cycle（32.54 ms @100 MHz），通过 `<46 ms` 门槛；
+- XC7Z020 完整 top OOC post-route 使用 25,645 Slice LUT、24,894 FF、61 BRAM36、
+  72 DSP；100 MHz WNS `+0.225 ns`、TNS `0`、WHS `+0.007 ns`，无未布通网络或
+  critical DRC。
 
 下一步按阻断优先级执行：
 
-1. 完成 `npu_top` OOC place/route、DRC、methodology、时钟和功耗估算；
-2. 完成可移植 PS 驱动、CSR/task image 提交与 cache maintenance 接口；
-3. 完成 Vivado IP packaging、Zynq PS block-design 接入脚本和上板前 checklist；
+1. 完成可移植 PS 驱动、CSR/task image 提交与 cache maintenance 接口；
+2. 完成 Vivado IP packaging、Zynq PS block-design 接入脚本和上板前 checklist；
+3. 在具体板卡 block design 中复跑 DRC、CDC、时钟、功耗和 post-route timing；
 4. 补充 CSR 错误/中断/恢复、AXI fault 与长随机 back-pressure 顶层回归；
 5. 选择网络 B 并验证“不换 RTL 只换模型包”的通用性；
 6. 得到具体板卡型号后完成 PS preset、DDR/IRQ/address map、引脚约束和板级验收。

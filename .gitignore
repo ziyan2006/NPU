@@ -33,6 +33,9 @@ logs/
 .Xil/
 vivado*.jou
 vivado*.log
+hardware/build/
+clockInfo.txt
+tight_setup_hold_pins.txt
 
 # ---- 本地候选模型 ----
 # 已被 Git 追踪的发布基线不受此规则影响；新 checkpoint 先留在本地，

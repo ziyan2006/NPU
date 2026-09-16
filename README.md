@@ -18,7 +18,7 @@
 | **延迟** | 通路 **133.5 ms**（恒定）· 按键响应 **≈30 ms** · 冷启动 **≈110 ms** |
 | **训练** | 无标注音乐 + HTDemucs 蒸馏（教师 80 MB 已就绪）；v1→v4 四轮 + 3 个损失探针 + K 片段实验 |
 | **出货权重** | **`models/student_k3s_model.pt`** + 推理期 `<250 Hz` 掩码置 0 |
-| **NPU RTL** | AXI4-Lite CSR、task loader/fetch、Command Processor、共享 AXI、DMA/Scratchpad、CONV2D/post、VEC_ADD、UPSAMPLE2X 已接成完整 `npu_top`；1,869 条真实命令与独立整数参考模型逐字节一致，3.254 M cycle / **32.54 ms @100 MHz**；XC7Z020 综合为 31,186 LUT / 24,362 FF / 61 BRAM36 / 72 DSP，WNS `+0.058 ns` |
+| **NPU RTL** | AXI4-Lite CSR、task loader/fetch、Command Processor、共享 AXI、DMA/Scratchpad、CONV2D/post、VEC_ADD、UPSAMPLE2X 已接成完整 `npu_top`；1,869 条真实命令与独立整数参考模型逐字节一致，3.254 M cycle / **32.54 ms @100 MHz**；XC7Z020 OOC 布局布线后为 25,645 Slice LUT / 24,894 FF / 61 BRAM36 / 72 DSP，WNS `+0.225 ns`、WHS `+0.007 ns` |
 
 ---
 

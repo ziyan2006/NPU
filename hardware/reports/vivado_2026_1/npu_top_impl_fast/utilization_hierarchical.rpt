@@ -1,0 +1,67 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Wed Sep 16 09:30:50 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : report_utilization -hierarchical -hierarchical_depth 4 -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/npu_top_impl_fast/utilization_hierarchical.rpt
+| Design       : npu_top
+| Device       : xc7z020clg400-1
+| Speed File   : -1
+| Design State : Routed
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Utilization Design Information
+
+Table of Contents
+-----------------
+1. Utilization by Hierarchy
+
+1. Utilization by Hierarchy
+---------------------------
+
++------------------------------+---------------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+|           Instance           |                 Module                | Total LUTs | Logic LUTs | LUTRAMs | SRLs |  FFs  | RAMB36 | RAMB18 | DSP Blocks |
++------------------------------+---------------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+| npu_top                      |                                 (top) |      25645 |      25640 |       0 |    5 | 24894 |     61 |      0 |         72 |
+|   (npu_top)                  |                                 (top) |          0 |          0 |       0 |    0 |     0 |      0 |      0 |          0 |
+|   core                       |                              npu_core |      25385 |      25380 |       0 |    5 | 24538 |     61 |      0 |         72 |
+|     (core)                   |                              npu_core |        571 |        571 |       0 |    0 |   846 |      0 |      0 |          0 |
+|     block_reader             |                  npu_axi_block_reader |        539 |        539 |       0 |    0 |   595 |      0 |      0 |          0 |
+|     command_fetch            |                     npu_command_fetch |        218 |        218 |       0 |    0 |   304 |      0 |      0 |          0 |
+|     command_processor        |                 npu_command_processor |        638 |        638 |       0 |    0 |   400 |      0 |      0 |          0 |
+|     data_subsystem           |                     npu_dma_subsystem |      14758 |      14753 |       0 |    5 | 13676 |     58 |      0 |         68 |
+|       (data_subsystem)       |                     npu_dma_subsystem |          0 |          0 |       0 |    0 |   370 |      0 |      0 |          0 |
+|       conv2d_pipeline        |                   npu_conv2d_pipeline |       5105 |       5100 |       0 |    5 |  5684 |      2 |      0 |         68 |
+|         (conv2d_pipeline)    |                   npu_conv2d_pipeline |         39 |         39 |       0 |    0 |  1476 |      0 |      0 |          0 |
+|         controller           |                 npu_conv2d_controller |       2747 |       2742 |       0 |    5 |  2558 |      0 |      0 |         64 |
+|         post                 |                   npu_requant_post_26 |       2319 |       2319 |       0 |    0 |  1650 |      2 |      0 |          4 |
+|       engine                 |                        npu_dma_engine |       3073 |       3073 |       0 |    0 |   720 |      0 |      0 |          0 |
+|       frontend               |                      npu_dma_frontend |       5448 |       5448 |       0 |    0 |  6213 |      0 |      0 |          0 |
+|         (frontend)           |                      npu_dma_frontend |         41 |         41 |       0 |    0 |   987 |      0 |      0 |          0 |
+|         address_generator    |                           npu_dma_agu |       3842 |       3842 |       0 |    0 |  2576 |      0 |      0 |          0 |
+|         descriptor_cache     |  npu_descriptor_cache__parameterized0 |       1565 |       1565 |       0 |    0 |  2650 |      0 |      0 |          0 |
+|       scratchpad             |                        npu_scratchpad |       1135 |       1135 |       0 |    0 |   689 |     56 |      0 |          0 |
+|         (scratchpad)         |                        npu_scratchpad |        145 |        145 |       0 |    0 |   679 |      0 |      0 |          0 |
+|         g_activation[1].bank |                 npu_scratchpad_bank_1 |        142 |        142 |       0 |    0 |     1 |     16 |      0 |          0 |
+|         g_output[1].bank     | npu_scratchpad_bank__parameterized1_2 |        133 |        133 |       0 |    0 |     1 |      4 |      0 |          0 |
+|         g_weight[0].bank     |   npu_scratchpad_bank__parameterized0 |        128 |        128 |       0 |    0 |     3 |      8 |      0 |          0 |
+|         g_weight[1].bank     | npu_scratchpad_bank__parameterized0_3 |        517 |        517 |       0 |    0 |     3 |      8 |      0 |          0 |
+|     execution_frontend       |                npu_execution_frontend |       1749 |       1749 |       0 |    0 |  3846 |      0 |      0 |          0 |
+|       (execution_frontend)   |                npu_execution_frontend |        592 |        592 |       0 |    0 |  1203 |      0 |      0 |          0 |
+|       descriptor_cache       |                  npu_descriptor_cache |       1157 |       1157 |       0 |    0 |  2643 |      0 |      0 |          0 |
+|     loader                   |                       npu_task_loader |       1619 |       1619 |       0 |    0 |  2138 |      0 |      0 |          0 |
+|     memory_arbiter           |                   npu_memory_arbiter4 |       1873 |       1873 |       0 |    0 |    69 |      0 |      0 |          0 |
+|     read_arbiter             |                 npu_axi_read_arbiter3 |        225 |        225 |       0 |    0 |    91 |      0 |      0 |          0 |
+|     upsample                 |                        npu_upsample2x |       1087 |       1087 |       0 |    0 |   905 |      1 |      0 |          0 |
+|       (upsample)             |                        npu_upsample2x |        754 |        754 |       0 |    0 |   689 |      1 |      0 |          0 |
+|       row_multiplier         |                    npu_u32_mul_iter_0 |        334 |        334 |       0 |    0 |   216 |      0 |      0 |          0 |
+|     vec_add                  |                           npu_vec_add |       2088 |       2088 |       0 |    0 |  1589 |      2 |      0 |          4 |
+|       (vec_add)              |                           npu_vec_add |        107 |        107 |       0 |    0 |   593 |      0 |      0 |          0 |
+|       residual_requant       |                      npu_requant_post |       1717 |       1717 |       0 |    0 |   862 |      2 |      0 |          4 |
+|       setup_multiplier       |                      npu_u32_mul_iter |        272 |        272 |       0 |    0 |   134 |      0 |      0 |          0 |
+|     write_arbiter            |                npu_axi_write_arbiter2 |         32 |         32 |       0 |    0 |    79 |      0 |      0 |          0 |
+|   csr                        |                               npu_csr |        276 |        276 |       0 |    0 |   356 |      0 |      0 |          0 |
++------------------------------+---------------------------------------+------------+------------+---------+------+-------+--------+--------+------------+
+* Note: The sum of lower-level cells may be larger than their parent cells total, due to cross-hierarchy LUT combining
+
+

@@ -43,6 +43,10 @@ module npu_axi_write_arbiter2 (
   write_arb_state_e state_q;
   logic owner_q;
   logic round_robin_q;
+  logic [63:0] address_q;
+  logic [7:0] length_q;
+  logic [2:0] size_q;
+  logic [1:0] burst_q;
   logic selected;
   logic found;
 
@@ -63,10 +67,10 @@ module npu_axi_write_arbiter2 (
     s_axi_wready_o = '0;
     s_axi_bresp_o = '0;
     s_axi_bvalid_o = '0;
-    m_axi_awaddr_o = s_axi_awaddr_i[owner_q];
-    m_axi_awlen_o = s_axi_awlen_i[owner_q];
-    m_axi_awsize_o = s_axi_awsize_i[owner_q];
-    m_axi_awburst_o = s_axi_awburst_i[owner_q];
+    m_axi_awaddr_o = address_q;
+    m_axi_awlen_o = length_q;
+    m_axi_awsize_o = size_q;
+    m_axi_awburst_o = burst_q;
     m_axi_awvalid_o = state_q == WA_ADDRESS
       && s_axi_awvalid_i[owner_q];
     m_axi_wdata_o = s_axi_wdata_i[owner_q];
@@ -90,15 +94,27 @@ module npu_axi_write_arbiter2 (
       state_q <= WA_IDLE;
       owner_q <= 0;
       round_robin_q <= 0;
+      address_q <= 0;
+      length_q <= 0;
+      size_q <= 0;
+      burst_q <= 0;
     end else if (soft_reset_i) begin
       state_q <= WA_IDLE;
       owner_q <= 0;
       round_robin_q <= 0;
+      address_q <= 0;
+      length_q <= 0;
+      size_q <= 0;
+      burst_q <= 0;
     end else begin
       case (state_q)
         WA_IDLE: begin
           if (found) begin
             owner_q <= selected;
+            address_q <= s_axi_awaddr_i[selected];
+            length_q <= s_axi_awlen_i[selected];
+            size_q <= s_axi_awsize_i[selected];
+            burst_q <= s_axi_awburst_i[selected];
             state_q <= WA_ADDRESS;
           end
         end

@@ -85,7 +85,8 @@ python scripts/_test_npu_top_task.py
 ```
 
 当前 `bott2_mir1k_v1_program` 结果为 1,869 条命令、32,768 个输出 byte 全部一致，
-RTL 为 3,253,529 cycle，即 32.54 ms @100 MHz。Vivado 2026.1 对
-`xc7z020clg400-1` 的 post-synthesis 结果为 31,186 LUT、24,362 FF、61 RAMB36E1、
-72 DSP48E1，100 MHz WNS `+0.058 ns`。这是板级无关 OOC 基线；最终时序仍以接入
-具体 Zynq PS block design 后的 post-route 结果为准。
+RTL 为 3,254,220 cycle，即 32.54 ms @100 MHz。Vivado 2026.1 对
+`xc7z020clg400-1` 的 OOC post-route 结果为 25,645 Slice LUT、24,894 FF、
+61 RAMB36E1、72 DSP48E1，100 MHz WNS `+0.225 ns`、TNS `0`、WHS `+0.007 ns`；
+全部网络布通且 critical DRC 为 0。这是板级无关 OOC 基线；最终时序仍以接入具体
+Zynq PS block design 后的 post-route 结果为准。

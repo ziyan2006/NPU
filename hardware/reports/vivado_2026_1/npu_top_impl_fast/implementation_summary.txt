@@ -1,0 +1,15 @@
+tool=Vivado 2026.1
+top=npu_top
+part=xc7z020clg400-1
+clock_period_ns=10.000
+clock_uncertainty_ns=0.200
+interface_delay_ns=2.000
+slice_luts=25645
+flip_flops=24894
+ramb36e1=61
+dsp48e1=72
+post_route_wns_ns=0.225
+post_route_tns_ns=0.000
+post_route_whs_ns=0.007
+unrouted_nets=0
+critical_drc=0

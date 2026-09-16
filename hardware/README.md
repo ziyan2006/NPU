@@ -1,6 +1,8 @@
 # STEM NPU
 
-本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。当前已进入 P4 微架构原型，ISA 仍未冻结，已有 Command Processor、Descriptor Fetch/Cache、DMA AGU、AXI DMA Engine、A/W/O Scratchpad、集成 DMA Subsystem、8x8 Tensor MAC 和 CONV2D tile 控制器可综合模块。
+本目录是 XC7Z020 轻量通用 CNN NPU 的硬件设计入口。网络 A 的 v1 ISA、完整
+`npu_top`、位精确任务回归和参考器件 OOC post-route 已完成；当前进入 PS 驱动、
+Vivado IP packaging 与 SoC block-design 集成阶段。
 
 建议按以下顺序阅读：
 
@@ -57,7 +59,26 @@ python scripts/_test_npu_conv2d.py
 python scripts/_test_npu_post.py
 python scripts/_test_npu_vec_add.py
 python scripts/_test_npu_upsample.py
+python scripts/_test_npu_top_task.py
 ```
+
+完整任务回归执行 1,869 条真实命令，最终 32,768 byte 与独立整数解释器逐字节一致；
+总周期为 3,254,220，即 32.54 ms @100 MHz。完整顶层 P&R：
+
+```powershell
+vivado -mode batch -source scripts/35_implement_npu_top.tcl -tclargs `
+  xc7z020clg400-1 10.000 hardware/reports/vivado_2026_1/npu_top_impl_fast `
+  hardware/build/npu_top_impl 1
+vivado -mode batch -source scripts/36_route_npu_checkpoint.tcl -tclargs `
+  hardware/build/npu_top_impl/post_synth.dcp `
+  hardware/reports/vivado_2026_1/npu_top_impl_fast `
+  hardware/build/npu_top_impl_fast
+```
+
+参考 `xc7z020clg400-1` 的 OOC post-route 使用 25,645 Slice LUT、24,894 FF、
+61 BRAM36、72 DSP，100 MHz WNS `+0.225 ns`、TNS `0`、WHS `+0.007 ns`；
+全部网络布通且 critical DRC 为 0。最终板级签核仍需具体板卡的 PS preset、
+SmartConnect/Protocol Converter、DDR/IRQ 地址映射和真实位置约束。
 
 Vivado 2026.1 OOC 综合当前 DMA/CONV2D 集成子系统：
 

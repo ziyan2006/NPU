@@ -61,8 +61,10 @@ module npu_upsample2x (
   typedef enum logic [3:0] {
     UPSAMPLE_IDLE,
     UPSAMPLE_SETUP_ROW,
+    UPSAMPLE_PLAN_READ,
     UPSAMPLE_READ_ADDRESS,
     UPSAMPLE_READ_DATA,
+    UPSAMPLE_PLAN_WRITE,
     UPSAMPLE_WRITE_ADDRESS,
     UPSAMPLE_WRITE_PREFETCH,
     UPSAMPLE_WRITE_DATA,
@@ -126,8 +128,10 @@ module npu_upsample2x (
   logic write_fire;
   logic expected_read_last;
   logic expected_write_last;
-  logic [63:0] read_burst_address;
-  logic [63:0] write_burst_address;
+  logic [63:0] read_burst_address_q;
+  logic [63:0] write_burst_address_q;
+  logic [63:0] next_read_burst_address;
+  logic [63:0] next_write_burst_address;
   logic [8:0] read_remaining_beats;
   logic [8:0] write_remaining_beats;
   logic [9:0] read_boundary_beats;
@@ -194,16 +198,16 @@ module npu_upsample2x (
     .operand_b_i(pixel_bytes_q), .busy_o(mul_busy), .done_o(mul_done),
     .result_o(mul_result));
 
-  assign read_burst_address
+  assign next_read_burst_address
     = source_row_address_q + ({55'd0, read_beat_q} << 3);
-  assign write_burst_address
+  assign next_write_burst_address
     = destination_row_address_q + ({55'd0, write_beat_q} << 3);
   assign read_remaining_beats = source_row_beats_q - read_beat_q;
   assign write_remaining_beats = destination_row_beats_q - write_beat_q;
   assign read_boundary_beats
-    = (13'd4096 - {1'b0, read_burst_address[11:0]}) >> 3;
+    = (13'd4096 - {1'b0, next_read_burst_address[11:0]}) >> 3;
   assign write_boundary_beats
-    = (13'd4096 - {1'b0, write_burst_address[11:0]}) >> 3;
+    = (13'd4096 - {1'b0, next_write_burst_address[11:0]}) >> 3;
 
   always_comb begin
     planned_read_burst_beats = read_remaining_beats;
@@ -218,8 +222,8 @@ module npu_upsample2x (
       planned_write_burst_beats = 256;
   end
 
-  assign m_axi_araddr_o = read_burst_address;
-  assign m_axi_arlen_o = planned_read_burst_beats[7:0] - 1'b1;
+  assign m_axi_araddr_o = read_burst_address_q;
+  assign m_axi_arlen_o = read_burst_beats_q[7:0] - 1'b1;
   assign m_axi_arsize_o = 3'd3;
   assign m_axi_arburst_o = 2'b01;
   assign m_axi_arvalid_o = state_q == UPSAMPLE_READ_ADDRESS;
@@ -227,8 +231,8 @@ module npu_upsample2x (
   assign read_fire = m_axi_rvalid_i && m_axi_rready_o;
   assign expected_read_last = read_burst_beat_q + 1 == read_burst_beats_q;
 
-  assign m_axi_awaddr_o = write_burst_address;
-  assign m_axi_awlen_o = planned_write_burst_beats[7:0] - 1'b1;
+  assign m_axi_awaddr_o = write_burst_address_q;
+  assign m_axi_awlen_o = write_burst_beats_q[7:0] - 1'b1;
   assign m_axi_awsize_o = 3'd3;
   assign m_axi_awburst_o = 2'b01;
   assign m_axi_awvalid_o = state_q == UPSAMPLE_WRITE_ADDRESS;
@@ -343,18 +347,28 @@ module npu_upsample2x (
               source_row_beats_q <= mul_result[11:3];
               destination_row_beats_q <= mul_result[10:2];
               read_beat_q <= '0;
-              state_q <= UPSAMPLE_READ_ADDRESS;
+              state_q <= UPSAMPLE_PLAN_READ;
             end
           end
         end
 
-        UPSAMPLE_READ_ADDRESS: begin
+        // Compute and register each AXI burst before asserting ARVALID.  This
+        // cuts the 4 KiB boundary/minimum calculation out of the address
+        // handshake and arbiter-control paths.
+        UPSAMPLE_PLAN_READ: begin
           if (source_row_address_q - source_base_q + source_row_bytes_q
               > source_desc_q.allocation_bytes) begin
             error_reason_o <= UPSAMPLE_ERROR_BOUNDS;
             state_q <= UPSAMPLE_ERROR;
-          end else if (m_axi_arready_i) begin
+          end else begin
+            read_burst_address_q <= next_read_burst_address;
             read_burst_beats_q <= planned_read_burst_beats;
+            state_q <= UPSAMPLE_READ_ADDRESS;
+          end
+        end
+
+        UPSAMPLE_READ_ADDRESS: begin
+          if (m_axi_arready_i) begin
             read_burst_beat_q <= '0;
             read_error_q <= 1'b0;
             state_q <= UPSAMPLE_READ_DATA;
@@ -375,14 +389,14 @@ module npu_upsample2x (
                 state_q <= UPSAMPLE_ERROR;
               end else if (read_beat_q + 1 != source_row_beats_q) begin
                 read_beat_q <= read_beat_q + 1'b1;
-                state_q <= UPSAMPLE_READ_ADDRESS;
+                state_q <= UPSAMPLE_PLAN_READ;
               end else begin
                 output_row_copy_q <= 1'b0;
                 write_beat_q <= '0;
                 buffer_index_q <= '0;
                 beat_in_pixel_q <= '0;
                 horizontal_copy_q <= 1'b0;
-                state_q <= UPSAMPLE_WRITE_ADDRESS;
+                state_q <= UPSAMPLE_PLAN_WRITE;
               end
             end else begin
               read_beat_q <= read_beat_q + 1'b1;
@@ -391,14 +405,24 @@ module npu_upsample2x (
           end
         end
 
-        UPSAMPLE_WRITE_ADDRESS: begin
+        // Likewise, register AWADDR/AWLEN before the write arbiter observes
+        // AWVALID.  Besides improving timing, this keeps all AXI address
+        // fields stable independently of downstream back-pressure.
+        UPSAMPLE_PLAN_WRITE: begin
           if (destination_row_address_q - destination_base_q
               + destination_row_bytes_q
               > destination_desc_q.allocation_bytes) begin
             error_reason_o <= UPSAMPLE_ERROR_BOUNDS;
             state_q <= UPSAMPLE_ERROR;
-          end else if (m_axi_awready_i) begin
+          end else begin
+            write_burst_address_q <= next_write_burst_address;
             write_burst_beats_q <= planned_write_burst_beats;
+            state_q <= UPSAMPLE_WRITE_ADDRESS;
+          end
+        end
+
+        UPSAMPLE_WRITE_ADDRESS: begin
+          if (m_axi_awready_i) begin
             write_burst_beat_q <= '0;
             state_q <= UPSAMPLE_WRITE_PREFETCH;
           end
@@ -436,7 +460,7 @@ module npu_upsample2x (
               error_reason_o <= UPSAMPLE_ERROR_WRITE;
               state_q <= UPSAMPLE_ERROR;
             end else if (write_beat_q + 1 != destination_row_beats_q) begin
-              state_q <= UPSAMPLE_WRITE_ADDRESS;
+              state_q <= UPSAMPLE_PLAN_WRITE;
             end else if (!output_row_copy_q) begin
               output_row_copy_q <= 1'b1;
               destination_row_address_q
@@ -445,7 +469,7 @@ module npu_upsample2x (
               buffer_index_q <= '0;
               beat_in_pixel_q <= '0;
               horizontal_copy_q <= 1'b0;
-              state_q <= UPSAMPLE_WRITE_ADDRESS;
+              state_q <= UPSAMPLE_PLAN_WRITE;
             end else if (source_row_q + 1 == source_desc_q.shape_h) begin
               state_q <= UPSAMPLE_DONE;
             end else begin
@@ -455,7 +479,7 @@ module npu_upsample2x (
               destination_row_address_q
                 <= destination_row_address_q + destination_desc_q.stride_h;
               read_beat_q <= '0;
-              state_q <= UPSAMPLE_READ_ADDRESS;
+              state_q <= UPSAMPLE_PLAN_READ;
             end
           end
         end

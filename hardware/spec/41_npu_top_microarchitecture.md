@@ -2,7 +2,7 @@
 
 文档版本：`1.0-implemented`
 
-状态：网络 A 功能 RTL、整任务位精确验证和 post-synthesis 基线已完成
+状态：网络 A 功能 RTL、整任务位精确验证和参考 XC7Z020 OOC post-route 已完成
 
 ## 1. 外部边界
 
@@ -62,13 +62,15 @@ sticky error/IRQ，软件 W1C 清中断。core 统计总周期、compute busy、
 `scripts/npu_task_reference.py` 独立解释相同 command、descriptor、DMA plan、O8I8
 weight、bias 和 quant 参数。`scripts/_test_npu_top_task.py` 用固定非零 INT12 输入同时
 运行解释器与 XSim RTL：当前 1,869 条命令的 32,768-byte 最终输出全部一致，RTL
-用 3,253,529 cycle，即 32.54 ms @100 MHz。
+用 3,254,220 cycle，即 32.54 ms @100 MHz。
 
-Vivado 2026.1、`xc7z020clg400-1`、10 ns OOC post-synthesis 基线：
+Vivado 2026.1、`xc7z020clg400-1`、10 ns OOC post-route 基线；约束包含
+0.2 ns 时钟不确定度和 2 ns 同步接口预算：
 
-| LUT | FF | BRAM36 | DSP48E1 | WNS |
-|---:|---:|---:|---:|---:|
-| 31,186 | 24,362 | 61 | 72 | +0.058 ns |
+| Slice LUT | FF | BRAM36 | DSP48E1 | WNS | TNS | WHS |
+|---:|---:|---:|---:|---:|---:|---:|
+| 25,645 | 24,894 | 61 | 72 | +0.225 ns | 0 ns | +0.007 ns |
 
-这是无 PS/interconnect/IO 的 PL core 数据。发布上板 bitstream 前仍必须在具体板卡的
-完整 block design 中完成 post-route timing、DRC、CDC、地址映射和 PS 软件验收。
+所有可路由网络均已布通，critical DRC 为 0。该结果仍是无 PS/interconnect 和真实
+part-pin 位置的 PL core OOC 数据；发布上板 bitstream 前必须在具体板卡的完整 block
+design 中重新完成 post-route timing、DRC、CDC、地址映射和 PS 软件验收。

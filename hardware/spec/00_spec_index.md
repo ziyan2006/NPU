@@ -46,15 +46,16 @@
 | P5 可执行参考 | 图编译器、位精确模拟器、测试向量 | 所有 P0 指令有 golden | 网络 A 完整 task golden 已完成 |
 | P6 RTL/HLS 实现 | 可综合模块和软件驱动 | 模块仿真通过 | 功能 RTL 完成，驱动进行中 |
 | P7 集成验证 | SoC、DMA、中断、CDC、回归 | 覆盖率和需求回归闭合 | 完整 RTL task bit-exact，SoC 待接入 |
-| P8 实现收敛 | 综合、布局布线、时序、功耗 | 资源和时钟满足规格 | 完整 top 综合已过 100 MHz，P&R 进行中 |
+| P8 实现收敛 | 综合、布局布线、时序、功耗 | 资源和时钟满足规格 | 参考 XC7Z020 OOC P&R 已过 100 MHz，SoC 实现待板卡确认 |
 | P9 上板验收 | 长稳、实时性、音频效果 | 所有 P0 板级测试通过 | 未开始 |
 
 P4/P5/P6 已完成网络 A 的第一条完整垂直路径：真实 task image 经 AXI4-Lite
 doorbell 启动，task loader、Command Processor、DMA/Scratchpad、CONV2D/post、
 VEC_ADD、UPSAMPLE2X 和共享 AXI 协同执行。1,869 条命令对 32,768-byte 输出与独立
-整数参考模型逐字节一致，需 3,253,529 cycle（32.54 ms @100 MHz）。完整 `npu_top`
-在临时 `xc7z020clg400-1` 上综合为 31,186 LUT、24,362 FF、61 BRAM36、72 DSP，
-100 MHz post-synthesis WNS `+0.058 ns`。下一阶段是 post-route、软件驱动与 SoC 集成。
+整数参考模型逐字节一致，需 3,254,220 cycle（32.54 ms @100 MHz）。完整 `npu_top`
+在临时 `xc7z020clg400-1` 上 OOC 布局布线后使用 25,645 Slice LUT、24,894 FF、
+61 BRAM36、72 DSP；100 MHz WNS `+0.225 ns`、TNS `0`、WHS `+0.007 ns`，且
+0 条未布通网络、0 条 critical DRC。下一阶段是软件驱动、IP packaging 和 SoC 集成。
 
 ## 4. 系统边界
 

@@ -107,6 +107,11 @@ module npu_conv2d_pipeline (
   logic [7:0] post_output_mask;
   logic post_error;
   logic [3:0] post_error_reason;
+  logic result_buffer_valid_q;
+  logic [255:0] result_buffer_data_q;
+  logic [7:0] result_buffer_mask_q;
+  logic [31:0] result_buffer_address_q;
+  logic controller_result_fire;
   logic [31:0] result_address_q;
   logic completion_pending_q;
   logic [7:0] completion_event_q;
@@ -172,10 +177,15 @@ module npu_conv2d_pipeline (
     || (param_state_q == PARAM_READY && controller_response_ready
         && activation_response_valid_i);
 
+  // A non-fall-through result buffer cuts the combinational back-pressure
+  // path from the slow post unit through MAC/controller into Scratchpad BRAM
+  // address selection.  Post latency dominates, so the extra initial cycle
+  // has no steady-state throughput cost.
   assign controller_result_ready = !completion_pending_q
-    && post_input_ready;
-  assign post_input_fire = controller_result_valid
-    && post_input_ready;
+    && !result_buffer_valid_q;
+  assign controller_result_fire = controller_result_valid
+    && controller_result_ready;
+  assign post_input_fire = result_buffer_valid_q && post_input_ready;
   assign post_output_ready = result_ready_i;
   assign result_valid_o = post_output_valid;
   assign result_data_o = post_output_data;
@@ -184,12 +194,12 @@ module npu_conv2d_pipeline (
 
   npu_requant_post post (
     .clk_i(clk_i), .rst_ni(rst_ni), .soft_reset_i(soft_reset_i),
-    .input_valid_i(controller_result_valid && !completion_pending_q),
+    .input_valid_i(result_buffer_valid_q),
     .input_ready_o(post_input_ready),
-    .accumulator_i(controller_result_data), .bias_i(bias_q),
+    .accumulator_i(result_buffer_data_q), .bias_i(bias_q),
     .quant_params_i(quant_params_q),
     .post_op_i(descriptor_q.post_op_id),
-    .lane_mask_i(controller_result_mask),
+    .lane_mask_i(result_buffer_mask_q),
     .output_valid_o(post_output_valid),
     .output_ready_i(post_output_ready), .output_data_o(post_output_data),
     .output_lane_mask_o(post_output_mask),
@@ -231,6 +241,7 @@ module npu_conv2d_pipeline (
       activation_sent_q <= 1'b0;
       weight_sent_q <= 1'b0;
       completion_pending_q <= 1'b0;
+      result_buffer_valid_q <= 1'b0;
       done_pulse_o <= 1'b0;
       event_set_o <= '0;
       error_pulse_o <= 1'b0;
@@ -240,6 +251,7 @@ module npu_conv2d_pipeline (
       activation_sent_q <= 1'b0;
       weight_sent_q <= 1'b0;
       completion_pending_q <= 1'b0;
+      result_buffer_valid_q <= 1'b0;
       done_pulse_o <= 1'b0;
       event_set_o <= '0;
       error_pulse_o <= 1'b0;
@@ -302,19 +314,29 @@ module npu_conv2d_pipeline (
         if (weight_fire) weight_sent_q <= 1'b1;
       end
 
-      if (post_input_fire)
-        result_address_q <= controller_result_address >> 1;
+      if (controller_result_fire) begin
+        result_buffer_valid_q <= 1'b1;
+        result_buffer_data_q <= controller_result_data;
+        result_buffer_mask_q <= controller_result_mask;
+        result_buffer_address_q <= controller_result_address;
+      end
+      if (post_input_fire) begin
+        result_buffer_valid_q <= 1'b0;
+        result_address_q <= result_buffer_address_q >> 1;
+      end
       if (controller_done) begin
         completion_pending_q <= 1'b1;
         completion_event_q <= controller_event;
       end
-      if (completion_pending_q && post_output_valid && result_ready_i) begin
+      if (completion_pending_q && !result_buffer_valid_q
+          && post_output_valid && result_ready_i) begin
         completion_pending_q <= 1'b0;
         param_state_q <= PARAM_IDLE;
         done_pulse_o <= 1'b1;
         event_set_o <= completion_event_q;
       end
       if (post_error) begin
+        result_buffer_valid_q <= 1'b0;
         completion_pending_q <= 1'b0;
         param_state_q <= PARAM_IDLE;
       end
