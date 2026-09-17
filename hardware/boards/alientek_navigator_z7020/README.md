@@ -173,6 +173,23 @@ xsdb scripts/70_probe_navigator_sd_boot.tcl
 `0x1000_0000` 附近说明 A9 已进入 SD runner，此时应优先检查 CH340/终端链路；
 PC 落在其他区域或出现异常入口，则继续检查 FSBL 到应用的 handoff 与 DDR 初始化。
 
+首次 SD 冷启动实测中，FSBL 已将 runner 装入 `0x1000_0000`，但 A9 最终停在
+`0x0000E6E4` 的 FSBL 保护循环。经 JTAG 仅修改**易失** PC 到 `0x1000_0000` 后，
+runner 能立即输出上述完整 UART 日志，证明 UART0/CH340、应用和嵌入 task 都正常；
+但它在 NPU 初始化处停住，DAP 对 `0x43C0_0000`–`0x43C0_001C` 的读取均报 AP timeout。
+这说明当前 SD 用 FSBL 未完整建立 NPU 需要的 PS–PL AXI/时钟配置，不能作为有效冷启动
+镜像。以已通过 JTAG CSR 实测的 NPU XSA/PS7 配置重建 FSBL 与 `BOOT.BIN` 是下一项工作。
+
+在保持 SD 启动的状态下，可用以下脚本复查这两个事实：
+
+```powershell
+# 仅临时将卡在 FSBL 的 A9 跳到已装入 DDR 的 runner；断电即恢复
+xsdb scripts/71_start_navigator_sd_runner_jtag.tcl
+
+# 不暂停 CPU，仅经 DAP 读取 NPU CSR；当前坏镜像会报告 AP timeout
+xsdb scripts/72_probe_navigator_sd_npu_csr.tcl
+```
+
 ## 2026-09-17 真实板 JTAG 记录
 
 本节是实测事实，不替代上述仍待完成的软件、全容量与长期稳定性验收。

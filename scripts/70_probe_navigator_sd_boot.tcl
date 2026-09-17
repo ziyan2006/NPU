@@ -22,6 +22,12 @@ if {[catch {stop} stop_result]} {
 
 puts "NPU_SD_BOOT_PROBE halted Cortex-A9 #0"
 puts "NPU_SD_BOOT_PROBE PC: [rrd pc]"
+puts "NPU_SD_BOOT_PROBE LR: [rrd lr]"
+puts "NPU_SD_BOOT_PROBE SP: [rrd sp]"
+puts "NPU_SD_BOOT_PROBE R0: [rrd r0]"
+puts "NPU_SD_BOOT_PROBE R1: [rrd r1]"
+puts "NPU_SD_BOOT_PROBE R2: [rrd r2]"
+puts "NPU_SD_BOOT_PROBE R3: [rrd r3]"
 puts "NPU_SD_BOOT_PROBE CPSR: [rrd cpsr]"
 
 # A BOOT.BIN inspected on 2026-09-17 loads navigator_a9_sd_runner at this
@@ -30,6 +36,12 @@ puts "NPU_SD_BOOT_PROBE CPSR: [rrd cpsr]"
 targets -set -filter {name == "APU"}
 set app_words [mrd -address-space AP0 -force -value $app_base 8]
 puts "NPU_SD_BOOT_PROBE DDR[0x10000000..0x1000001C]=$app_words"
+
+# When PC is still in the low-memory FSBL image, its surrounding instructions
+# make a fixed wait loop distinguishable from an application handoff.  This is
+# a physical read through the DAP only.
+set low_code [mrd -address-space AP0 -force -value 0x0000e6d0 16]
+puts "NPU_SD_BOOT_PROBE DDR[0x0000E6D0..0x0000E70C]=$low_code"
 
 targets -set -filter {name =~ "ARM Cortex-A9 MPCore #0"}
 con
