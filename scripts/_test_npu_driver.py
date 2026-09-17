@@ -92,7 +92,7 @@ def compile_driver() -> str:
             completed = subprocess.run(
                 [str(executable)], check=True, capture_output=True, text=True
             )
-            if "npu_driver: PASS" not in completed.stdout:
+            if "npu_driver: PASS (legacy + resident)" not in completed.stdout:
                 raise AssertionError("native driver test did not report PASS")
             return f"native compile/run ({native})"
 

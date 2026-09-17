@@ -19,6 +19,7 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 PLAYER = ROOT / "software" / "audio_player"
 INCLUDE = PLAYER / "include"
+NPU_INCLUDE = ROOT / "software" / "include"
 
 CASES = {
     "foundation": (
@@ -46,6 +47,15 @@ CASES = {
             PLAYER / "tests" / "test_stem_frontend.c",
         ],
         "stem frontend: PASS",
+    ),
+    "npu_session": (
+        [
+            ROOT / "software" / "src" / "npu_driver.c",
+            PLAYER / "generated" / "stem_task_payload.c",
+            PLAYER / "src" / "stem_npu_session.c",
+            PLAYER / "tests" / "test_stem_npu_session.c",
+        ],
+        "stem npu session: PASS",
     ),
 }
 
@@ -213,6 +223,12 @@ def compile_and_run(case: str) -> None:
              "--check"],
             check=True,
         )
+    elif case == "npu_session":
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "99_generate_stem_task_payload.py"),
+             "--check"],
+            check=True,
+        )
         subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "97_generate_audio_vectors.py"),
              "--stem", "--check"],
@@ -235,6 +251,8 @@ def compile_and_run(case: str) -> None:
                 PLAYER / "third_party" / "kissfft",
                 PLAYER / "generated",
             ])
+        elif case == "npu_session":
+            include_paths.extend([NPU_INCLUDE, PLAYER / "generated"])
         if native is not None:
             command = [
                 native,

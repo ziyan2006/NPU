@@ -1,6 +1,8 @@
 /* SPDX-License-Identifier: MIT */
 #include "npu_driver.h"
 
+#include <stdint.h>
+
 #if defined(_MSC_VER)
 #include <intrin.h>
 #endif
@@ -27,6 +29,56 @@ static void npu_barrier(npu_device_t *device)
 #elif defined(_MSC_VER)
     _ReadWriteBarrier();
 #endif
+}
+
+static uint32_t npu_read_le32(const uint8_t *bytes)
+{
+    return (uint32_t)bytes[0]
+        | ((uint32_t)bytes[1] << 8)
+        | ((uint32_t)bytes[2] << 16)
+        | ((uint32_t)bytes[3] << 24);
+}
+
+static int npu_add_overflows_u64(uint64_t start, uint64_t bytes)
+{
+    return bytes > UINT64_MAX - start;
+}
+
+static int npu_add_overflows_uintptr(uintptr_t start, size_t bytes)
+{
+    return bytes > UINTPTR_MAX - start;
+}
+
+static int npu_resident_range_valid(const npu_resident_t *resident,
+                                    const npu_range_t *range)
+{
+    uintptr_t task_cpu;
+    uintptr_t range_cpu;
+    uintptr_t task_cpu_end;
+    uint64_t task_dma_end;
+    uint64_t range_dma_end;
+
+    if (resident == NULL || range == NULL || range->cpu_address == NULL
+        || range->bytes == 0u)
+        return 0;
+    task_cpu = (uintptr_t)resident->task_cpu_address;
+    range_cpu = (uintptr_t)range->cpu_address;
+    if (npu_add_overflows_uintptr(task_cpu, resident->task_bytes)
+        || npu_add_overflows_uintptr(range_cpu, range->bytes)
+        || npu_add_overflows_u64(resident->task_physical_address,
+                                 (uint64_t)resident->task_bytes)
+        || npu_add_overflows_u64(range->physical_address,
+                                 (uint64_t)range->bytes))
+        return 0;
+    task_cpu_end = task_cpu + resident->task_bytes;
+    task_dma_end = resident->task_physical_address + resident->task_bytes;
+    range_dma_end = range->physical_address + range->bytes;
+    if (range_cpu < task_cpu || range_cpu + range->bytes > task_cpu_end
+        || range->physical_address < resident->task_physical_address
+        || range_dma_end > task_dma_end)
+        return 0;
+    return (uint64_t)(range_cpu - task_cpu)
+        == range->physical_address - resident->task_physical_address;
 }
 
 uint32_t npu_read_register(const npu_device_t *device, uint32_t offset)
@@ -179,6 +231,95 @@ npu_result_t npu_submit(npu_device_t *device,
     npu_barrier(device);
     npu_write_register(device, NPU_REG_DOORBELL, 1u);
     npu_barrier(device);
+    return NPU_OK;
+}
+
+npu_result_t npu_resident_prepare(npu_resident_t *resident,
+                                  npu_device_t *device,
+                                  uint64_t task_physical_address,
+                                  void *task_cpu_address,
+                                  size_t task_bytes)
+{
+    uintptr_t task_cpu;
+
+    if (resident == NULL || device == NULL || device->registers == NULL
+        || task_cpu_address == NULL
+        || (task_physical_address & (NPU_TASK_ALIGNMENT - 1u)) != 0u
+        || task_bytes < NPU_TASK_HEADER_BYTES
+        || (task_bytes & (NPU_TASK_ALIGNMENT - 1u)) != 0u
+        || task_bytes > UINT32_MAX
+        || npu_add_overflows_u64(task_physical_address, (uint64_t)task_bytes))
+        return NPU_E_INVALID;
+    task_cpu = (uintptr_t)task_cpu_address;
+    if (npu_add_overflows_uintptr(task_cpu, task_bytes))
+        return NPU_E_INVALID;
+
+    npu_zero(resident, sizeof(*resident));
+    resident->device = device;
+    resident->task_cpu_address = task_cpu_address;
+    resident->task_physical_address = task_physical_address;
+    resident->task_bytes = task_bytes;
+    resident->expected_commands = npu_read_le32(
+        (const uint8_t *)task_cpu_address + 0x1cu);
+    if (resident->expected_commands == 0u)
+        return NPU_E_INVALID;
+    if (device->platform.clean != NULL)
+        device->platform.clean(task_cpu_address, task_bytes,
+                               device->platform.context);
+    npu_barrier(device);
+    resident->prepared = 1u;
+    return NPU_OK;
+}
+
+npu_result_t npu_resident_submit(npu_resident_t *resident,
+                                 const npu_range_t *clean_range,
+                                 const npu_range_t *invalidate_range,
+                                 uint32_t task_tag,
+                                 uint32_t watchdog_cycles)
+{
+    npu_device_t *device;
+    npu_result_t result;
+
+    if (resident == NULL || resident->prepared == 0u
+        || resident->device == NULL || task_tag == 0u
+        || !npu_resident_range_valid(resident, clean_range)
+        || !npu_resident_range_valid(resident, invalidate_range))
+        return NPU_E_INVALID;
+    device = resident->device;
+    if ((npu_read_register(device, NPU_REG_STATUS) & NPU_STATUS_IDLE) == 0u)
+        return NPU_E_BUSY;
+
+    if (device->platform.clean != NULL) {
+        device->platform.clean(clean_range->cpu_address, clean_range->bytes,
+                               device->platform.context);
+    }
+    npu_barrier(device);
+    npu_write_register(device, NPU_REG_IRQ_STATUS, NPU_IRQ_ALL);
+    npu_write_register(device, NPU_REG_TASK_BASE_HI,
+                       (uint32_t)(resident->task_physical_address >> 32));
+    npu_write_register(device, NPU_REG_TASK_BASE_LO,
+                       (uint32_t)resident->task_physical_address);
+    npu_write_register(device, NPU_REG_TASK_BYTES, (uint32_t)resident->task_bytes);
+    npu_write_register(device, NPU_REG_TASK_TAG, task_tag);
+    npu_write_register(device, NPU_REG_WATCHDOG_LIMIT, watchdog_cycles);
+    npu_barrier(device);
+    npu_write_register(device, NPU_REG_DOORBELL, 1u);
+    npu_barrier(device);
+
+    result = npu_wait(device, watchdog_cycles, &resident->completion);
+    if (result != NPU_E_TIMEOUT && device->platform.invalidate != NULL) {
+        device->platform.invalidate(invalidate_range->cpu_address,
+                                    invalidate_range->bytes,
+                                    device->platform.context);
+        npu_barrier(device);
+    }
+    if (result != NPU_OK)
+        return result;
+    if (resident->completion.completed_tag != task_tag
+        || resident->completion.error_code != 0u
+        || resident->completion.statistics.commands_retired
+               != resident->expected_commands)
+        return NPU_E_HARDWARE;
     return NPU_OK;
 }
 

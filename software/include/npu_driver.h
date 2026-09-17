@@ -130,6 +130,22 @@ typedef struct {
     uint8_t cache_pending;
 } npu_device_t;
 
+typedef struct {
+    void *cpu_address;
+    uint64_t physical_address;
+    size_t bytes;
+} npu_range_t;
+
+typedef struct {
+    npu_device_t *device;
+    void *task_cpu_address;
+    uint64_t task_physical_address;
+    size_t task_bytes;
+    uint32_t expected_commands;
+    npu_completion_t completion;
+    uint8_t prepared;
+} npu_resident_t;
+
 npu_result_t npu_device_init(npu_device_t *device,
                              volatile void *register_base,
                              const npu_platform_ops_t *platform);
@@ -144,6 +160,16 @@ npu_result_t npu_submit(npu_device_t *device,
                         size_t task_bytes,
                         uint32_t task_tag,
                         uint32_t watchdog_cycles);
+npu_result_t npu_resident_prepare(npu_resident_t *resident,
+                                  npu_device_t *device,
+                                  uint64_t task_physical_address,
+                                  void *task_cpu_address,
+                                  size_t task_bytes);
+npu_result_t npu_resident_submit(npu_resident_t *resident,
+                                 const npu_range_t *clean_range,
+                                 const npu_range_t *invalidate_range,
+                                 uint32_t task_tag,
+                                 uint32_t watchdog_cycles);
 npu_state_t npu_poll(npu_device_t *device);
 npu_result_t npu_wait(npu_device_t *device,
                       uint32_t maximum_polls,
