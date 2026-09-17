@@ -2,9 +2,9 @@
  * Self-contained SD cold-boot runner.
  *
  * A legacy FSBL used on the board loads the PL image but omits the candidate
- * XSA's ps7_post_config() sequence.  Calling that sequence here is safe: it
- * releases PL resets and level shifters without reinitializing DDR, unlike a
- * full ps7_init() call.  This file is linked with that generated ps7_init.c.
+ * XSA's ps7_post_config() sequence.  The four writes below are exactly the
+ * Zynq-7000 silicon-v3 post-config sequence generated from that candidate:
+ * release PL level shifters and FPGA resets, without reinitializing DDR.
  */
 #include <stddef.h>
 #include <stdint.h>
@@ -20,9 +20,6 @@
 #define TASK_TAG 0x53444254u /* "SDBT" */
 #define WATCHDOG_CYCLES 10000000u
 #define MAXIMUM_POLLS 20000000u
-
-/* Generated from the signed-off candidate XSA; do not call ps7_init() here. */
-extern int ps7_post_config(void);
 
 static uint8_t task_buffer[1851712] __attribute__((aligned(64)));
 
@@ -43,6 +40,22 @@ static void disable_caches(void)
 static void barrier(void *context)
 {
     (void)context;
+    dsb();
+}
+
+static void mask_write(uintptr_t address, uint32_t mask, uint32_t value)
+{
+    volatile uint32_t *const reg = (volatile uint32_t *)address;
+    *reg = (*reg & ~mask) | (value & mask);
+}
+
+static void release_npu_pl(void)
+{
+    /* ps7_post_config_3_0 from the signed-off candidate XSA. */
+    *(volatile uint32_t *)0xf8000008u = 0x0000df0du;
+    mask_write(0xf8000900u, 0x0000000fu, 0x0000000fu);
+    mask_write(0xf8000240u, 0xffffffffu, 0x00000000u);
+    *(volatile uint32_t *)0xf8000004u = 0x0000767bu;
     dsb();
 }
 
@@ -106,22 +119,19 @@ int main(void)
     uint32_t hash;
 
     disable_caches();
-    uart_puts("STEM NPU SD coldboot runner: applying candidate PL post-config\n");
-    if (ps7_post_config() != 0) {
-        uart_puts("[FAIL] ps7_post_config\n");
-        return 1;
-    }
+    uart_puts("STEM NPU SD coldboot runner: releasing candidate PL post-config\n");
+    release_npu_pl();
     uart_puts("[INFO] PL post-config complete; probing NPU\n");
     platform.barrier = barrier;
     result = npu_device_init(&device, (volatile void *)NPU_BASE, &platform);
     if (result != NPU_OK) {
         uart_puts("[FAIL] NPU CSR probe\n");
-        return 2;
+        return 1;
     }
     result = npu_soft_reset(&device);
     if (result != NPU_OK) {
         uart_puts("[FAIL] NPU reset\n");
-        return 3;
+        return 2;
     }
     for (volatile uint32_t settle = 0u; settle != 1024u; ++settle)
         __asm__ volatile("nop");
@@ -134,13 +144,13 @@ int main(void)
                         WATCHDOG_CYCLES);
     if (result != NPU_OK) {
         uart_puts("[FAIL] NPU submit\n");
-        return 4;
+        return 3;
     }
     result = npu_wait(&device, MAXIMUM_POLLS, &completion);
     if (result != NPU_OK || completion.completed_tag != TASK_TAG
         || completion.error_code != 0u) {
         uart_puts("[FAIL] NPU completion\n");
-        return 5;
+        return 4;
     }
     hash = fnv1a32(task_buffer + navigator_npu_output_offset,
                    navigator_npu_expected_output_bytes);
@@ -149,7 +159,7 @@ int main(void)
             navigator_npu_expected_output,
             navigator_npu_expected_output_bytes)) {
         uart_puts("[FAIL] output verification\n");
-        return 6;
+        return 5;
     }
     uart_puts("[PASS] SD coldboot NPU inference verified\n");
     heartbeat_forever();

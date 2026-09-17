@@ -1,0 +1,5 @@
+the_ROM_image:
+{
+  [bootloader] hardware/boards/alientek_navigator_z7020/vendor_reference_local/boot/zynq_fsbl.elf
+  hardware/build/navigator_z7020_vendor_v37_export/stem_npu_navigator_z7020_candidate.bit
+}

@@ -5,9 +5,9 @@ V3.7（WM8960）资料配置。这里的“V3.7”仅指**参考资料/兼容性
 实物 PCB 版本。厂商资料的 PS7 DDR/MIO 参数已接入 NPU 离线工程并完成布局布线；
 两颗 DDR 型号已由用户确认；FPGA `-2` 速度级别由卖家提供、用户转述，尚未经
 AMD 查询或原厂包装标签独立核验。已通过 JTAG 对前 64 MiB DDR 做了双图案读回验证；
-独立 GNU Arm A9 裸机驱动已完成一次完整 NPU task 的实测；全容量稳定性和正式
-Vitis/BSP 软件仍待验证。完整 NPU 任务已完成两组 JTAG/DDR 逐字节输出验证，
-详见本页的真实板记录。
+独立 GNU Arm A9 裸机驱动已完成完整 NPU task 和 18,000 轮压力实测；修复后的
+MicroSD 镜像也已完成无需 JTAG 的自主冷启动、完整推理、输出校验和持续心跳。
+全容量 DDR 与正式 Vitis/BSP 软件仍待验证，详见本页的真实板记录。
 
 ## 已确认度较高的硬件
 
@@ -43,6 +43,7 @@ LED 添加 XDC。DDR 和 MIO 是 Zynq 的专用 PS 管脚，也不通过普通 P
 | `vendor_reference_local/ps7/system_processing_system7_0_0.xci`、`system.bd` | `4_Source_Code/2_Embedded_Vitis/ZYNQ_Vitis_7020.rar` 中 `21_audio_loopback` 的 PS7 IP 参数与 block design；作为 DDR/MIO 配置的主要来源。 |
 | `vendor_reference_local/ps7/ps7_init.c`、`ps7_init.h`、`ps7_init.tcl`、`system_wrapper.xsa` | 同一例程生成的初始化代码和硬件平台；仅作配置对照，不是 NPU 的 XSA/bitstream。 |
 | `vendor_reference_local/audio/` | `4_Source_Code/1_FPGA_Design/ZYNQ_7020_FPGA.rar` 中 `37_audio_loopback/rtl` 的 8 个文件；WM8960 寄存器配置、I2S 和音频引脚参考。 |
+| `vendor_reference_local/boot/zynq_fsbl.elf` | `11_key_led/zynq纯PL端固化脚本` 中的原始 FSBL；SHA-256 `499A4050469D66CD4EC2823F15EBA50E0898C62D598A429B4720FD78605D6818`。它可作纯 PL 启动基线，但不会 handoff 到 PS 应用；含应用的镜像须用 `scripts/91_patch_navigator_sd_fsbl_handoff.ps1` 生成受控副本。禁止使用运行态 OCM 快照。 |
 
 V3.7 例程的 PS7 XCI 记录了 32-bit DDR3L、533.333 MHz、`MT41K256M16 RE-125`、
 UART0 MIO14/15 等参数。它证明厂商示例如何配置 PS，不证明手中板卡与示例完全相同；
@@ -153,8 +154,8 @@ vivado -mode batch -nolog -nojournal `
 
 ## MicroSD 冷启动串口诊断
 
-2026-09-17 检查到的 `F:\BOOT.BIN` 含有 `zynq_fsbl.elf`、NPU bitstream 和加载到
-`0x1000_0000` 的 `navigator_a9_sd_runner.elf`。该应用应从 **UART0 / MIO14/15**
+早期检查过的三分区 `BOOT.BIN` 含有 FSBL、NPU bitstream 和加载到
+`0x1000_0000` 的 runner。该应用应从 **UART0 / MIO14/15**
 以 **115200, 8N1, 无硬件或软件流控** 输出启动信息，并在成功后每秒输出一条
 `[HEARTBEAT]`。因此，若串口始终没有任何文本，不能仅以绿灯判断 A9 应用已正常
 handoff：绿灯可能只表示 PL 配置成功。
@@ -173,12 +174,18 @@ xsdb scripts/70_probe_navigator_sd_boot.tcl
 `0x1000_0000` 附近说明 A9 已进入 SD runner，此时应优先检查 CH340/终端链路；
 PC 落在其他区域或出现异常入口，则继续检查 FSBL 到应用的 handoff 与 DDR 初始化。
 
-首次 SD 冷启动实测中，FSBL 已将 runner 装入 `0x1000_0000`，但 A9 最终停在
-`0x0000E6E4` 的 FSBL 保护循环。经 JTAG 仅修改**易失** PC 到 `0x1000_0000` 后，
-runner 能立即输出上述完整 UART 日志，证明 UART0/CH340、应用和嵌入 task 都正常；
-但它在 NPU 初始化处停住，DAP 对 `0x43C0_0000`–`0x43C0_001C` 的读取均报 AP timeout。
-这说明当前 SD 用 FSBL 未完整建立 NPU 需要的 PS–PL AXI/时钟配置，不能作为有效冷启动
-镜像。以已通过 JTAG CSR 实测的 NPU XSA/PS7 配置重建 FSBL 与 `BOOT.BIN` 是下一项工作。
+早期失败镜像把已运行过的 OCM 内存快照包装成 `fsbl_rewrapped.elf`。A9 最终停在
+`0x000060B0` 的 `Xil_Assert` 永久循环，调用点对应 `xsdps.c:297` 的
+`InstancePtr->IsReady` 断言；运行时全局状态不是可重启的 FSBL 初始状态。该重包装方案
+已停用，不能再用于任何启动镜像。
+
+改用资料盘的真实 `zynq_fsbl.elf` 后，纯位流镜像可正常亮绿灯，探针也被完整加载到
+DDR，且 `R0=0x100000F4` 正好是应用入口，但 A9 停在 `0x0000E6E4`。反汇编确认这份
+文件来自“纯 PL 端固化脚本”：`main` 在 `LoadBootImage()` 返回后执行
+`B 0xE6E4`，没有调用镜像中已存在的 `FsblHandoff()`。JTAG 易失设置 PC 到应用入口后，
+探针立即输出 heartbeat；PC 位于 `0x100000E8` 的应用循环，NPU
+`IP_ID=0x3155504E`、`STATUS=IDLE`、`ERROR_CODE=0`，因此 UART、DDR、应用和 NPU
+通路均被独立排除。
 
 在保持 SD 启动的状态下，可用以下脚本复查这两个事实：
 
@@ -196,15 +203,14 @@ xsdb scripts/72_probe_navigator_sd_npu_csr.tcl
 ### 当前镜像的兼容修复
 
 `software/bringup/minimal_a9/navigator_sd_coldboot_runner.c` 是一个不依赖 Vitis BSP
-的替代应用：FSBL handoff 后，它先调用候选 XSA 导出的 `ps7_post_config()`，再访问
-NPU。此调用只释放 PL reset/level shifter，**不调用会重置 DDR 的 `ps7_init()`**。在
-实板上，经 JTAG 易失下载该 runner 后，NPU CSR 读回
-`IP_ID=0x3155504E`、`STATUS=IDLE|DONE`、`ERROR_CODE=0`。这证明 post-config 后
-硬件可访问且一次任务结束时未报告硬件错误；新的 runner UART 完整 PASS 日志仍应在
-下一次 JTAG 运行时记录，之后才可将其表述为完整任务的独立验证。
+的替代应用：FSBL handoff 后，它执行候选 XSA 中与 `ps7_post_config()` 等价的四个
+寄存器写操作，再访问 NPU。这只释放 PL reset/level shifter，**不调用会重置 DDR 的
+`ps7_init()`**。在实板上，经 JTAG 易失下载及最终 MicroSD 自主冷启动两条路径均已
+通过。最终串口输出 `[PASS] SD coldboot NPU inference verified`，随后持续输出
+`[HEARTBEAT] SD coldboot NPU runner healthy`。
 
-构建命令如下；task payload 与 Vivado 导出的 `ps7_init.c/h` 都是本地忽略文件，故 ELF
-只会出现在忽略的 `hardware/build/` 下：
+构建命令如下；task payload 是本地忽略文件，故 ELF 只会出现在忽略的
+`hardware/build/` 下：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File scripts/74_build_navigator_sd_coldboot_runner.ps1
@@ -212,23 +218,38 @@ xsdb scripts/75_run_navigator_sd_coldboot_runner_jtag.tcl `
   hardware/build/navigator_sd_coldboot_runner/navigator_sd_coldboot_runner.elf
 ```
 
-后一个命令只覆盖易失 DDR 以验证应用；它不是 SD 写入。将该 ELF 封装进新的 `BOOT.BIN`
-前，必须先备份当前 SD 卡，并从当前启动镜像提取/重建可审计的 FSBL 组成物。
-
-当前可复现的候选镜像流程为：在板卡已从原 SD 镜像启动、JTAG 已连接时，先只读导出
-OCM 中的 FSBL，再封装候选镜像。两条命令均只在本机 `hardware/build/` 生成文件：
+后一个命令只覆盖易失 DDR 以验证应用；它不是 SD 写入。`scripts/91_*` 从哈希已锁定
+的原始 FSBL 生成副本，并只把 `0xE6E4` 的 `EAFFFFFE`（原地循环）替换成
+`EBFFCB25`（调用 `FsblHandoff`）；脚本同时核对前一条 `BL LoadBootImage` 和源文件
+SHA-256。修复后 ELF 的 SHA-256 为
+`7B3AD97C0ED47C94533A80B2FB5A3C46F316962C8CB9D9E9AB14483FA56B377E`。
+按以下顺序逐级验证，每次只增加一个变量：
 
 ```powershell
-xsdb scripts/76_dump_navigator_sd_fsbl.tcl `
-  hardware/build/navigator_sd_coldboot_runner/fsbl_raw.bin
+# 1. 原厂 FSBL + NPU bitstream
+powershell -ExecutionPolicy Bypass -File scripts/81_build_navigator_sd_npu_bit_only.ps1
+powershell -ExecutionPolicy Bypass -File scripts/82_test_navigator_sd_npu_bit_only.ps1
+
+# 2. 再加最小 UART/NPU-ID 探针
+powershell -ExecutionPolicy Bypass -File scripts/91_patch_navigator_sd_fsbl_handoff.ps1
+powershell -ExecutionPolicy Bypass -File scripts/89_test_navigator_sd_fsbl.ps1
+powershell -ExecutionPolicy Bypass -File scripts/80_build_navigator_sd_boot_probe.ps1
+powershell -ExecutionPolicy Bypass -File scripts/79_test_navigator_sd_boot_probe.ps1
+
+# 3. 最后加入完整推理 runner
+powershell -ExecutionPolicy Bypass -File scripts/74_build_navigator_sd_coldboot_runner.ps1
 powershell -ExecutionPolicy Bypass -File scripts/77_build_navigator_sd_boot_image.ps1
+powershell -ExecutionPolicy Bypass -File scripts/86_test_navigator_sd_coldboot_image.ps1
 ```
 
-`scripts/77_*` 会用 Bootgen 回读候选 `BOOT.BIN`。当前实测的结构为 3 个 image：
-`fsbl_rewrapped.elf`（`0x18008` bytes）、候选 NPU bitstream（`0xF6EC0` bytes）、
-以及加载到 `0x1000_0000`、从 `0x1000_02D0` 执行的 SD runner。它不复制文件到 SD；
-待 SD 卡在 Windows 中挂载后，必须先创建完整备份并核对候选 SHA-256，再替换根目录的
-`BOOT.BIN` 进行冷启动验证。
+这些脚本只在本机生成和检查文件，不自动复制到 SD。2026-09-17 实测记录：
+
+- 原厂 FSBL + NPU bitstream：`AF1CD3715EFC7A100BA43D252C5596E33456A0FDC602407775C09C8A6782C5FB`，冷启动绿灯通过；
+- 原厂纯 PL FSBL + 最小探针：`9C78C06C73CCD61B76EB8A66A63401A4FBF5399B80CB04A18F2A16CE223607BE`，应用已加载但不 handoff；
+- 修复 handoff FSBL + 最小探针：实板自主启动版本 `3675B030BA61FC4EFF036E45817163ED0613AA0588FE4E01F4495F9D17B528C5` 无需 JTAG 自动输出 NPU ID、PASS 和 heartbeat；随后增加错误 NPU ID 拒绝逻辑的构建版本为 `755E5A93AF6CBE68C3554673A90499FB5AF6EDA63EB5D4599AB03284BBBEB82E`，已通过编译及镜像回归测试，未单独重复上板；
+- 修复 handoff FSBL + 完整 runner：`09FE74FBA4E982F9D690455C34A9559FDDF597C626E35D5BB1E51C5E9EA5C736`，无需 JTAG 完成 1,869 指令推理、输出逐字节校验并持续 heartbeat。
+
+每次 SD 替换前均保存上一张已知正常镜像，并在写入后核对 SHA-256。
 
 ## 2026-09-17 真实板 JTAG 记录
 
