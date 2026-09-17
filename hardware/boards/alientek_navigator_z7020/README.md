@@ -151,6 +151,28 @@ vivado -mode batch -nolog -nojournal `
 6. 连续运行长时间压测并记录 deadline miss、DMA error、watchdog；**已完成 18,000 轮（18.65 分钟）连续高压测试，0 error、0 watchdog、输出 FNV-1a 逐轮 100% 吻合，周期抖动仅 0.061%，贴散热片工况稳定**；
 7. 上述全部通过后，才启用 QSPI/eMMC 启动和 WM8960/音频通路。
 
+## MicroSD 冷启动串口诊断
+
+2026-09-17 检查到的 `F:\BOOT.BIN` 含有 `zynq_fsbl.elf`、NPU bitstream 和加载到
+`0x1000_0000` 的 `navigator_a9_sd_runner.elf`。该应用应从 **UART0 / MIO14/15**
+以 **115200, 8N1, 无硬件或软件流控** 输出启动信息，并在成功后每秒输出一条
+`[HEARTBEAT]`。因此，若串口始终没有任何文本，不能仅以绿灯判断 A9 应用已正常
+handoff：绿灯可能只表示 PL 配置成功。
+
+先在电脑上确认 CH340 出现的 COM 口（此前实测为 `COM3`）并以以上参数打开终端，
+再给板卡完整断电/上电。即使错过起始日志，正常应用也会持续打印 heartbeat。
+
+若仍无数据，在板卡上电、启动拨码保持 SD 模式且 JTAG 已接入时运行：
+
+```powershell
+xsdb scripts/70_probe_navigator_sd_boot.tcl
+```
+
+该脚本只会短暂暂停 A9#0、打印 PC 和 `0x1000_0000` 的 8 个 DDR 字，再立即继续
+运行；它不会配置 PL，也绝不写入 SD、QSPI 或 eMMC。PC 落在
+`0x1000_0000` 附近说明 A9 已进入 SD runner，此时应优先检查 CH340/终端链路；
+PC 落在其他区域或出现异常入口，则继续检查 FSBL 到应用的 handoff 与 DDR 初始化。
+
 ## 2026-09-17 真实板 JTAG 记录
 
 本节是实测事实，不替代上述仍待完成的软件、全容量与长期稳定性验收。
