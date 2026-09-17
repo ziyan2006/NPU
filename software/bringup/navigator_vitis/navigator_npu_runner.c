@@ -15,7 +15,7 @@
 
 #include "npu_vitis_platform.h"
 #ifndef NPU_VITIS_PAYLOAD_HEADER
-#define NPU_VITIS_PAYLOAD_HEADER "generated/navigator_npu_task_payload.h"
+#define NPU_VITIS_PAYLOAD_HEADER "navigator_npu_task_payload.h"
 #endif
 #include NPU_VITIS_PAYLOAD_HEADER
 

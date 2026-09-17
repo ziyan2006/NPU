@@ -96,16 +96,22 @@ set xsa_file [file join $output_dir stem_npu_navigator_z7020_candidate.xsa]
 # In project mode, -include_bit reads the implementation run's own bitstream.
 # A standalone write_bitstream to $output_dir leaves that run at route_design
 # and makes write_hw_platform fail even though the external .bit is valid.
-close_design
-launch_runs $run -to_step write_bitstream
-wait_on_run $run
 set run_bit_file [file join $project_dir reference_zynq_soc.runs impl_1 \
   "[get_property TOP [get_filesets sources_1]].bit"]
+close_design
+if {![file isfile $run_bit_file]} {
+  launch_runs $run -to_step write_bitstream
+  wait_on_run $run
+}
 if {![file isfile $run_bit_file]} {
   error "implementation run did not produce its bitstream: $run_bit_file"
 }
 file copy -force $run_bit_file $bit_file
 open_run $run
+# This XSA is consumed by a Zynq standalone application, not an accelerator
+# shell.  Preserve that intent in the handoff metadata so downstream tools do
+# not classify it as a data-centre accelerator platform.
+set_property platform.design_intent.embedded true [current_project]
 write_hw_platform -fixed -include_bit -force -file $xsa_file
 puts "NPU_NAVIGATOR_EXPORT_RESULT bit=$bit_file xsa=$xsa_file"
 close_project

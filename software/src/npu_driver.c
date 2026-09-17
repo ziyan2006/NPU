@@ -1,10 +1,20 @@
 /* SPDX-License-Identifier: MIT */
 #include "npu_driver.h"
 
-#include <string.h>
 #if defined(_MSC_VER)
 #include <intrin.h>
 #endif
+
+/* Keep the portable driver usable in a freestanding A9 bring-up image.  A
+ * normal hosted build is free to provide libc, but requiring memset here made
+ * a tiny -nostdlib JTAG test pull an otherwise unnecessary C runtime. */
+static void npu_zero(void *address, size_t bytes)
+{
+    uint8_t *cursor = (uint8_t *)address;
+
+    while (bytes-- != 0u)
+        *cursor++ = 0u;
+}
 
 static void npu_barrier(npu_device_t *device)
 {
@@ -69,7 +79,7 @@ npu_result_t npu_device_init(npu_device_t *device,
 
     if (device == NULL || register_base == NULL)
         return NPU_E_INVALID;
-    memset(device, 0, sizeof(*device));
+    npu_zero(device, sizeof(*device));
     device->registers = (volatile uint32_t *)register_base;
     if (platform != NULL)
         device->platform = *platform;
@@ -197,7 +207,7 @@ void npu_read_completion(const npu_device_t *device,
 {
     if (device == NULL || device->registers == NULL || completion == NULL)
         return;
-    memset(completion, 0, sizeof(*completion));
+    npu_zero(completion, sizeof(*completion));
     completion->completed_tag = npu_read_register(
         device, NPU_REG_COMPLETED_TAG);
     completion->error_code = (uint16_t)npu_read_register(

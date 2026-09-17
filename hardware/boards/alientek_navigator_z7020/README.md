@@ -146,8 +146,9 @@ vivado -mode batch -nolog -nojournal `
    Vitis/BSP 版本仍待执行；
 3. 提交最小 task，核对完成 tag、错误码和 cycle；**已完成**；
 4. 提交完整 1,869-command task，逐字节比对 32,768-byte golden；**已完成零输入与固定非零输入两组**；
-5. 连续运行 30 分钟并记录 deadline miss、DMA error、watchdog；
-6. 上述全部通过后，才启用 QSPI/eMMC 启动和 WM8960/音频通路。
+5. 用 A9 裸机驱动提交同一完整 task，并核对 completed tag、错误码、retired、cycle 和输出校验值；脚本和 ELF 已离线构建，尚待下次接板实测；
+6. 连续运行 30 分钟并记录 deadline miss、DMA error、watchdog；
+7. 上述全部通过后，才启用 QSPI/eMMC 启动和 WM8960/音频通路。
 
 ## 2026-09-17 真实板 JTAG 记录
 
@@ -201,6 +202,47 @@ xsdb scripts/51_run_navigator_a9_probe.tcl `
   hardware/build/navigator_z7020_vendor_v37_export/stem_npu_navigator_z7020_candidate.bit `
   hardware/build/navigator_a9_probe/navigator_a9_probe.elf
 ```
+
+## 不依赖 Vitis 的 A9 软件任务验证
+
+`scripts/66_build_navigator_a9_task_runner.ps1` 用已安装的 GNU Arm
+Embedded Toolchain 构建一个 freestanding ARM32 ELF，不依赖 BSP、Flash 或
+Vitis 平台服务。它复用 `software/src/npu_driver.c`：主机经 JTAG 把 task
+分块放入易失 DDR 后，A9#0 读取一小段配置、提交 task、轮询完成、写回
+completed tag/错误码/retired/cycle，并对 NPU 写出的输出做 FNV-1a 校验。
+
+当前完整非零任务的本地元数据可这样取得：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/66_build_navigator_a9_task_runner.ps1
+python scripts/68_describe_navigator_a9_task.py `
+  --image hardware/build/navigator_seeded_task/task_image.bin `
+  --golden hardware/build/navigator_seeded_task/expected_output.bin `
+  --program-dir hardware/generated/bott2_mir1k_v1_program
+```
+
+当前输出会给出 `task_bytes=1851712`、`output_offset=966784`、
+`output_bytes=32768`、`expected_fnv1a=0x4DB54515`。仅当上述本地文件仍对应
+同一 task 时，使用以下命令（全部为 JTAG/易失 DDR 操作）：
+
+```powershell
+xsdb scripts/67_run_navigator_a9_task.tcl `
+  hardware/build/navigator_z7020_jtag_probe/ps7_init.tcl `
+  hardware/build/navigator_z7020_vendor_v37_export/stem_npu_navigator_z7020_candidate.bit `
+  hardware/build/navigator_a9_task_runner/navigator_a9_task_runner.elf `
+  hardware/build/navigator_seeded_task/jtag_chunks `
+  1851712 966784 32768 0x4DB54515
+```
+
+不要复用这些数字给另一份 task：先运行 `scripts/68_describe_navigator_a9_task.py`
+取得其元数据。该测试尚未在新 ELF 上实测，不改变此前“JTAG 直接提交完整任务已通过”的
+记录，也不写入 QSPI、eMMC 或 SD。
+
+Vitis 版 runner 仍保留在 `software/bringup/navigator_vitis/`。本机的 Vitis
+2026.1 CLI 目前连其官方 `zc702` standalone 示例都无法生成 Processor List，
+而 AMD `sdtgen` 能正确解析 NPU XSA；因此这是本机 Vitis Embedded 组件/服务问题，
+不是板卡或 NPU XSA 问题。修复该安装后可直接运行
+`scripts/65_build_navigator_vitis.ps1 -Clean` 重新尝试生成 BSP ELF。
 
 ## 其他设计依据
 
