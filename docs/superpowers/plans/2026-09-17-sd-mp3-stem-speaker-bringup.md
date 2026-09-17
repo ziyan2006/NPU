@@ -144,11 +144,11 @@
 - Consumes: `wr_clk`, `wr_reset_n`, `wr_valid`, `wr_data[63:0]`, `rd_clk`, `rd_reset_n`, `rd_ready`.
 - Produces: `wr_full`, write-domain `wr_level[13:0]`, `rd_valid`, `rd_data[63:0]`, read-domain `rd_empty`, `rd_level[13:0]`; capacity is exactly 8192 and accepted transfers are `wr_valid && !wr_full` / `rd_ready && rd_valid`.
 
-- [ ] **Step 1: Add a failing dual-clock FIFO test**
+- [x] **Step 1: Add a failing dual-clock FIFO test**
 
   Drive 100 MHz writes and 11.2896 MHz reads with unrelated reset release. Verify ordering across pointer wrap, exact full/empty transitions, rejected full writes, stable head data under backpressure, and at least 20 randomized clock-phase seeds.
 
-- [ ] **Step 2: Confirm the red test**
+- [x] **Step 2: Confirm the red test**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case fifo
@@ -156,11 +156,11 @@
 
   Expected: compile failure naming missing `audio_async_fifo`.
 
-- [ ] **Step 3: Implement the FIFO**
+- [x] **Step 3: Implement the FIFO**
 
   Use 14-bit binary pointers with an extra wrap bit, Gray-code synchronization through two flops in each direction, and `(* ram_style = "block" *) logic [63:0] memory [0:8191]`. Compute full by comparing the next write Gray pointer with the synchronized read pointer whose top two bits are inverted; compute levels from synchronized binary pointers. Reset each domain locally and never combine asynchronous reset state combinationally.
 
-- [ ] **Step 4: Run focused and complete audio RTL tests**
+- [x] **Step 4: Run focused and complete audio RTL tests**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case fifo
@@ -169,7 +169,7 @@
 
   Expected: `audio_async_fifo: PASS`, no assertion or Icarus warning promoted to failure.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add hardware/rtl/audio/audio_async_fifo.sv hardware/rtl/tb/tb_audio_async_fifo.sv scripts/_test_audio_rtl.py

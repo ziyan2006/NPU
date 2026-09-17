@@ -21,6 +21,14 @@ CASES = {
         ],
         "audio_axi_csr: PASS",
     ),
+    "fifo": (
+        "tb_audio_async_fifo",
+        [
+            RTL / "audio" / "audio_async_fifo.sv",
+            RTL / "tb" / "tb_audio_async_fifo.sv",
+        ],
+        "audio_async_fifo: PASS",
+    ),
 }
 
 
@@ -35,11 +43,16 @@ def run_case(name: str, iverilog: str, vvp: str) -> None:
         )
         if compile_result.returncode:
             raise RuntimeError(compile_result.stdout + compile_result.stderr)
-        result = subprocess.run(
-            [vvp, str(image)], cwd=ROOT, capture_output=True, text=True
-        )
-        if result.returncode or marker not in result.stdout:
-            raise RuntimeError(result.stdout + result.stderr)
+        seeds = range(1, 21) if name == "fifo" else (1,)
+        for seed in seeds:
+            result = subprocess.run(
+                [vvp, str(image), f"+SEED={seed}"], cwd=ROOT,
+                capture_output=True, text=True,
+            )
+            if result.returncode or marker not in result.stdout:
+                raise RuntimeError(
+                    f"{name} seed {seed}\n" + result.stdout + result.stderr
+                )
 
 
 def main() -> int:
