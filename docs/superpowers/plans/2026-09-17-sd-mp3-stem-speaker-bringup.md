@@ -404,11 +404,11 @@
 - Produces: `audio_hw_init(audio_hw_t*, uintptr_t)`, `audio_hw_space(const audio_hw_t*)`, `audio_hw_write_frame(audio_hw_t*, const audio_frame_t*)`, `pcm_ring_push/peek/drop`, and `wav_source_open/read`; `audio_frame_t` contains four `int16_t` members in mix-L/R, vocal-L/R order.
 - Consumes: memory-mapped register words, byte buffer/file callback, and generated stereo WAV fixtures.
 
-- [ ] **Step 1: Write foundation tests**
+- [x] **Step 1: Write foundation tests**
 
   Test IP/address validation, compile-time `_Static_assert(XPAR_AUDIO_OUT_AXI_0_BASEADDR == 0x43C10000U)` in the target build, MIX-before-VOCAL write ordering, no write when full, ring wrap/backpressure, RIFF chunks with odd padding, and rejection of mono/48 kHz/24-bit WAV.
 
-- [ ] **Step 2: Confirm the red host build**
+- [x] **Step 2: Confirm the red host build**
 
   ```powershell
   python scripts/97_generate_audio_vectors.py --check
@@ -417,11 +417,11 @@
 
   Expected: vector check and C compile fail because generators/modules are absent.
 
-- [ ] **Step 3: Implement minimal portable modules and generator**
+- [x] **Step 3: Implement minimal portable modules and generator**
 
   Keep OS/BSP calls behind `wav_read_fn(void *ctx, void *dst, size_t bytes)`. `audio_hw_write_frame` first checks `FIFO_LEVEL < FIFO_CAPACITY`, packs `{right,left}` into two 32-bit writes, and only then updates software submitted count. Use power-of-two ring capacity with monotonically increasing 32-bit producer/consumer counters.
 
-- [ ] **Step 4: Run native tests**
+- [x] **Step 4: Run native tests**
 
   ```powershell
   python scripts/97_generate_audio_vectors.py
@@ -431,7 +431,7 @@
 
   Expected: generated fixture hashes are stable and `audio foundation: PASS`.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add software/audio_player/include/audio_hw.h software/audio_player/src/audio_hw.c software/audio_player/include/pcm_ring.h software/audio_player/src/pcm_ring.c software/audio_player/include/wav_source.h software/audio_player/src/wav_source.c software/audio_player/tests/test_audio_foundation.c scripts/97_generate_audio_vectors.py scripts/_test_audio_player.py
