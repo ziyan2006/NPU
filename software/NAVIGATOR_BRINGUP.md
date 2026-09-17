@@ -9,15 +9,40 @@ Linux 和永久启动放在 NPU/DDR 链路验证之后，避免同时调试设�
 
 ## 音频 standalone 分阶段应用
 
-NPU 与 WM8960 的联合 XSA 可通过 `scripts/101_build_audio_player.ps1` 构建两个独立
+NPU 与 WM8960 的联合 XSA 可通过 `scripts/101_build_audio_player.ps1` 构建四个独立
 应用：`-Mode Tone` 只验证 codec/I2S/扬声器，`-Mode Wav` 从 FAT 分区读取
 `0:/test.wav`。WAV 模式只接受 44.1 kHz、16-bit、双声道 PCM，并在 FIFO 预填满
 8192 帧后才开始播放；文件不足 8192 帧会报告 `WAV_TOO_SHORT` 且不启用输出。
 `-Mode Mp3Bypass` 从 `0:/music.mp3` 流式解码，只接受 MPEG-1 Layer III、
 44.1 kHz、双声道，并将 vocal 通道保持为零，用于先验证 SD 到扬声器的完整旁路。
-两个构建都只在 `hardware/build/navigator_audio_player/` 生成本地 ELF，不制作启动
-镜像、不复制 SD 文件，也不连接板卡。当前仅完成离线构建路径，实际扬声器输出仍须
-按 Tone、Wav 顺序上板验收。
+`-Mode FullStem` 使用同一个 MP3 输入，连续执行 STFT、NPU、iSTFT 和对齐混音；NPU
+故障会锁存旁路，codec/SD/解码故障会静音。四个构建都只在
+`hardware/build/navigator_audio_player/` 生成本地 ELF，不复制 SD 文件，也不连接板卡。
+
+## 音频 MicroSD 分阶段镜像
+
+运行以下命令会重建四个应用，并在忽略提交的
+`hardware/build/navigator_audio_boot/` 中生成四套 `BOOT.BIN`、Bootgen readback 和
+SHA-256 manifest。脚本只生成本地文件，**不会查找或写入可移动磁盘**。
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/102_build_navigator_audio_boot.ps1 -Clean
+powershell -ExecutionPolicy Bypass -File scripts/103_test_navigator_audio_boot.ps1
+```
+
+| 目录 | 应用 | SD 根目录输入 | 首测目标 |
+|---|---|---|---|
+| `tone/` | Tone | 无 | WM8960 配置、I2S 时钟、板载扬声器 |
+| `wav/` | Wav | `test.wav` | FAT 读取与无压缩 PCM 播放 |
+| `mp3_bypass/` | Mp3Bypass | `music.mp3` | MP3 解码、FIFO 与扬声器旁路 |
+| `stem/` | FullStem | `music.mp3` | 连续 NPU STEM、KEY0 切换与降级路径 |
+
+每个 manifest 锁定修复后的 handoff FSBL、音频 bitstream、对应 ELF、BIF 和 BOOT.BIN
+哈希，并记录 Git commit、Vivado/Vitis 版本和构建模式。测试脚本要求 Bootgen 中只有
+FSBL、音频 bitstream、对应 ELF 三个逻辑镜像且顺序固定，同时复跑已有 SD 冷启动回归。
+上板时每次只人工复制一种 `BOOT.BIN`，保留上一份已知正常镜像，并按
+Tone、Wav、Mp3Bypass、FullStem 顺序逐级验收；前一级失败时不要继续后一级。
+当前四套镜像仅完成离线构建和静态审计，不能记为扬声器或 FullStem 实板通过。
 
 ## 工件边界
 

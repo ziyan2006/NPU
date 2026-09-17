@@ -26,6 +26,16 @@
 #error "build must define exactly one player mode"
 #endif
 
+#if defined(PLAYER_MODE_TONE)
+#define PLAYER_BUILD_MODE "Tone"
+#elif defined(PLAYER_MODE_WAV)
+#define PLAYER_BUILD_MODE "Wav"
+#elif defined(PLAYER_MODE_MP3_BYPASS)
+#define PLAYER_BUILD_MODE "Mp3Bypass"
+#else
+#define PLAYER_BUILD_MODE "FullStem"
+#endif
+
 #define PLAYER_LEGACY_PREFILL_FRAMES 8192u
 #define PLAYER_BATCH_FRAMES 128u
 #define PLAYER_FADE_FRAMES 1323u
@@ -577,6 +587,7 @@ int player_main(void)
     if (!player_platform_init())
         return 1;
     player_platform_log("BOOT");
+    player_platform_log("AUDIO_BUILD_MODE=" PLAYER_BUILD_MODE);
     if (audio_hw_init(&hardware, player_platform_audio_base()) != AUDIO_HW_OK) {
         player_platform_log("FAIL AUDIO_HW");
         goto done;

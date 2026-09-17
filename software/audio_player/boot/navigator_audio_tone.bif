@@ -1,0 +1,7 @@
+// Generated inputs only. This file never writes removable media.
+the_ROM_image:
+{
+  [bootloader] hardware/build/navigator_sd_fsbl/zynq_fsbl.elf
+  hardware/build/navigator_z7020_audio_export/stem_npu_audio_navigator_z7020.bit
+  hardware/build/navigator_audio_player/tone_player.elf
+}

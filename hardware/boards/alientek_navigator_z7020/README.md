@@ -126,6 +126,22 @@ python scripts/96_check_navigator_audio_soc.py
 bitstream 生成；尚未在实板上验证 WM8960 配置、测试音或扬声器输出，不能作为音频
 上板验收结论。
 
+基于同一音频 bitstream 的四阶段 MicroSD 镜像可用以下命令构建和审计：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/102_build_navigator_audio_boot.ps1 -Clean
+powershell -ExecutionPolicy Bypass -File scripts/103_test_navigator_audio_boot.ps1
+```
+
+输出位于忽略提交的 `hardware/build/navigator_audio_boot/`：`tone/`、`wav/`、
+`mp3_bypass/`、`stem/` 各含 `BOOT.BIN`、`BOOT.read.txt` 和 `manifest.json`。
+每个镜像严格按修复后的 handoff FSBL、
+`stem_npu_audio_navigator_z7020.bit`、对应应用 ELF 的顺序组成；manifest 记录所有输入
+和 BOOT.BIN 的 SHA-256、Git commit、工具版本与构建模式。构建和检查脚本不会自动写
+SD 卡，也不依赖 JTAG。人工上板必须按 Tone、WAV、MP3 bypass、FullStem 的顺序，
+WAV 镜像要求卡根目录有 `test.wav`，后两者要求 `music.mp3`；前一级未通过时停止。
+目前这些镜像只通过离线 Bootgen/哈希/地址图审计，尚无音频实板通过记录。
+
 在填齐完整实物及首测记录前，只运行到实现和检查，
 不执行 `43_export_navigator_candidate.tcl`。
 导出脚本会核对 V3.7 DDR/MIO 参数，并通过 `45_validate_navigator_confirmation.py`
