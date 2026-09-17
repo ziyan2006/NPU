@@ -31,9 +31,12 @@ logs/
 *.tmp
 *.vvp
 .Xil/
+.srcs/
 vivado*.jou
 vivado*.log
 hardware/build/
+hardware/reports/vivado_2026_1/navigator_z7020_audio_impl/
+hardware/reports/vivado_2026_1/navigator_z7020_audio_synth/
 hardware/boards/**/board_confirmation.local.json
 # 厂商资料仅供本地对照，授权状态未确认，勿推送到公开仓库。
 hardware/boards/**/vendor_reference_local/

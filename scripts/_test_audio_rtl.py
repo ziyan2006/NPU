@@ -56,6 +56,23 @@ CASES = {
         ],
         "wm8960_init: PASS",
     ),
+    "top": (
+        "tb_audio_out_axi",
+        [
+            RTL / "audio" / "audio_regs_pkg.sv",
+            RTL / "audio" / "audio_axi_csr.sv",
+            RTL / "audio" / "audio_async_fifo.sv",
+            RTL / "audio" / "audio_key_debounce.sv",
+            RTL / "audio" / "audio_stem_mixer.sv",
+            RTL / "audio" / "audio_i2s_tx.sv",
+            RTL / "audio" / "audio_test_tone.sv",
+            RTL / "audio" / "wm8960_i2c_master.sv",
+            RTL / "audio" / "wm8960_init.sv",
+            RTL / "audio" / "audio_out_axi.sv",
+            RTL / "tb" / "tb_audio_out_axi.sv",
+        ],
+        "audio_out_axi: PASS",
+    ),
 }
 
 

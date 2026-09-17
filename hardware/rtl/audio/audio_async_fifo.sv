@@ -35,6 +35,9 @@ module audio_async_fifo #(
   logic [PTR_WIDTH-1:0] rd_gray_q;
   logic rd_valid_q;
   logic [63:0] rd_data_q;
+  logic rd_fetch;
+  logic [ADDR_WIDTH-1:0] rd_fetch_address;
+  logic [PTR_WIDTH-1:0] rd_consumed_bin;
   (* async_reg = "true" *) logic [PTR_WIDTH-1:0] wr_gray_rd_sync1_q;
   (* async_reg = "true" *) logic [PTR_WIDTH-1:0] wr_gray_rd_sync2_q;
 
@@ -77,6 +80,12 @@ module audio_async_fifo #(
     wr_bin_rd_sync = gray_to_binary(wr_gray_rd_sync2_q);
     wr_level_o = wr_bin_q - rd_bin_wr_sync;
     rd_level_o = wr_bin_rd_sync - rd_bin_q;
+    rd_consumed_bin = rd_bin_q + 1'b1;
+    rd_fetch = (!rd_valid_q && rd_bin_q != wr_bin_rd_sync)
+      || (rd_valid_q && rd_ready_i && rd_consumed_bin != wr_bin_rd_sync);
+    rd_fetch_address = (!rd_valid_q)
+      ? rd_bin_q[ADDR_WIDTH-1:0]
+      : rd_consumed_bin[ADDR_WIDTH-1:0];
   end
 
   assign rd_valid_o = rd_valid_q;
@@ -93,45 +102,41 @@ module audio_async_fifo #(
     end else begin
       rd_gray_wr_sync1_q <= rd_gray_q;
       rd_gray_wr_sync2_q <= rd_gray_wr_sync1_q;
-      if (wr_valid_i && !wr_full_o)
-        memory[wr_bin_q[ADDR_WIDTH-1:0]] <= wr_data_i;
       wr_bin_q <= wr_bin_next;
       wr_gray_q <= wr_gray_next;
       wr_full_o <= wr_full_next;
     end
   end
 
+  always_ff @(posedge wr_clk_i) begin
+    if (wr_valid_i && !wr_full_o)
+      memory[wr_bin_q[ADDR_WIDTH-1:0]] <= wr_data_i;
+  end
+
   always_ff @(posedge rd_clk_i or negedge rd_rst_ni) begin
-    logic [PTR_WIDTH-1:0] consumed_bin;
-    logic [PTR_WIDTH-1:0] consumed_gray;
     if (!rd_rst_ni) begin
       rd_bin_q <= '0;
       rd_gray_q <= '0;
       rd_valid_q <= 1'b0;
-      rd_data_q <= '0;
       wr_gray_rd_sync1_q <= '0;
       wr_gray_rd_sync2_q <= '0;
     end else begin
       wr_gray_rd_sync1_q <= wr_gray_q;
       wr_gray_rd_sync2_q <= wr_gray_rd_sync1_q;
-
-      if (!rd_valid_q) begin
-        if (rd_bin_q != wr_bin_rd_sync) begin
-          rd_data_q <= memory[rd_bin_q[ADDR_WIDTH-1:0]];
-          rd_valid_q <= 1'b1;
-        end
-      end else if (rd_ready_i) begin
-        consumed_bin = rd_bin_q + 1'b1;
-        consumed_gray = binary_to_gray(consumed_bin);
-        rd_bin_q <= consumed_bin;
-        rd_gray_q <= consumed_gray;
-        if (consumed_bin != wr_bin_rd_sync) begin
-          rd_data_q <= memory[consumed_bin[ADDR_WIDTH-1:0]];
-          rd_valid_q <= 1'b1;
-        end else begin
-          rd_valid_q <= 1'b0;
-        end
+      if (!rd_valid_q && rd_fetch) begin
+        rd_valid_q <= 1'b1;
+      end else if (rd_valid_q && rd_ready_i) begin
+        rd_bin_q <= rd_consumed_bin;
+        rd_gray_q <= binary_to_gray(rd_consumed_bin);
+        rd_valid_q <= rd_consumed_bin != wr_bin_rd_sync;
       end
     end
+  end
+
+  // Keep the memory read in a reset-free synchronous process so Vivado can
+  // infer the asynchronous FIFO storage as simple dual-port block RAM.
+  always_ff @(posedge rd_clk_i) begin
+    if (rd_fetch)
+      rd_data_q <= memory[rd_fetch_address];
   end
 endmodule

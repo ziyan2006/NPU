@@ -1,0 +1,10 @@
+hardware/rtl/audio/audio_regs_pkg.sv
+hardware/rtl/audio/audio_axi_csr.sv
+hardware/rtl/audio/audio_async_fifo.sv
+hardware/rtl/audio/audio_key_debounce.sv
+hardware/rtl/audio/audio_stem_mixer.sv
+hardware/rtl/audio/audio_i2s_tx.sv
+hardware/rtl/audio/audio_test_tone.sv
+hardware/rtl/audio/wm8960_i2c_master.sv
+hardware/rtl/audio/wm8960_init.sv
+hardware/rtl/audio/audio_out_axi.sv

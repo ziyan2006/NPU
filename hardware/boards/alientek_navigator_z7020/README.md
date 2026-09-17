@@ -91,6 +91,41 @@ BD 中 58/72 个显式字段、MIO 和时序报告，结果 `PASS`。
 25,293 FF、61 BRAM36、72 DSP；100 MHz post-route WNS `+0.461 ns`、WHS
 `+0.032 ns`。PS7 是硬核，两个候选的 PL 资源/时序数字相同不代表 DDR 配置相同。
 
+## NPU + WM8960 音频 PL 离线实现
+
+音频子系统与现有 NPU 已集成到同一个 `xc7z020clg400-2` 设计中。NPU CSR 保持在
+`0x43C00000`，音频 CSR 使用 `0x43C10000`。音频 IP 包含 8192 帧、每帧 64 bit 的
+异步 FIFO，Vivado 推断为 `16 x RAMB36E1`；WM8960 的 SCL/SDA 通过两个显式
+`IOBUF` 实现开漏读写和 ACK 回读。50 MHz 板载时钟通过 MMCM 参数
+`D=3, M=63.250, O=93.375` 生成约 11.2896 MHz MCLK，并输出 44.1 kHz I2S。
+
+V3.7 参考资料对应的 PL 引脚如下：
+
+| 信号 | 管脚 |
+|---|---|
+| `sys_clk` | `U18` |
+| `KEY0` / `key_n` | `L14` |
+| WM8960 SCL / SDA | `E18` / `F17` |
+| WM8960 MCLK / BCLK | `E19` / `M18` |
+| WM8960 DAC LRCLK / DACDAT | `G18` / `G17` |
+
+Vivado 2026.1 离线实现结果：post-route WNS `+0.235 ns`、WHS `+0.050 ns`，
+setup/hold 失败路径、未布线网络和 Critical DRC 均为 0；实现后 CDC 仅保留异步复位
+断言/同步释放结构的已知报告项。生成和审计命令：
+
+```powershell
+vivado -mode batch -source scripts/93_package_audio_out_ip.tcl
+vivado -mode batch -source scripts/94_create_navigator_audio_soc.tcl
+vivado -mode batch -source scripts/95_implement_navigator_audio_soc.tcl
+python scripts/96_check_navigator_audio_soc.py
+```
+
+导出文件位于忽略提交的
+`hardware/build/navigator_z7020_audio_export/stem_npu_audio_navigator_z7020.bit` 和
+`stem_npu_audio_navigator_z7020.xsa`。这些结果证明设计已完成离线综合、布局布线和
+bitstream 生成；尚未在实板上验证 WM8960 配置、测试音或扬声器输出，不能作为音频
+上板验收结论。
+
 在填齐完整实物及首测记录前，只运行到实现和检查，
 不执行 `43_export_navigator_candidate.tcl`。
 导出脚本会核对 V3.7 DDR/MIO 参数，并通过 `45_validate_navigator_confirmation.py`

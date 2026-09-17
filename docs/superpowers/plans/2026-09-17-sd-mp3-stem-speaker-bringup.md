@@ -348,11 +348,11 @@
 - Consumes: Zynq GP0 AXI at 100 MHz, board 50 MHz clock on `U18`, reset, KEY0 `L14`, WM8960 SDA input; packaged NPU IP and validated V3.7 PS configuration.
 - Produces: audio AXI segment `0x43C10000..0x43C10FFF`, MCLK `E19`, BCLK `M18`, DAC LRCLK `G18`, DACDAT `G17`, I2C SCL `E18`, SDA `F17`, plus bitstream/XSA under ignored `hardware/build/navigator_z7020_audio_export/`.
 
-- [ ] **Step 1: Write the failing integration test and audit**
+- [x] **Step 1: Write the failing integration test and audit**
 
   The top test writes two FIFO frames, enables playback, toggles KEY0 and checks register counters against serialized samples. The Python audit must fail unless `xc7z020clg400-2`, both address segments, exact pins, 8192-depth BRAM inference, routed status, no critical DRC and nonnegative WNS are present.
 
-- [ ] **Step 2: Confirm simulation and audit are red**
+- [x] **Step 2: Confirm simulation and audit are red**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case top
@@ -361,11 +361,11 @@
 
   Expected: missing top and missing exported reports cause nonzero exits.
 
-- [ ] **Step 3: Wire the top and recreate the block design**
+- [x] **Step 3: Wire the top and recreate the block design**
 
   Instantiate the existing `stem_npu_1_0` unchanged and the new audio IP behind GP0 SmartConnect. Create the 11.289602856 MHz clock with Clocking Wizard `D=3`, `M=63.25`, `O=93.375` from the 50 MHz pin, connect AXI reset through `proc_sys_reset`, and force address assignments with Tcl assertions. The XDC contains only these seven audio/control pins and creates the 20 ns input clock; it must not import the vendor-wide XDC.
 
-- [ ] **Step 4: Simulate, implement and audit**
+- [x] **Step 4: Simulate, implement and audit**
 
   ```powershell
   python scripts/_test_audio_rtl.py
@@ -378,7 +378,7 @@
 
   Expected: all commands pass; audit reports audio CSR at `0x43C10000`, NPU CSR unchanged, routed design and timing closure.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add hardware/rtl/audio hardware/rtl/tb/tb_audio_out_axi.sv hardware/boards/alientek_navigator_z7020/audio_out_v37.xdc hardware/boards/alientek_navigator_z7020/README.md scripts/93_package_audio_out_ip.tcl scripts/94_create_navigator_audio_soc.tcl scripts/95_implement_navigator_audio_soc.tcl scripts/96_check_navigator_audio_soc.py
