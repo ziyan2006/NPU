@@ -34,6 +34,7 @@ logs/
 .srcs/
 vivado*.jou
 vivado*.log
+.repo.yaml
 hardware/build/
 hardware/reports/vivado_2026_1/navigator_z7020_audio_impl/
 hardware/reports/vivado_2026_1/navigator_z7020_audio_synth/

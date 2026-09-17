@@ -7,6 +7,16 @@ JTAG 首测，不得写入启动 Flash。
 Linux 和永久启动放在 NPU/DDR 链路验证之后，避免同时调试设备树、DMA 分配、
 启动介质和硬件。
 
+## 音频 standalone 分阶段应用
+
+NPU 与 WM8960 的联合 XSA 可通过 `scripts/101_build_audio_player.ps1` 构建两个独立
+应用：`-Mode Tone` 只验证 codec/I2S/扬声器，`-Mode Wav` 从 FAT 分区读取
+`0:/test.wav`。WAV 模式只接受 44.1 kHz、16-bit、双声道 PCM，并在 FIFO 预填满
+8192 帧后才开始播放；文件不足 8192 帧会报告 `WAV_TOO_SHORT` 且不启用输出。
+两个构建都只在 `hardware/build/navigator_audio_player/` 生成本地 ELF，不制作启动
+镜像、不复制 SD 文件，也不连接板卡。当前仅完成离线构建路径，实际扬声器输出仍须
+按 Tone、Wav 顺序上板验收。
+
 ## 工件边界
 
 - CSR：`0x43C0_0000`，4 KiB；

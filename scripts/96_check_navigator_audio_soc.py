@@ -55,6 +55,20 @@ def main() -> None:
     components = design["components"]
     if "stem_npu_0" not in components or "audio_out_0" not in components:
         raise AssertionError("NPU/audio IP is missing from block design")
+    ps = components.get("processing_system7_0", {}).get("parameters", {})
+    expected_sd = {
+        "PCW_SD0_PERIPHERAL_ENABLE": "1",
+        "PCW_SD0_SD0_IO": "MIO 40 .. 45",
+        "PCW_SD0_GRP_CD_ENABLE": "1",
+        "PCW_SD0_GRP_CD_IO": "MIO 10",
+    }
+    for key, expected in expected_sd.items():
+        actual = ps.get(key, {}).get("value")
+        if actual != expected:
+            raise AssertionError(
+                f"audio runtime SD0 mismatch: {key}={actual!r}, "
+                f"expected {expected!r}"
+            )
     clock_component = components.get("audio_clock", {})
     clock_xci_path = clock_component.get("xci_path")
     if not clock_xci_path:

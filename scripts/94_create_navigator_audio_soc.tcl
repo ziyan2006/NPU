@@ -24,6 +24,10 @@ set_property ip_repo_paths $ip_repository [current_project]
 update_ip_catalog
 add_files -fileset constrs_1 -norecurse $xdc
 
+# The playback image reads media after FSBL handoff, so the runtime XSA must
+# expose the board's SD0 controller.  The base JTAG profile keeps this off.
+set ::npu_board_runtime_sd0 1
+
 create_bd_design audio_soc
 set ps [create_bd_cell -type ip -vlnv \
   xilinx.com:ip:processing_system7:5.5 processing_system7_0]

@@ -4,6 +4,9 @@
 # This profile is for a first JTAG/DDR smoke test, not a verified boot image.
 
 set ::npu_board_profile_name "alientek_navigator_z7020_vendor_v37_jtag"
+if {![info exists ::npu_board_runtime_sd0]} {
+  set ::npu_board_runtime_sd0 0
+}
 set ::npu_vendor_ps7_xci [file join [file dirname [file normalize [info script]]] \
   vendor_reference_local ps7 system_processing_system7_0_0.xci]
 
@@ -71,10 +74,19 @@ proc npu_apply_board_ps {ps} {
     CONFIG.PCW_UART0_UART0_IO {MIO 14 .. 15} \
     CONFIG.PCW_UART0_BAUD_RATE {115200} \
     CONFIG.PCW_QSPI_PERIPHERAL_ENABLE {0} \
-    CONFIG.PCW_SD0_PERIPHERAL_ENABLE {0} \
+    CONFIG.PCW_SD0_PERIPHERAL_ENABLE $::npu_board_runtime_sd0 \
     CONFIG.PCW_ENET0_PERIPHERAL_ENABLE {0} \
     CONFIG.PCW_ENET1_PERIPHERAL_ENABLE {0} \
   ] $ps
+  if {$::npu_board_runtime_sd0} {
+    set_property -dict [list \
+      CONFIG.PCW_SD0_SD0_IO {MIO 40 .. 45} \
+      CONFIG.PCW_SD0_GRP_CD_ENABLE {1} \
+      CONFIG.PCW_SD0_GRP_CD_IO {MIO 10} \
+      CONFIG.PCW_SD0_GRP_WP_ENABLE {0} \
+      CONFIG.PCW_SD0_GRP_POW_ENABLE {0} \
+    ] $ps
+  }
 }
 
 proc npu_expect_vendor_ps {ps property expected} {
@@ -100,11 +112,21 @@ proc npu_validate_board_ps {ps} {
     PCW_S_AXI_HP0_DATA_WIDTH 64
     PCW_FPGA0_PERIPHERAL_FREQMHZ 100.000000
     PCW_QSPI_PERIPHERAL_ENABLE 0
-    PCW_SD0_PERIPHERAL_ENABLE 0
     PCW_ENET0_PERIPHERAL_ENABLE 0
     PCW_ENET1_PERIPHERAL_ENABLE 0
   } {
     npu_expect_vendor_ps $ps CONFIG.$property $expected
+  }
+  npu_expect_vendor_ps $ps CONFIG.PCW_SD0_PERIPHERAL_ENABLE \
+    $::npu_board_runtime_sd0
+  if {$::npu_board_runtime_sd0} {
+    foreach {property expected} {
+      PCW_SD0_SD0_IO {MIO 40 .. 45}
+      PCW_SD0_GRP_CD_ENABLE 1
+      PCW_SD0_GRP_CD_IO {MIO 10}
+    } {
+      npu_expect_vendor_ps $ps CONFIG.$property $expected
+    }
   }
   foreach index {0 1 2 3} {
     npu_expect_vendor_ps $ps CONFIG.PCW_UIPARAM_DDR_BOARD_DELAY$index 0.25
