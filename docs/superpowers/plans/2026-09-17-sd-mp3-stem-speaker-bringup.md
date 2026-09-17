@@ -232,11 +232,11 @@
 - Consumes: 11.2896 MHz `mclk`, reset, signed stereo int16 frame, `frame_valid`, and tone enable/amplitude/phase step.
 - Produces: `aud_mclk`, BCLK=MCLK/4, DAC LRCLK=BCLK/64, I2S `aud_dacdat`, `frame_ready` at a stereo boundary and `sample_tick` once per consumed frame.
 
-- [ ] **Step 1: Add a bit-exact failing I2S test**
+- [x] **Step 1: Add a bit-exact failing I2S test**
 
   Queue `left=16'h1234`, `right=16'hfedc` and assert the wire has one-bit I2S delay, then `24'h123400` and `24'hfedc00` in the MSBs of the two 32-bit slots. Count exactly 64 BCLK rising edges and four MCLK periods per BCLK period. Verify underflow serializes zero without changing frame timing.
 
-- [ ] **Step 2: Confirm the red test**
+- [x] **Step 2: Confirm the red test**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case i2s
@@ -244,11 +244,11 @@
 
   Expected: compile failure naming `audio_i2s_tx`.
 
-- [ ] **Step 3: Implement serializer and phase-accumulator tone**
+- [x] **Step 3: Implement serializer and phase-accumulator tone**
 
   Generate BCLK and LRCLK only from MCLK counters, latch one stereo frame at the frame boundary, left-shift int16 samples by eight, and serialize MSB first. Tone mode uses a 32-bit phase accumulator and a committed 256-entry signed sine ROM; default phase step is `round(1000*2^32/44100)=97391549`, amplitude defaults to 4096.
 
-- [ ] **Step 4: Run bit-exact tests**
+- [x] **Step 4: Run bit-exact tests**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case i2s
@@ -257,7 +257,7 @@
 
   Expected: serialized frame bits, clock ratios, zero-underflow and tone period all pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add hardware/rtl/audio/audio_i2s_tx.sv hardware/rtl/audio/audio_test_tone.sv hardware/rtl/tb/tb_audio_i2s_tx.sv scripts/_test_audio_rtl.py

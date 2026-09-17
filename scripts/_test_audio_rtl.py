@@ -38,6 +38,15 @@ CASES = {
         ],
         "audio_key_mixer: PASS",
     ),
+    "i2s": (
+        "tb_audio_i2s_tx",
+        [
+            RTL / "audio" / "audio_i2s_tx.sv",
+            RTL / "audio" / "audio_test_tone.sv",
+            RTL / "tb" / "tb_audio_i2s_tx.sv",
+        ],
+        "audio_i2s_tx: PASS",
+    ),
 }
 
 
