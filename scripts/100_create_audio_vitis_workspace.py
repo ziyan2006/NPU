@@ -25,6 +25,7 @@ MODES = {
     "Tone": ("tone_player", "PLAYER_MODE_TONE=1"),
     "Wav": ("wav_player", "PLAYER_MODE_WAV=1"),
     "Mp3Bypass": ("mp3_bypass_player", "PLAYER_MODE_MP3_BYPASS=1"),
+    "FullStem": ("stem_player", "PLAYER_MODE_FULL_STEM=1"),
 }
 MODE_SOURCES = {
     "Tone": ["audio_hw.c", "pcm_ring.c", "wav_source.c",
@@ -33,16 +34,31 @@ MODE_SOURCES = {
             "player_platform_vitis.c", "player_main.c"],
     "Mp3Bypass": ["audio_hw.c", "sd_mp3_source.c",
                   "player_platform_vitis.c", "player_main.c"],
+    "FullStem": [
+        "audio_hw.c", "pcm_ring.c", "sd_mp3_source.c", "stem_frontend.c",
+        "stem_npu_session.c", "stem_backend.c", "player.c",
+        "player_platform_vitis.c", "player_main.c", "npu_driver.c",
+        "kiss_fft.c", "kiss_fftr.c", "stem_filterbank.c",
+        "stem_task_payload.c",
+    ],
 }
 MODE_HEADERS = {
     "Tone": ["audio_hw.h", "pcm_ring.h", "wav_source.h", "player_platform.h"],
     "Wav": ["audio_hw.h", "pcm_ring.h", "wav_source.h", "player_platform.h"],
     "Mp3Bypass": ["audio_hw.h", "sd_mp3_source.h", "player_platform.h"],
+    "FullStem": [
+        "audio_hw.h", "pcm_ring.h", "sd_mp3_source.h", "stem_contract.h",
+        "stem_frontend.h", "stem_npu_session.h", "stem_backend.h", "player.h",
+        "player_platform.h", "npu_driver.h", "stem_filterbank.h",
+        "stem_task_metadata.h", "stem_task_payload.h",
+    ],
 }
 MODE_VENDOR_HEADERS = {
     "Tone": [],
     "Wav": [],
     "Mp3Bypass": ["minimp3.h"],
+    "FullStem": ["minimp3.h", "kiss_fft.h", "kiss_fftr.h",
+                 "_kiss_fft_guts.h", "kiss_fft_log.h"],
 }
 REQUIRED_SYMBOLS = {"player_main", "f_mount", "audio_hw_write_frame"}
 
@@ -90,6 +106,33 @@ def require_file(path: Path) -> None:
         raise FileNotFoundError(path)
 
 
+def source_path(name: str) -> Path:
+    candidates = (
+        ROOT / "software" / "audio_player" / "src" / name,
+        ROOT / "software" / "src" / name,
+        ROOT / "software" / "audio_player" / "generated" / name,
+        ROOT / "software" / "audio_player" / "third_party" / "kissfft" / name,
+    )
+    return next((path for path in candidates if path.is_file()), candidates[0])
+
+
+def header_path(name: str) -> Path:
+    candidates = (
+        ROOT / "software" / "audio_player" / "include" / name,
+        ROOT / "software" / "include" / name,
+        ROOT / "software" / "audio_player" / "generated" / name,
+    )
+    return next((path for path in candidates if path.is_file()), candidates[0])
+
+
+def vendor_header_path(name: str) -> Path:
+    candidates = (
+        ROOT / "software" / "audio_player" / "third_party" / "minimp3" / name,
+        ROOT / "software" / "audio_player" / "third_party" / "kissfft" / name,
+    )
+    return next((path for path in candidates if path.is_file()), candidates[0])
+
+
 def validate_audio_xsa(path: Path) -> None:
     require_file(path)
     if not zipfile.is_zipfile(path):
@@ -108,17 +151,12 @@ def describe_build(mode: str, xsa: Path) -> dict[str, object]:
     if mode not in MODES:
         raise ValueError(f"unsupported audio player mode: {mode}")
     validate_audio_xsa(xsa)
-    source_dir = ROOT / "software" / "audio_player" / "src"
-    include_dir = ROOT / "software" / "audio_player" / "include"
     for name in MODE_SOURCES[mode]:
-        require_file(source_dir / name)
+        require_file(source_path(name))
     for name in MODE_HEADERS[mode]:
-        require_file(include_dir / name)
-    vendor_dir = (
-        ROOT / "software" / "audio_player" / "third_party" / "minimp3"
-    )
+        require_file(header_path(name))
     for name in MODE_VENDOR_HEADERS[mode]:
-        require_file(vendor_dir / name)
+        require_file(vendor_header_path(name))
     application, definition = MODES[mode]
     workspace_root = Path(
         os.environ.get("AUDIO_PLAYER_WORKSPACE_ROOT", str(BUILD_ROOT))
@@ -207,14 +245,12 @@ def generated_domain_has_xilffs(workspace: Path) -> bool:
 
 def configure_generated_app(app_source: Path,
                             description: dict[str, object]) -> None:
-    source_root = ROOT / "software" / "audio_player"
     for name in description["sources"]:
-        shutil.copy2(source_root / "src" / name, app_source / name)
+        shutil.copy2(source_path(str(name)), app_source / str(name))
     for name in description["headers"]:
-        shutil.copy2(source_root / "include" / name, app_source / name)
+        shutil.copy2(header_path(str(name)), app_source / str(name))
     for name in description["vendor_headers"]:
-        shutil.copy2(source_root / "third_party" / "minimp3" / name,
-                     app_source / name)
+        shutil.copy2(vendor_header_path(str(name)), app_source / str(name))
 
     user_config = app_source / "UserConfig.cmake"
     text = user_config.read_text(encoding="utf-8")
@@ -228,21 +264,40 @@ def configure_generated_app(app_source: Path,
     )
     if count != 1:
         raise RuntimeError("could not configure generated application mode")
+    if description["mode"] == "FullStem":
+        text, count = re.subn(
+            r"set\(USER_COMPILE_OPTIMIZATION_LEVEL\s+-O0\s*\)",
+            "set(USER_COMPILE_OPTIMIZATION_LEVEL -O2)",
+            text,
+            count=1,
+        )
+        if count != 1:
+            raise RuntimeError("could not enable FullStem compiler optimization")
     user_config.write_text(text, encoding="utf-8")
 
 
 def configure_linker_stack(user_config: Path, mode: str) -> None:
-    if mode != "Mp3Bypass":
+    if mode not in ("Mp3Bypass", "FullStem"):
         return
     text = user_config.read_text(encoding="utf-8")
+    stack_size = "0x20000" if mode == "FullStem" else "0x10000"
     text, count = re.subn(
         r"set\(USER_LINK_OTHER_FLAGS\s*\)",
-        'set(USER_LINK_OTHER_FLAGS\n"-Wl,--defsym=_STACK_SIZE=0x10000"\n)',
+        f'set(USER_LINK_OTHER_FLAGS\n"-Wl,--defsym=_STACK_SIZE={stack_size}"\n)',
         text,
         count=1,
     )
     if count != 1:
-        raise RuntimeError("could not set MP3 application stack to 64 KiB")
+        raise RuntimeError("could not set audio application stack")
+    if mode == "FullStem":
+        text, count = re.subn(
+            r"set\(USER_LINK_LIBRARIES\s*\)",
+            'set(USER_LINK_LIBRARIES\n"m"\n)',
+            text,
+            count=1,
+        )
+        if count != 1:
+            raise RuntimeError("could not link FullStem with libm")
     user_config.write_text(text, encoding="utf-8")
 
 

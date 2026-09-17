@@ -23,6 +23,7 @@ extern "C" {
 #define AUDIO_HW_REG_UNDERFLOW_COUNT 0x020u
 #define AUDIO_HW_REG_OVERFLOW_COUNT  0x024u
 #define AUDIO_HW_REG_PLAYED_FRAMES   0x028u
+#define AUDIO_HW_REG_STEM_STATE       0x02cu
 #define AUDIO_HW_REG_CODEC_STATUS    0x030u
 #define AUDIO_HW_REG_TONE_CONTROL    0x034u
 
@@ -32,6 +33,8 @@ extern "C" {
 
 #define AUDIO_HW_STATUS_CODEC_DONE   (1u << 2)
 #define AUDIO_HW_STATUS_CODEC_ERROR  (1u << 3)
+#define AUDIO_HW_STEM_TARGET          (1u << 0)
+#define AUDIO_HW_STEM_RAMPING         (1u << 1)
 
 #if defined(XPAR_AUDIO_OUT_AXI_0_BASEADDR)
 _Static_assert(XPAR_AUDIO_OUT_AXI_0_BASEADDR == AUDIO_HW_BASE_ADDRESS,

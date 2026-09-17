@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("Tone", "Wav", "Mp3Bypass")]
+    [ValidateSet("Tone", "Wav", "Mp3Bypass", "FullStem")]
     [string]$Mode = "Wav",
     [string]$XsaPath = "",
     [switch]$Clean
@@ -29,6 +29,7 @@ $application = switch ($Mode) {
     "Tone" { "tone_player" }
     "Wav" { "wav_player" }
     "Mp3Bypass" { "mp3_bypass_player" }
+    "FullStem" { "stem_player" }
 }
 $buildRoot = Join-Path $repoRoot "hardware\build\navigator_audio_player"
 $elf = Join-Path $buildRoot "$application.elf"

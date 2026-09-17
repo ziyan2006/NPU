@@ -68,6 +68,13 @@ uint32_t player_platform_milliseconds(void)
     return (uint32_t)((now * 1000u) / COUNTS_PER_SECOND);
 }
 
+uint64_t player_platform_microseconds(void)
+{
+    XTime now;
+    XTime_GetTime(&now);
+    return ((uint64_t)now * 1000000u) / COUNTS_PER_SECOND;
+}
+
 void player_platform_delay_ms(uint32_t milliseconds)
 {
     while (milliseconds != 0u) {

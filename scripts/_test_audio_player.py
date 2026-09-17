@@ -67,6 +67,18 @@ CASES = {
         ],
         "stem backend: PASS",
     ),
+    "player": (
+        [
+            PLAYER / "third_party" / "kissfft" / "kiss_fft.c",
+            PLAYER / "third_party" / "kissfft" / "kiss_fftr.c",
+            PLAYER / "generated" / "stem_filterbank.c",
+            PLAYER / "src" / "pcm_ring.c",
+            PLAYER / "src" / "stem_backend.c",
+            PLAYER / "src" / "player.c",
+            PLAYER / "tests" / "test_player.c",
+        ],
+        "player state machine: PASS",
+    ),
 }
 
 
@@ -167,6 +179,55 @@ def test_vitis_layout() -> None:
         raise AssertionError("MP3 source is missing from Vitis imports")
     if "minimp3.h" not in mp3_description["vendor_headers"]:
         raise AssertionError("pinned minimp3 header is missing from Vitis imports")
+    stem_description = builder.describe_build("FullStem", xsa)
+    if stem_description["definition"] != "PLAYER_MODE_FULL_STEM=1":
+        raise AssertionError("full STEM application build definition is missing")
+    required_stem_sources = {
+        "audio_hw.c", "pcm_ring.c", "sd_mp3_source.c", "stem_frontend.c",
+        "stem_npu_session.c", "stem_backend.c", "player.c",
+        "player_platform_vitis.c", "player_main.c", "npu_driver.c",
+        "kiss_fft.c", "kiss_fftr.c", "stem_filterbank.c",
+        "stem_task_payload.c",
+    }
+    if set(stem_description["sources"]) != required_stem_sources:
+        raise AssertionError(
+            f"FullStem source imports differ: {stem_description['sources']}"
+        )
+    if stem_description["application"] != "stem_player":
+        raise AssertionError("FullStem application must produce stem_player.elf")
+    for header in ("player.h", "npu_driver.h", "stem_task_metadata.h"):
+        if header not in stem_description["headers"]:
+            raise AssertionError(f"FullStem header import is missing {header}")
+    if set(stem_description["vendor_headers"]) != {
+        "minimp3.h", "kiss_fft.h", "kiss_fftr.h", "_kiss_fft_guts.h",
+        "kiss_fft_log.h",
+    }:
+        raise AssertionError("FullStem pinned vendor headers differ")
+    with tempfile.TemporaryDirectory(prefix="stem_app_config_") as directory:
+        app_source = Path(directory)
+        user_config = app_source / "UserConfig.cmake"
+        user_config.write_text(
+            'set(USER_COMPILE_DEFINITIONS "")\n'
+            "set(USER_COMPILE_OPTIMIZATION_LEVEL -O0)\n",
+            encoding="ascii",
+        )
+        builder.configure_generated_app(app_source, stem_description)
+        configured = user_config.read_text(encoding="ascii")
+        if "set(USER_COMPILE_OPTIMIZATION_LEVEL -O2)" not in configured:
+            raise AssertionError("FullStem application must compile with -O2")
+
+    with tempfile.TemporaryDirectory(prefix="wav_app_config_") as directory:
+        app_source = Path(directory)
+        user_config = app_source / "UserConfig.cmake"
+        user_config.write_text(
+            'set(USER_COMPILE_DEFINITIONS "")\n'
+            "set(USER_COMPILE_OPTIMIZATION_LEVEL -O0)\n",
+            encoding="ascii",
+        )
+        builder.configure_generated_app(app_source, description)
+        configured = user_config.read_text(encoding="ascii")
+        if "set(USER_COMPILE_OPTIMIZATION_LEVEL -O0)" not in configured:
+            raise AssertionError("non-FullStem optimization must remain unchanged")
     with tempfile.TemporaryDirectory(prefix="mp3_linker_contract_") as directory:
         linker = Path(directory) / "UserConfig.cmake"
         linker.write_text(
@@ -226,7 +287,7 @@ def compile_and_run(case: str) -> None:
              "--mp3", "--check"],
             check=True,
         )
-    elif case in ("frontend", "backend"):
+    elif case in ("frontend", "backend", "player"):
         verify_kissfft_upstream()
         subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "98_generate_stem_constants.py"),
@@ -256,7 +317,7 @@ def compile_and_run(case: str) -> None:
         include_paths = [INCLUDE]
         if case == "mp3":
             include_paths.append(PLAYER / "third_party" / "minimp3")
-        elif case in ("frontend", "backend"):
+        elif case in ("frontend", "backend", "player"):
             include_paths.extend([
                 PLAYER / "third_party" / "kissfft",
                 PLAYER / "generated",
@@ -313,7 +374,7 @@ def compile_and_run(case: str) -> None:
                 *(["/wd4244", "/D_CRT_SECURE_NO_WARNINGS"]
                   if case == "mp3" else
                   ["/wd4267", "/D_CRT_SECURE_NO_WARNINGS"]
-                  if case in ("frontend", "backend") else []),
+                  if case in ("frontend", "backend", "player") else []),
                 *(f"/I{path}" for path in include_paths),
                 *(f"/D{define}" for define in defines),
                 *(str(source) for source in sources),

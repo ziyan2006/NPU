@@ -15,6 +15,7 @@ uintptr_t player_platform_audio_base(void);
 uint32_t player_platform_audio_read(uint32_t offset);
 void player_platform_audio_write(uint32_t offset, uint32_t value);
 uint32_t player_platform_milliseconds(void);
+uint64_t player_platform_microseconds(void);
 void player_platform_delay_ms(uint32_t milliseconds);
 void player_platform_log(const char *message);
 void player_platform_status(uint32_t played, uint32_t level,
