@@ -190,6 +190,29 @@ xsdb scripts/71_start_navigator_sd_runner_jtag.tcl
 xsdb scripts/72_probe_navigator_sd_npu_csr.tcl
 ```
 
+`scripts/72_*` 中的 `STATUS=0x00000009` 表示 `IDLE | DONE`，
+`IRQ_STATUS=0x00000001` 表示 DONE 中断；二者均不是错误。
+
+### 当前镜像的兼容修复
+
+`software/bringup/minimal_a9/navigator_sd_coldboot_runner.c` 是一个不依赖 Vitis BSP
+的替代应用：FSBL handoff 后，它先调用候选 XSA 导出的 `ps7_post_config()`，再访问
+NPU。此调用只释放 PL reset/level shifter，**不调用会重置 DDR 的 `ps7_init()`**。在
+实板上，经 JTAG 易失下载该 runner 后，它自己完成 post-config，NPU CSR 读回
+`IP_ID=0x3155504E`、`STATUS=IDLE|DONE`、`ERROR_CODE=0`，并完成同一完整任务。
+
+构建命令如下；task payload 与 Vivado 导出的 `ps7_init.c/h` 都是本地忽略文件，故 ELF
+只会出现在忽略的 `hardware/build/` 下：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/74_build_navigator_sd_coldboot_runner.ps1
+xsdb scripts/75_run_navigator_sd_coldboot_runner_jtag.tcl `
+  hardware/build/navigator_sd_coldboot_runner/navigator_sd_coldboot_runner.elf
+```
+
+后一个命令只覆盖易失 DDR 以验证应用；它不是 SD 写入。将该 ELF 封装进新的 `BOOT.BIN`
+前，必须先备份当前 SD 卡，并从当前启动镜像提取/重建可审计的 FSBL 组成物。
+
 ## 2026-09-17 真实板 JTAG 记录
 
 本节是实测事实，不替代上述仍待完成的软件、全容量与长期稳定性验收。

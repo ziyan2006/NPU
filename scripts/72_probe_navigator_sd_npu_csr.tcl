@@ -14,9 +14,11 @@ foreach pair {
   {IP_ID 0x00}
   {RTL_VERSION 0x04}
   {ISA_VERSION 0x08}
-  {CONTROL 0x10}
+  {CAPABILITY1 0x10}
+  {CONTROL 0x14}
   {STATUS 0x18}
-  {ERROR 0x1c}
+  {IRQ_STATUS 0x1c}
+  {ERROR_CODE 0x3c}
 } {
   lassign $pair name offset
   set address [expr {$csr_base + $offset}]
