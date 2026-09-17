@@ -1,0 +1,43 @@
+{
+  "channels": 2,
+  "duration_seconds": 3,
+  "ffmpeg": "9.0.1",
+  "files": {
+    "test_44100_stereo_cbr.mp3": {
+      "bytes": 48900,
+      "sha256": "59341dd57f5c7fd5cffe83ca0afe8f3a0ec1fb39e5e380dcd1697d199208f06b"
+    },
+    "test_44100_stereo_vbr.mp3": {
+      "bytes": 19246,
+      "sha256": "d3a9352986dbfa791681977fd66c9399a21a1cec36a6487314cb214e4eb143ea"
+    }
+  },
+  "left_frequency_hz": 1000,
+  "minimp3_raw_reference": {
+    "commit": "ea99364f61c14656440e8d77e9c233ccf3124633",
+    "frames": 134784,
+    "test_44100_stereo_cbr.mp3_fnv1a32": "0xF0F5EDD2",
+    "test_44100_stereo_vbr.mp3_fnv1a32": "0x23DF9715"
+  },
+  "negative_vectors": {
+    "invalid_44100_mono.mp3": "2037beb1b1b648b94744fe73f1c155577ff390ee3ed4af197b99642e23da2b9a",
+    "invalid_48000_stereo.mp3": "fc927a70f07fcfc755a73528be4ec8ba458e4ddbd98a962da3071f35eb48dfad",
+    "invalid_layer2.mp2": "94ef617cac122e2f38600397aa8acb8ebfd8ee63332c0b20dd7d5a9e12577eb2",
+    "invalid_mpeg2_stereo.mp3": "9b8e99ccf8d2889dc0cb02b84bf04e6293e689e9598ed0632f886f09c938131b"
+  },
+  "reference_pcm": {
+    "test_44100_stereo_cbr.mp3": {
+      "bytes": 529200,
+      "fnv1a32": "0x719D5EE4",
+      "frames": 132300
+    },
+    "test_44100_stereo_vbr.mp3": {
+      "bytes": 529200,
+      "fnv1a32": "0x3ACB5002",
+      "frames": 132300
+    }
+  },
+  "right_frequency_hz": 2000,
+  "sample_rate_hz": 44100,
+  "source_amplitude_dbfs": -12.0
+}

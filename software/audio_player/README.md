@@ -11,6 +11,11 @@ Two initial build modes are available:
 - `Wav`: mounts `0:/`, opens `0:/test.wav`, accepts only stereo 44.1 kHz
   16-bit PCM, preloads all 8192 FIFO frames before enabling playback, and
   applies a 1323-frame fade at EOF.
+- `Mp3Bypass`: mounts `0:/`, opens `0:/music.mp3`, accepts only MPEG-1 Layer
+  III stereo at 44.1 kHz, and sends decoded PCM to the original-audio path
+  with the vocal path held at zero. This staged decoder exposes complete MPEG
+  frames, including encoder delay/padding; later player integration owns
+  gapless trimming and the final EOF fade.
 
 Build with Vitis 2026.1:
 
@@ -19,6 +24,8 @@ powershell -ExecutionPolicy Bypass -File scripts/101_build_audio_player.ps1 `
   -Mode Tone -Clean
 powershell -ExecutionPolicy Bypass -File scripts/101_build_audio_player.ps1 `
   -Mode Wav -Clean
+powershell -ExecutionPolicy Bypass -File scripts/101_build_audio_player.ps1 `
+  -Mode Mp3Bypass -Clean
 ```
 
 Outputs are local and ignored by Git:
@@ -26,6 +33,7 @@ Outputs are local and ignored by Git:
 ```text
 hardware/build/navigator_audio_player/tone_player.elf
 hardware/build/navigator_audio_player/wav_player.elf
+hardware/build/navigator_audio_player/mp3_bypass_player.elf
 ```
 
 The build validates the XSA audio address, enables `xilffs`, and rejects an

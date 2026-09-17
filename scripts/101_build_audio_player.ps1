@@ -1,5 +1,5 @@
 param(
-    [ValidateSet("Tone", "Wav")]
+    [ValidateSet("Tone", "Wav", "Mp3Bypass")]
     [string]$Mode = "Wav",
     [string]$XsaPath = "",
     [switch]$Clean
@@ -25,7 +25,11 @@ if ($LASTEXITCODE -ne 0) {
     throw "Navigator audio player Vitis build failed for mode $Mode"
 }
 
-$application = if ($Mode -eq "Tone") { "tone_player" } else { "wav_player" }
+$application = switch ($Mode) {
+    "Tone" { "tone_player" }
+    "Wav" { "wav_player" }
+    "Mp3Bypass" { "mp3_bypass_player" }
+}
 $buildRoot = Join-Path $repoRoot "hardware\build\navigator_audio_player"
 $elf = Join-Path $buildRoot "$application.elf"
 $manifest = Join-Path $buildRoot "${application}_build.json"

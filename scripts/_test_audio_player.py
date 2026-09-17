@@ -28,6 +28,13 @@ CASES = {
         ],
         "audio foundation: PASS",
     ),
+    "mp3": (
+        [
+            PLAYER / "src" / "sd_mp3_source.c",
+            PLAYER / "tests" / "test_mp3_source.c",
+        ],
+        "mp3 source: PASS",
+    ),
 }
 
 
@@ -103,6 +110,22 @@ def test_vitis_layout() -> None:
         raise AssertionError("standalone domain must enable xilffs")
     if description["definition"] != "PLAYER_MODE_WAV=1":
         raise AssertionError("WAV application build definition is missing")
+    mp3_description = builder.describe_build("Mp3Bypass", xsa)
+    if mp3_description["definition"] != "PLAYER_MODE_MP3_BYPASS=1":
+        raise AssertionError("MP3 bypass build definition is missing")
+    if "sd_mp3_source.c" not in mp3_description["sources"]:
+        raise AssertionError("MP3 source is missing from Vitis imports")
+    if "minimp3.h" not in mp3_description["vendor_headers"]:
+        raise AssertionError("pinned minimp3 header is missing from Vitis imports")
+    with tempfile.TemporaryDirectory(prefix="mp3_linker_contract_") as directory:
+        linker = Path(directory) / "UserConfig.cmake"
+        linker.write_text(
+            "set(USER_LINK_OTHER_FLAGS\n)\n",
+            encoding="ascii",
+        )
+        builder.configure_linker_stack(linker, "Mp3Bypass")
+        if "--defsym=_STACK_SIZE=0x10000" not in linker.read_text(encoding="ascii"):
+            raise AssertionError("MP3 application stack must be 64 KiB")
 
     with tempfile.TemporaryDirectory(prefix="bad_audio_xsa_") as directory:
         bad_xsa = Path(directory) / "bad.xsa"
@@ -147,6 +170,12 @@ def visual_studio_vcvars() -> Path | None:
 
 def compile_and_run(case: str) -> None:
     sources, marker = CASES[case]
+    if case == "mp3":
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "97_generate_audio_vectors.py"),
+             "--mp3", "--check"],
+            check=True,
+        )
     with tempfile.TemporaryDirectory(prefix=f"audio_{case}_") as directory:
         output = Path(directory)
         executable = output / "test.exe"
@@ -156,6 +185,9 @@ def compile_and_run(case: str) -> None:
             None,
         )
         defines = ["XPAR_AUDIO_OUT_AXI_0_BASEADDR=0x43C10000U"]
+        include_paths = [INCLUDE]
+        if case == "mp3":
+            include_paths.append(PLAYER / "third_party" / "minimp3")
         if native is not None:
             command = [
                 native,
@@ -163,7 +195,7 @@ def compile_and_run(case: str) -> None:
                 "-Wall",
                 "-Wextra",
                 "-Werror",
-                f"-I{INCLUDE}",
+                *(f"-I{path}" for path in include_paths),
                 *(f"-D{define}" for define in defines),
                 *(str(source) for source in sources),
                 "-o",
@@ -202,15 +234,32 @@ def compile_and_run(case: str) -> None:
                 "/std:c11",
                 "/W4",
                 "/WX",
-                f"/I{INCLUDE}",
+                *(["/wd4244", "/D_CRT_SECURE_NO_WARNINGS"]
+                  if case == "mp3" else []),
+                *(f"/I{path}" for path in include_paths),
                 *(f"/D{define}" for define in defines),
                 *(str(source) for source in sources),
                 f"/Fe:{executable}",
             ]
             subprocess.run(command, check=True, env=environment, cwd=output)
+        run_environment = os.environ.copy()
+        if case == "mp3":
+            run_environment["MP3_FIXTURE_DIR"] = str(
+                PLAYER / "tests" / "fixtures"
+            )
+            run_environment["MP3_VECTOR_DIR"] = str(
+                ROOT / "hardware" / "build" / "audio_vectors"
+            )
         completed = subprocess.run(
-            [str(executable)], check=True, capture_output=True, text=True
+            [str(executable)], check=False, capture_output=True, text=True,
+            env=run_environment,
         )
+        if completed.returncode != 0:
+            sys.stdout.write(completed.stdout)
+            sys.stderr.write(completed.stderr)
+            raise subprocess.CalledProcessError(
+                completed.returncode, [str(executable)]
+            )
         if marker not in completed.stdout:
             raise AssertionError(f"{case} did not report {marker!r}")
 

@@ -24,6 +24,9 @@ int player_platform_mount(void);
 int player_platform_open_wav(void);
 size_t player_platform_wav_read(void *context, void *destination, size_t bytes);
 void player_platform_close_wav(void);
+int player_platform_open_mp3(void);
+size_t player_platform_mp3_read(void *context, void *destination, size_t bytes);
+void player_platform_close_mp3(void);
 
 #ifdef __cplusplus
 }

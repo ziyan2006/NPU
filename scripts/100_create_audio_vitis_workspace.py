@@ -24,15 +24,26 @@ DOMAIN_NAME = "standalone_ps7_cortexa9_0"
 MODES = {
     "Tone": ("tone_player", "PLAYER_MODE_TONE=1"),
     "Wav": ("wav_player", "PLAYER_MODE_WAV=1"),
+    "Mp3Bypass": ("mp3_bypass_player", "PLAYER_MODE_MP3_BYPASS=1"),
 }
-SOURCE_NAMES = [
-    "audio_hw.c",
-    "pcm_ring.c",
-    "wav_source.c",
-    "player_platform_vitis.c",
-    "player_main.c",
-]
-HEADER_NAMES = ["audio_hw.h", "pcm_ring.h", "wav_source.h", "player_platform.h"]
+MODE_SOURCES = {
+    "Tone": ["audio_hw.c", "pcm_ring.c", "wav_source.c",
+             "player_platform_vitis.c", "player_main.c"],
+    "Wav": ["audio_hw.c", "pcm_ring.c", "wav_source.c",
+            "player_platform_vitis.c", "player_main.c"],
+    "Mp3Bypass": ["audio_hw.c", "sd_mp3_source.c",
+                  "player_platform_vitis.c", "player_main.c"],
+}
+MODE_HEADERS = {
+    "Tone": ["audio_hw.h", "pcm_ring.h", "wav_source.h", "player_platform.h"],
+    "Wav": ["audio_hw.h", "pcm_ring.h", "wav_source.h", "player_platform.h"],
+    "Mp3Bypass": ["audio_hw.h", "sd_mp3_source.h", "player_platform.h"],
+}
+MODE_VENDOR_HEADERS = {
+    "Tone": [],
+    "Wav": [],
+    "Mp3Bypass": ["minimp3.h"],
+}
 REQUIRED_SYMBOLS = {"player_main", "f_mount", "audio_hw_write_frame"}
 
 
@@ -99,10 +110,15 @@ def describe_build(mode: str, xsa: Path) -> dict[str, object]:
     validate_audio_xsa(xsa)
     source_dir = ROOT / "software" / "audio_player" / "src"
     include_dir = ROOT / "software" / "audio_player" / "include"
-    for name in SOURCE_NAMES:
+    for name in MODE_SOURCES[mode]:
         require_file(source_dir / name)
-    for name in HEADER_NAMES:
+    for name in MODE_HEADERS[mode]:
         require_file(include_dir / name)
+    vendor_dir = (
+        ROOT / "software" / "audio_player" / "third_party" / "minimp3"
+    )
+    for name in MODE_VENDOR_HEADERS[mode]:
+        require_file(vendor_dir / name)
     application, definition = MODES[mode]
     workspace_root = Path(
         os.environ.get("AUDIO_PLAYER_WORKSPACE_ROOT", str(BUILD_ROOT))
@@ -116,8 +132,9 @@ def describe_build(mode: str, xsa: Path) -> dict[str, object]:
         "application": application,
         "definition": definition,
         "libraries": ["xilffs"],
-        "sources": list(SOURCE_NAMES),
-        "headers": list(HEADER_NAMES),
+        "sources": list(MODE_SOURCES[mode]),
+        "headers": list(MODE_HEADERS[mode]),
+        "vendor_headers": list(MODE_VENDOR_HEADERS[mode]),
         "elf": str(BUILD_ROOT / f"{application}.elf"),
     }
 
@@ -188,22 +205,44 @@ def generated_domain_has_xilffs(workspace: Path) -> bool:
     return False
 
 
-def configure_generated_app(app_source: Path, definition: str) -> None:
+def configure_generated_app(app_source: Path,
+                            description: dict[str, object]) -> None:
     source_root = ROOT / "software" / "audio_player"
-    for name in SOURCE_NAMES:
+    for name in description["sources"]:
         shutil.copy2(source_root / "src" / name, app_source / name)
-    for name in HEADER_NAMES:
+    for name in description["headers"]:
         shutil.copy2(source_root / "include" / name, app_source / name)
+    for name in description["vendor_headers"]:
+        shutil.copy2(source_root / "third_party" / "minimp3" / name,
+                     app_source / name)
 
     user_config = app_source / "UserConfig.cmake"
     text = user_config.read_text(encoding="utf-8")
-    replacement = f'set(USER_COMPILE_DEFINITIONS\n"{definition}"\n)'
+    replacement = (
+        'set(USER_COMPILE_DEFINITIONS\n'
+        f'"{description["definition"]}"\n)'
+    )
     text, count = re.subn(
         r'set\(USER_COMPILE_DEFINITIONS\s*""\s*\)', replacement, text,
         count=1,
     )
     if count != 1:
         raise RuntimeError("could not configure generated application mode")
+    user_config.write_text(text, encoding="utf-8")
+
+
+def configure_linker_stack(user_config: Path, mode: str) -> None:
+    if mode != "Mp3Bypass":
+        return
+    text = user_config.read_text(encoding="utf-8")
+    text, count = re.subn(
+        r"set\(USER_LINK_OTHER_FLAGS\s*\)",
+        'set(USER_LINK_OTHER_FLAGS\n"-Wl,--defsym=_STACK_SIZE=0x10000"\n)',
+        text,
+        count=1,
+    )
+    if count != 1:
+        raise RuntimeError("could not set MP3 application stack to 64 KiB")
     user_config.write_text(text, encoding="utf-8")
 
 
@@ -263,7 +302,9 @@ def build_with_pyesw(description: dict[str, object]) -> Path:
         ]),
         [app_yaml, app_source / "UserConfig.cmake"], "create_app",
     )
-    configure_generated_app(app_source, str(description["definition"]))
+    configure_generated_app(app_source, description)
+    configure_linker_stack(app_source / "UserConfig.cmake",
+                           str(description["mode"]))
 
     expected_elf = application / "build" / f"{description['application']}.elf"
     run_tool(

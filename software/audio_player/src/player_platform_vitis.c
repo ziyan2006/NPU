@@ -26,18 +26,22 @@ _Static_assert(PLAYER_AUDIO_BASE == 0x43c10000u,
 static FATFS filesystem;
 static FIL wav_file;
 static int file_open;
+static FIL mp3_file;
+static int mp3_file_open;
 
 int player_platform_init(void)
 {
     Xil_ICacheEnable();
     Xil_DCacheEnable();
     file_open = 0;
+    mp3_file_open = 0;
     return 1;
 }
 
 void player_platform_shutdown(void)
 {
     player_platform_close_wav();
+    player_platform_close_mp3();
     Xil_DCacheDisable();
     Xil_ICacheDisable();
 }
@@ -126,5 +130,41 @@ void player_platform_close_wav(void)
     if (file_open) {
         (void)f_close(&wav_file);
         file_open = 0;
+    }
+}
+
+int player_platform_open_mp3(void)
+{
+    if (f_open(&mp3_file, "0:/music.mp3", FA_READ) != FR_OK)
+        return 0;
+    mp3_file_open = 1;
+    return 1;
+}
+
+size_t player_platform_mp3_read(void *context, void *destination, size_t bytes)
+{
+    size_t total = 0u;
+
+    (void)context;
+    while (bytes != 0u) {
+        UINT received = 0u;
+        UINT chunk = bytes > UINT_MAX ? UINT_MAX : (UINT)bytes;
+        if (!mp3_file_open
+            || f_read(&mp3_file, (uint8_t *)destination + total,
+                      chunk, &received) != FR_OK)
+            return SIZE_MAX;
+        total += received;
+        bytes -= received;
+        if (received != chunk)
+            break;
+    }
+    return total;
+}
+
+void player_platform_close_mp3(void)
+{
+    if (mp3_file_open) {
+        (void)f_close(&mp3_file);
+        mp3_file_open = 0;
     }
 }

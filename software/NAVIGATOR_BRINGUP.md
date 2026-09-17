@@ -13,6 +13,8 @@ NPU 与 WM8960 的联合 XSA 可通过 `scripts/101_build_audio_player.ps1` 构�
 应用：`-Mode Tone` 只验证 codec/I2S/扬声器，`-Mode Wav` 从 FAT 分区读取
 `0:/test.wav`。WAV 模式只接受 44.1 kHz、16-bit、双声道 PCM，并在 FIFO 预填满
 8192 帧后才开始播放；文件不足 8192 帧会报告 `WAV_TOO_SHORT` 且不启用输出。
+`-Mode Mp3Bypass` 从 `0:/music.mp3` 流式解码，只接受 MPEG-1 Layer III、
+44.1 kHz、双声道，并将 vocal 通道保持为零，用于先验证 SD 到扬声器的完整旁路。
 两个构建都只在 `hardware/build/navigator_audio_player/` 生成本地 ELF，不制作启动
 镜像、不复制 SD 文件，也不连接板卡。当前仅完成离线构建路径，实际扬声器输出仍须
 按 Tone、Wav 顺序上板验收。
