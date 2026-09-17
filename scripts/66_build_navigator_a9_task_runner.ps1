@@ -15,3 +15,13 @@ if ($LASTEXITCODE -ne 0) { throw 'A9 task-runner link failed.' }
 & $objcopy -O binary $out/navigator_a9_task_runner.elf $out/navigator_a9_task_runner.bin
 if ($LASTEXITCODE -ne 0) { throw 'A9 task-runner binary conversion failed.' }
 Write-Output "NPU_A9_TASK_RUNNER_ELF $(Resolve-Path $out/navigator_a9_task_runner.elf)"
+
+& $gcc -mcpu=cortex-a9 -marm -mfloat-abi=soft -ffreestanding -fno-builtin -fdata-sections -ffunction-sections -nostdlib `
+  '-Isoftware/include' '-Wl,-T,software/bringup/minimal_a9/linker.ld' '-Wl,--gc-sections' "-Wl,-Map,$out/navigator_a9_stress_runner.map" `
+  software/bringup/minimal_a9/start.S software/bringup/minimal_a9/navigator_a9_stress_runner.c software/src/npu_driver.c `
+  -lgcc -o $out/navigator_a9_stress_runner.elf
+if ($LASTEXITCODE -ne 0) { throw 'A9 stress-runner link failed.' }
+& $objcopy -O binary $out/navigator_a9_stress_runner.elf $out/navigator_a9_stress_runner.bin
+if ($LASTEXITCODE -ne 0) { throw 'A9 stress-runner binary conversion failed.' }
+Write-Output "NPU_A9_STRESS_RUNNER_ELF $(Resolve-Path $out/navigator_a9_stress_runner.elf)"
+

@@ -148,7 +148,7 @@ vivado -mode batch -nolog -nojournal `
 3. 提交最小 task，核对完成 tag、错误码和 cycle；**已完成**；
 4. 提交完整 1,869-command task，逐字节比对 32,768-byte golden；**已完成零输入与固定非零输入两组**；
 5. 用 A9 裸机驱动提交同一完整 task，并核对 completed tag、错误码、retired、cycle 和输出校验值；**已用固定非零 task 通过**；
-6. 连续运行 30 分钟并记录 deadline miss、DMA error、watchdog；
+6. 连续运行长时间压测并记录 deadline miss、DMA error、watchdog；**已完成 18,000 轮（18.65 分钟）连续高压测试，0 error、0 watchdog、输出 FNV-1a 逐轮 100% 吻合，周期抖动仅 0.061%，贴散热片工况稳定**；
 7. 上述全部通过后，才启用 QSPI/eMMC 启动和 WM8960/音频通路。
 
 ## 2026-09-17 真实板 JTAG 记录
@@ -186,6 +186,12 @@ vivado -mode batch -nolog -nojournal `
   （约 `33.55 ms @100 MHz`）。A9 对 32,768-byte 输出计算的 FNV-1a 为
   `0x4DB54515`，与 host golden 一致。该路径仅使用 JTAG 易失下载和 DDR，
   不使用 Vitis BSP，也不写入非易失存储。
+- 完整非零任务长循环压测（`scripts/69_stress_navigator_a9_task.tcl`）：A9#0 连续循环执行
+  18,000 轮完整 NPU 任务（每轮 1,869 条指令），耗时 1,119 秒（约 18.65 分钟，实际吞吐
+  16.1 轮/秒，总搬移 DDR 数据逾 33.3 GB）。全部 18,000 轮每轮逐次实时计算 32,768 字节输出的
+  FNV-1a 校验值均为 `0x4DB54515`（100% 吻合），全程错误数 0、看门狗触发 0；最小周期
+  3,356,412、最大周期 3,358,451，周期抖动仅 2,039 周期（0.061%）。实物芯片贴附被动散热片，
+  实测表面温烫但系统稳定无热衰减降速。
 - 原始 JTAG 链路在连续大块下载或反复 PS7 初始化后曾出现 AP/USB 超时。稳定复现路径是：
   用 `scripts/61_run_navigator_end_task_pair.tcl` 完成一次初始化和最小任务检查，再用
   `scripts/62_run_navigator_resident_task.tcl` 提交完整分块任务；两者均只使用 JTAG 与易失 DDR。
@@ -243,8 +249,19 @@ xsdb scripts/67_run_navigator_a9_task.tcl `
 ```
 
 不要复用这些数字给另一份 task：先运行 `scripts/68_describe_navigator_a9_task.py`
-取得其元数据。该测试尚未在新 ELF 上实测，不改变此前“JTAG 直接提交完整任务已通过”的
-记录，也不写入 QSPI、eMMC 或 SD。
+取得其元数据。
+
+运行多轮长时间高压测试（以 18,000 轮 / 约 18.65 分钟为例）：
+
+```powershell
+xsdb scripts/69_stress_navigator_a9_task.tcl `
+  hardware/build/navigator_z7020_jtag_probe/ps7_init.tcl `
+  hardware/build/navigator_z7020_vendor_v37_export/stem_npu_navigator_z7020_candidate.bit `
+  hardware/build/navigator_a9_task_runner/navigator_a9_stress_runner.elf `
+  hardware/build/navigator_seeded_task/jtag_chunks `
+  1851712 966784 32768 0x4DB54515 18000
+```
+
 
 Vitis 版 runner 仍保留在 `software/bringup/navigator_vitis/`。本机的 Vitis
 2026.1 CLI 目前连其官方 `zc702` standalone 示例都无法生成 Processor List，
