@@ -20,6 +20,7 @@ ROOT = Path(__file__).resolve().parents[1]
 OUTPUT = ROOT / "hardware" / "build" / "audio_vectors"
 MP3_FIXTURES = ROOT / "software" / "audio_player" / "tests" / "fixtures"
 STEM_OUTPUT = OUTPUT / "stem_frontend"
+STEM_BACKEND_OUTPUT = OUTPUT / "stem_backend"
 STEM_FFT_SIZE = 1024
 STEM_HOP = 256
 STEM_FRAMES_PER_BLOCK = 16
@@ -191,7 +192,7 @@ def generate_mp3_fixtures() -> dict[Path, bytes]:
         return result
 
 
-def load_stem_analysis() -> np.ndarray:
+def load_stem_filterbanks() -> tuple[np.ndarray, np.ndarray]:
     generator_path = ROOT / "scripts" / "98_generate_stem_constants.py"
     spec = importlib.util.spec_from_file_location("stem_constants", generator_path)
     if spec is None or spec.loader is None:
@@ -202,7 +203,13 @@ def load_stem_analysis() -> np.ndarray:
     analysis = namespace["make_analysis_matrix"](
         STEM_BANDS, layout="legacy_log"
     )
-    return np.asarray(analysis, dtype=np.float32)
+    synthesis = namespace["make_synthesis_matrix"](
+        STEM_BANDS, layout="legacy_log"
+    )
+    return (
+        np.asarray(analysis, dtype=np.float32),
+        np.asarray(synthesis, dtype=np.float32).T.copy(),
+    )
 
 
 def build_stem_pcm(name: str, blocks: int) -> np.ndarray:
@@ -297,8 +304,118 @@ def stem_reference(pcm: np.ndarray, blocks: int,
     }
 
 
+def build_backend_mask(name: str, blocks: int) -> np.ndarray:
+    packed = np.zeros(
+        (blocks, STEM_BANDS, STEM_FRAMES_PER_BLOCK, STEM_LANES),
+        dtype=np.int16,
+    )
+    if name == "full":
+        packed[..., :2] = 2047
+    elif name == "random":
+        rng = np.random.default_rng(0xBACC0E)
+        packed[..., :2] = rng.integers(
+            -4096, 4097, size=packed[..., :2].shape, dtype=np.int16
+        )
+        packed[0, 44, 0, 0] = -32768
+    elif name != "zero":
+        raise ValueError(f"unknown backend mask: {name}")
+    return packed
+
+
+def stem_backend_reference(spectrum: np.ndarray, packed: np.ndarray,
+                           synthesis: np.ndarray) -> np.ndarray:
+    blocks = spectrum.shape[0]
+    total_output = blocks * STEM_FRAMES_PER_BLOCK * STEM_HOP - STEM_FFT_SIZE // 2
+    accumulation = np.zeros((total_output + STEM_FFT_SIZE, 2), dtype=np.float64)
+    weight = np.zeros(total_output + STEM_FFT_SIZE, dtype=np.float64)
+    window = (
+        0.5 - 0.5 * np.cos(
+            2.0 * math.pi * np.arange(STEM_FFT_SIZE, dtype=np.float64)
+            / STEM_FFT_SIZE
+        )
+    )
+    for block in range(blocks):
+        for frame in range(STEM_FRAMES_PER_BLOCK):
+            center = (block * STEM_FRAMES_PER_BLOCK + frame) * STEM_HOP
+            start = center - STEM_FFT_SIZE // 2
+            valid_start = max(start, 0)
+            source_start = valid_start - start
+            valid_end = min(start + STEM_FFT_SIZE, accumulation.shape[0])
+            source_end = source_start + valid_end - valid_start
+            weight[valid_start:valid_end] += window[source_start:source_end] ** 2
+            for channel in range(2):
+                quantized = packed[block, :, frame, channel].astype(np.int32)
+                band_mask = np.clip(np.abs(quantized) / 2047.0, 0.0, 1.0)
+                band_mask[:44] = 0.0
+                bin_mask = band_mask @ synthesis
+                masked = spectrum[block, channel, frame] * bin_mask
+                restored = np.fft.irfft(masked, n=STEM_FFT_SIZE)
+                accumulation[valid_start:valid_end, channel] += (
+                    restored[source_start:source_end]
+                    * window[source_start:source_end]
+                )
+    output = np.zeros((total_output, 2), dtype=np.float32)
+    valid = weight[:total_output] > 1.0e-12
+    output[valid] = (
+        accumulation[:total_output][valid] / weight[:total_output][valid, None]
+    ).astype(np.float32)
+    return output
+
+
+def generate_stem_backend_vectors(analysis: np.ndarray,
+                                  synthesis: np.ndarray) -> dict[Path, bytes]:
+    outputs: dict[Path, bytes] = {}
+    manifest: dict[str, object] = {
+        "schema": 1,
+        "startup_frames": 3584,
+        "steady_frames": 4096,
+        "low_bands_zeroed": 44,
+        "cases": {},
+    }
+    cases = {
+        "chirp20_zero": ("chirp20", "zero", 20),
+        "chirp20_full": ("chirp20", "full", 20),
+        "chirp20_random": ("chirp20", "random", 20),
+        "impulse_full": ("impulse", "full", 1),
+    }
+    case_manifest = manifest["cases"]
+    assert isinstance(case_manifest, dict)
+    for case_name, (pcm_name, mask_name, blocks) in cases.items():
+        pcm = build_stem_pcm(pcm_name, blocks)
+        frontend = stem_reference(pcm, blocks, analysis)
+        spectrum = np.frombuffer(frontend["spectrum.c64le"], dtype="<c8").reshape(
+            blocks, 2, STEM_FRAMES_PER_BLOCK, STEM_FFT_SIZE // 2 + 1
+        )
+        packed = build_backend_mask(mask_name, blocks)
+        vocal = stem_backend_reference(spectrum, packed, synthesis)
+        delayed = pcm[:vocal.shape[0]].astype(np.float32) / np.float32(32768.0)
+        payloads = {
+            "spectrum.c64le": np.asarray(spectrum, dtype="<c8").tobytes(),
+            "mask.s16le": np.asarray(packed, dtype="<i2").tobytes(),
+            "vocal.f32le": np.asarray(vocal, dtype="<f4").tobytes(),
+            "delay.f32le": np.asarray(delayed, dtype="<f4").tobytes(),
+        }
+        files = {}
+        for suffix, payload in payloads.items():
+            filename = f"{case_name}.{suffix}"
+            outputs[STEM_BACKEND_OUTPUT / filename] = payload
+            files[filename] = {
+                "bytes": len(payload),
+                "sha256": hashlib.sha256(payload).hexdigest(),
+            }
+        case_manifest[case_name] = {
+            "blocks": blocks,
+            "output_frames": int(vocal.shape[0]),
+            "files": files,
+        }
+    outputs[STEM_BACKEND_OUTPUT / "manifest.json"] = (
+        json.dumps(manifest, indent=2, sort_keys=True) + "\n"
+    ).encode("ascii")
+    return outputs
+
+
 def generate_stem_vectors() -> dict[Path, bytes]:
-    analysis = load_stem_analysis()
+    analysis, synthesis = load_stem_filterbanks()
     cases = {
         "impulse": 1,
         "dc": 1,
@@ -342,6 +459,7 @@ def generate_stem_vectors() -> dict[Path, bytes]:
         json.dumps(manifest, indent=2, sort_keys=True) + "\n"
     ).encode("ascii")
     outputs[STEM_OUTPUT / "manifest.json"] = manifest_bytes
+    outputs.update(generate_stem_backend_vectors(analysis, synthesis))
     return outputs
 
 
@@ -371,7 +489,7 @@ def main() -> None:
     if arguments.mp3:
         destination = "MP3 fixture/vector paths"
     elif arguments.stem:
-        destination = str(STEM_OUTPUT)
+        destination = f"{STEM_OUTPUT} and {STEM_BACKEND_OUTPUT}"
     else:
         destination = str(OUTPUT)
     print(f"audio vectors: generated {len(outputs)} files in {destination}")

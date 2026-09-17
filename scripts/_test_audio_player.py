@@ -57,6 +57,16 @@ CASES = {
         ],
         "stem npu session: PASS",
     ),
+    "backend": (
+        [
+            PLAYER / "third_party" / "kissfft" / "kiss_fft.c",
+            PLAYER / "third_party" / "kissfft" / "kiss_fftr.c",
+            PLAYER / "generated" / "stem_filterbank.c",
+            PLAYER / "src" / "stem_backend.c",
+            PLAYER / "tests" / "test_stem_backend.c",
+        ],
+        "stem backend: PASS",
+    ),
 }
 
 
@@ -216,7 +226,7 @@ def compile_and_run(case: str) -> None:
              "--mp3", "--check"],
             check=True,
         )
-    elif case == "frontend":
+    elif case in ("frontend", "backend"):
         verify_kissfft_upstream()
         subprocess.run(
             [sys.executable, str(ROOT / "scripts" / "98_generate_stem_constants.py"),
@@ -246,7 +256,7 @@ def compile_and_run(case: str) -> None:
         include_paths = [INCLUDE]
         if case == "mp3":
             include_paths.append(PLAYER / "third_party" / "minimp3")
-        elif case == "frontend":
+        elif case in ("frontend", "backend"):
             include_paths.extend([
                 PLAYER / "third_party" / "kissfft",
                 PLAYER / "generated",
@@ -303,7 +313,7 @@ def compile_and_run(case: str) -> None:
                 *(["/wd4244", "/D_CRT_SECURE_NO_WARNINGS"]
                   if case == "mp3" else
                   ["/wd4267", "/D_CRT_SECURE_NO_WARNINGS"]
-                  if case == "frontend" else []),
+                  if case in ("frontend", "backend") else []),
                 *(f"/I{path}" for path in include_paths),
                 *(f"/D{define}" for define in defines),
                 *(str(source) for source in sources),
@@ -318,9 +328,10 @@ def compile_and_run(case: str) -> None:
             run_environment["MP3_VECTOR_DIR"] = str(
                 ROOT / "hardware" / "build" / "audio_vectors"
             )
-        elif case == "frontend":
+        elif case in ("frontend", "backend"):
+            vector_name = "stem_backend" if case == "backend" else "stem_frontend"
             run_environment["STEM_VECTOR_DIR"] = str(
-                ROOT / "hardware" / "build" / "audio_vectors" / "stem_frontend"
+                ROOT / "hardware" / "build" / "audio_vectors" / vector_name
             )
         completed = subprocess.run(
             [str(executable)], check=False, capture_output=True, text=True,
