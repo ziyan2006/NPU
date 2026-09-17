@@ -5,6 +5,8 @@
 
 当前 P4 RTL 包含：
 
+- `audio/audio_regs_pkg.sv` / `audio/audio_axi_csr.sv`：独立于 NPU 的音频
+  AXI4-Lite 寄存器窗口，提供 64-bit 原子音频帧提交、控制/status 和饱和错误计数；
 - `npu_command_processor.sv`：命令校验、分派、PC、event、WAIT/END、watchdog 和首错锁存；
 - `npu_axi_block_reader.sv` / `npu_memory_arbiter4.sv`：为 task header、命令和描述符提供共享的单 outstanding AXI block-read 边界；
 - `npu_task_loader.sv`：校验 256-byte task header、生成各 section 基址并从真实镜像预载 4096 项 tanh LUT；

@@ -94,7 +94,7 @@
 - Consumes: AXI4-Lite 32-bit single-beat reads/writes on `s_axi_aclk`; synchronized FIFO status/counters from later tasks.
 - Produces: `frame_wr_valid`, `frame_wr_data[63:0]`, `control_enable`, `control_soft_reset`, `control_codec_reinit`, `control_tone_enable`; registers `IP_ID=32'h31445541`, `VERSION=32'h00010000`, offsets `0x00..0x34` exactly as the spec.
 
-- [ ] **Step 1: Write the failing CSR simulation**
+- [x] **Step 1: Write the failing CSR simulation**
 
   Test reset ID/version/capacity, independent AW/W arrival, byte strobes, read back, MIX staging, atomic commit only on `VOCAL_FRAME`, full-FIFO rejection, one overflow increment, and W1C underflow/overflow. The central assertion is:
 
@@ -105,7 +105,7 @@
   assert (frame_wr_valid && frame_wr_data == 64'h4444_3333_2222_1111);
   ```
 
-- [ ] **Step 2: Run the focused test and record the red state**
+- [x] **Step 2: Run the focused test and record the red state**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case csr
@@ -113,11 +113,11 @@
 
   Expected: nonzero exit because `audio_regs_pkg.sv` and `audio_axi_csr.sv` do not exist.
 
-- [ ] **Step 3: Implement the package and AXI slave**
+- [x] **Step 3: Implement the package and AXI slave**
 
   Use registered AXI ready/response channels, honor `WSTRB`, stage `MIX_FRAME`, and make a `VOCAL_FRAME` write the only commit point. A full FIFO must emit no `frame_wr_valid`; it increments the saturating overflow counter once. Snapshot synchronized counters for readback and encode `STEM_STATE` as `{gain_q15[15:0], 13'b0, key_pressed, ramping, target}`.
 
-- [ ] **Step 4: Run CSR and legacy RTL regressions**
+- [x] **Step 4: Run CSR and legacy RTL regressions**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case csr
@@ -126,7 +126,7 @@
 
   Expected: both print `PASS`; no existing NPU register definition changes.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add hardware/rtl/audio/audio_regs_pkg.sv hardware/rtl/audio/audio_axi_csr.sv hardware/rtl/tb/tb_audio_axi_csr.sv hardware/rtl/README.md scripts/_test_audio_rtl.py
