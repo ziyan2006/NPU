@@ -277,7 +277,7 @@
 - Consumes: 100 MHz AXI clock/reset, `codec_reinit`, open-drain SDA input, and the generated MCLK-stable indication.
 - Produces: open-drain `scl_drive_low`/`sda_drive_low`, `codec_done`, `codec_error`, `codec_muted`, `config_index[7:0]`, `last_ack`; address is fixed at `7'h1a`.
 
-- [ ] **Step 1: Encode the expected transaction test before RTL**
+- [x] **Step 1: Encode the expected transaction test before RTL**
 
   The testbench I2C slave records `{register[6:0],data[8:0]}` and compares it against this exact array. `WAIT` entries are sequencer delays rather than I2C writes. Inject a NACK at every write index in turn and assert `codec_error=1`, `codec_done=0`, `codec_muted=1`, with no later writes.
 
@@ -303,7 +303,7 @@
   | 17 | `WAIT=10 ms` | output stage settling while DAC remains muted |
   | 18 | `R5=0x000` | DAC soft-unmute; PL gain ramp still starts at zero |
 
-- [ ] **Step 2: Confirm the red test**
+- [x] **Step 2: Confirm the red test**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case wm8960
@@ -311,11 +311,11 @@
 
   Expected: compile failure naming `wm8960_init` and `wm8960_i2c_master`.
 
-- [ ] **Step 3: Derive and implement the table from datasheet fields**
+- [x] **Step 3: Derive and implement the table from datasheet fields**
 
   Document every table row as register name, field values, 9-bit value and purpose in `43_wm8960_audio_out.md`, citing WM8960 Rev 4.4 Tables 26, 28, 39 and 40. Use a <=250 kHz open-drain I2C engine, sample ACK on the ninth clock, retry no transaction automatically, and latch the first NACK index until `codec_reinit` or reset. The direct-clock values `R4=0x000` and `R8=0x1C0` intentionally replace the vendor reference's 48-kHz PLL configuration.
 
-- [ ] **Step 4: Run the sequence and full RTL regressions**
+- [x] **Step 4: Run the sequence and full RTL regressions**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case wm8960
@@ -324,7 +324,7 @@
 
   Expected: the exact table and every injected-NACK case pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add hardware/rtl/audio/wm8960_i2c_master.sv hardware/rtl/audio/wm8960_init.sv hardware/rtl/tb/tb_wm8960_init.sv hardware/spec/43_wm8960_audio_out.md scripts/_test_audio_rtl.py

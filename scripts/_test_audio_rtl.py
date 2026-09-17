@@ -47,6 +47,15 @@ CASES = {
         ],
         "audio_i2s_tx: PASS",
     ),
+    "wm8960": (
+        "tb_wm8960_init",
+        [
+            RTL / "audio" / "wm8960_i2c_master.sv",
+            RTL / "audio" / "wm8960_init.sv",
+            RTL / "tb" / "tb_wm8960_init.sv",
+        ],
+        "wm8960_init: PASS",
+    ),
 }
 
 
