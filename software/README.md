@@ -46,5 +46,8 @@ RTL read-decode，并用 Vivado 自带 MicroBlaze GCC 以 `-Wall -Wextra -Werror
 python scripts/_test_npu_driver.py
 ```
 
-最终板卡确定后，还需增加 BSP/Linux 适配文件，填入实际 CSR 地址、IRQ 号、DMA
-allocation 与 cache/coherency 策略；驱动核心本身不硬编码这些板级参数。
+`software/bringup/navigator_vitis/` 已提供 Zynq standalone 的 BSP 适配和完整 task
+runner：使用 linker-owned、64-byte 对齐的 DDR staging buffer，提交前 clean、完成后
+invalidate，并通过 payload generator 将本地 task / golden output 转换为 Vitis C 源。
+它仍需在最终 XSA 的 Vitis BSP 中编译并上板执行；GIC IRQ 号将由最终 XSA 确认后再启用。
+Linux 适配仍待实现，必须使用内核 DMA API 而不是直接复用 standalone 指针。

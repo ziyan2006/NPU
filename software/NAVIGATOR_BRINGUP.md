@@ -16,7 +16,21 @@ Linux 和永久启动放在 NPU/DDR 链路验证之后，避免同时调试设�
 - 完整任务：1,869 command，输出 32,768 byte；实板两组输入测得约 3,346,2xx cycle（约 33.46 ms @ 100 MHz）；
 - IP ID：`0x3155504E`，RTL/ISA major 都为 1。
 
-## XSA 导入后需要补的薄适配层
+## 已实现的 Vitis standalone 适配层
+
+`bringup/navigator_vitis/` 现已提供可直接加入 Vitis standalone 应用的实现：
+
+- `npu_vitis_platform.[ch]`：将 `Xil_DCacheFlushRange`、
+  `Xil_DCacheInvalidateRange` 和 `dmb sy` 绑定到通用 `npu_driver`；
+- `navigator_npu_runner.c`：将完整 task 拷贝到 2 MiB、64-byte 对齐的 linker-owned
+  DDR 缓冲区，提交、轮询、读取计数器，并与 golden output 比较；
+- `scripts/63_generate_vitis_task_payload.py`：从本地 task image / golden output
+  生成不进入仓库的 C payload。完整任务含模型权重，不能以空模板替代。
+
+该第一版有意使用轮询，避免在尚未由最终 XSA 确认 GIC ID 时写死中断号。编译并运行
+`navigator_npu_runner.c` 后，才把它作为 Vitis/BSP、A9 cache 维护和 DDR 数据面的验收结果。
+
+## XSA 导入后需要补的薄适配层（接口说明）
 
 ```c
 static void cache_clean(void *p, size_t n, void *ctx) {

@@ -37,6 +37,9 @@ hardware/build/
 hardware/boards/**/board_confirmation.local.json
 # 厂商资料仅供本地对照，授权状态未确认，勿推送到公开仓库。
 hardware/boards/**/vendor_reference_local/
+
+# Generated local Vitis task images embed private model weights/test tensors.
+software/bringup/navigator_vitis/generated/
 clockInfo.txt
 tight_setup_hold_pins.txt
 
