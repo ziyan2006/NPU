@@ -597,6 +597,9 @@
 - Create: `software/audio_player/third_party/kissfft/kiss_fft.h`
 - Create: `software/audio_player/third_party/kissfft/kiss_fftr.c`
 - Create: `software/audio_player/third_party/kissfft/kiss_fftr.h`
+- Create: `software/audio_player/third_party/kissfft/_kiss_fft_guts.h`
+- Create: `software/audio_player/third_party/kissfft/kiss_fft_log.h`
+- Create: `software/audio_player/third_party/kissfft/COPYING`
 - Create: `software/audio_player/third_party/kissfft/LICENSES/BSD-3-Clause`
 - Create: `software/audio_player/third_party/kissfft/UPSTREAM.json`
 - Create: `software/audio_player/include/stem_frontend.h`
@@ -609,11 +612,11 @@
 - Produces: `stem_spectrum_block_t { kiss_fft_cpx bins[2][16][513]; int64_t first_sample; }`, `stem_frontend_init(stem_frontend_t*)`, `stem_frontend_push(stem_frontend_t*, const int16_t *lr, size_t frames)`, `stem_frontend_block_ready`, and `stem_frontend_pack(stem_frontend_t*, int16_t nhwc8[16384], stem_spectrum_block_t*)`.
 - Consumes: normalized `sample/32768.0f`, periodic Hann, 512-sample reflect-lookahead start policy, generated `stem_analysis`, input scale `0.07046897899364925f`.
 
-- [ ] **Step 1: Generate goldens and write failing numerical tests**
+- [x] **Step 1: Generate goldens and write failing numerical tests**
 
   Use impulse, DC, alternating Nyquist, seeded stereo noise and a 20-block chirp. Compare each 1024-point complex spectrum, 513-bin magnitude, 128 bands and packed NHWC8 bytes to Python. Require lanes 2..7 zero and INT12 clipping to `[-2048,2047]`.
 
-- [ ] **Step 2: Confirm the frontend test is red**
+- [x] **Step 2: Confirm the frontend test is red**
 
   ```powershell
   python scripts/97_generate_audio_vectors.py --stem
@@ -622,11 +625,11 @@
 
   Expected: C compile fails because KissFFT and frontend are absent.
 
-- [ ] **Step 3: Vendor KissFFT and implement streaming analysis**
+- [x] **Step 3: Vendor KissFFT and implement streaming analysis**
 
   Pin KissFFT tag `131.2.0`, commit `7bce4153c6bc8aba2db0e889e576f9d00505cbe1`, preserve BSD-3-Clause and record hashes. Preallocate all FFT configurations/workspaces at init; perform no heap allocation in `push`/`pack`. Logical frame `k` is centered at sample `k*256` and reads `[k*256-512, k*256+511]`; reflect negative startup indices. Produce 16 frames per 4096 new samples while retaining overlap and 512 samples of lookahead. Quantize with `lrintf(value/scale)` then saturate to signed 12-bit.
 
-- [ ] **Step 4: Run numerical comparison**
+- [x] **Step 4: Run numerical comparison**
 
   ```powershell
   python scripts/_test_audio_player.py --case frontend
@@ -635,7 +638,7 @@
 
   Expected: maximum complex FFT error <=`2e-4`, band error <=`2e-5`, and packed tensor is byte-identical.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add software/audio_player/third_party/kissfft software/audio_player/include/stem_frontend.h software/audio_player/src/stem_frontend.c software/audio_player/tests/test_stem_frontend.c scripts/97_generate_audio_vectors.py scripts/_test_audio_player.py

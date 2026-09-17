@@ -1,0 +1,18 @@
+{
+  "name": "KissFFT",
+  "url": "https://github.com/mborgerding/kissfft.git",
+  "tag": "131.2.0",
+  "commit": "7bce4153c6bc8aba2db0e889e576f9d00505cbe1",
+  "retrieved": "2026-09-18",
+  "license": "BSD-3-Clause",
+  "files": {
+    "COPYING": "a2840585f8411be8e6826a31ef15ae65c950bd74a2437a73b013398a934ad0c6",
+    "LICENSES/BSD-3-Clause": "4d6bcab46f27d6d0c878e8305d4bdcfe040d52bf6656b9771f04c9fb9902c0ed",
+    "_kiss_fft_guts.h": "dd1731891d0fff0e297198847de39216c5c8b9677ea4fe53160d1f6c74218d40",
+    "kiss_fft.c": "3e8af99313c7e94f952ac12db46d3d5c5dd4a9bf93e0c32d43efa5fe39724051",
+    "kiss_fft.h": "9d6c7ddf520932c0aad669c86c064a24e571e594681be9f1491c14c9c9c75693",
+    "kiss_fft_log.h": "f954cb6890ec999f7fbc80cdd1c8c0194bbaeb0f1c27e11bd23450f53871cf8c",
+    "kiss_fftr.c": "128b651120725e8d55f6b9edf5d44b06dc022b260894eac078c6ff8aa7159561",
+    "kiss_fftr.h": "a0f72c1bddc3126d7a51ad80e965b58f6af77e4419aa882a0b11951e783632a8"
+  }
+}

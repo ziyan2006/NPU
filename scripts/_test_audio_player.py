@@ -3,7 +3,9 @@
 from __future__ import annotations
 
 import argparse
+import hashlib
 import importlib.util
+import json
 import os
 import shutil
 import stat
@@ -35,7 +37,35 @@ CASES = {
         ],
         "mp3 source: PASS",
     ),
+    "frontend": (
+        [
+            PLAYER / "third_party" / "kissfft" / "kiss_fft.c",
+            PLAYER / "third_party" / "kissfft" / "kiss_fftr.c",
+            PLAYER / "generated" / "stem_filterbank.c",
+            PLAYER / "src" / "stem_frontend.c",
+            PLAYER / "tests" / "test_stem_frontend.c",
+        ],
+        "stem frontend: PASS",
+    ),
 }
+
+
+def verify_kissfft_upstream() -> None:
+    directory = PLAYER / "third_party" / "kissfft"
+    metadata = json.loads((directory / "UPSTREAM.json").read_text(encoding="utf-8"))
+    if metadata["url"] != "https://github.com/mborgerding/kissfft.git":
+        raise AssertionError("KissFFT upstream URL changed")
+    if metadata["tag"] != "131.2.0":
+        raise AssertionError("KissFFT tag changed")
+    if metadata["commit"] != "7bce4153c6bc8aba2db0e889e576f9d00505cbe1":
+        raise AssertionError("KissFFT commit changed")
+    if metadata["license"] != "BSD-3-Clause":
+        raise AssertionError("KissFFT license metadata changed")
+    for name, expected in metadata["files"].items():
+        path = directory / name
+        actual = hashlib.sha256(path.read_bytes()).hexdigest()
+        if actual != expected:
+            raise AssertionError(f"KissFFT vendored file differs: {name}")
 
 
 def load_workspace_builder():
@@ -176,6 +206,18 @@ def compile_and_run(case: str) -> None:
              "--mp3", "--check"],
             check=True,
         )
+    elif case == "frontend":
+        verify_kissfft_upstream()
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "98_generate_stem_constants.py"),
+             "--check"],
+            check=True,
+        )
+        subprocess.run(
+            [sys.executable, str(ROOT / "scripts" / "97_generate_audio_vectors.py"),
+             "--stem", "--check"],
+            check=True,
+        )
     with tempfile.TemporaryDirectory(prefix=f"audio_{case}_") as directory:
         output = Path(directory)
         executable = output / "test.exe"
@@ -188,6 +230,11 @@ def compile_and_run(case: str) -> None:
         include_paths = [INCLUDE]
         if case == "mp3":
             include_paths.append(PLAYER / "third_party" / "minimp3")
+        elif case == "frontend":
+            include_paths.extend([
+                PLAYER / "third_party" / "kissfft",
+                PLAYER / "generated",
+            ])
         if native is not None:
             command = [
                 native,
@@ -198,6 +245,7 @@ def compile_and_run(case: str) -> None:
                 *(f"-I{path}" for path in include_paths),
                 *(f"-D{define}" for define in defines),
                 *(str(source) for source in sources),
+                *(["-lm"] if case == "frontend" else []),
                 "-o",
                 str(executable),
             ]
@@ -235,7 +283,9 @@ def compile_and_run(case: str) -> None:
                 "/W4",
                 "/WX",
                 *(["/wd4244", "/D_CRT_SECURE_NO_WARNINGS"]
-                  if case == "mp3" else []),
+                  if case == "mp3" else
+                  ["/wd4267", "/D_CRT_SECURE_NO_WARNINGS"]
+                  if case == "frontend" else []),
                 *(f"/I{path}" for path in include_paths),
                 *(f"/D{define}" for define in defines),
                 *(str(source) for source in sources),
@@ -249,6 +299,10 @@ def compile_and_run(case: str) -> None:
             )
             run_environment["MP3_VECTOR_DIR"] = str(
                 ROOT / "hardware" / "build" / "audio_vectors"
+            )
+        elif case == "frontend":
+            run_environment["STEM_VECTOR_DIR"] = str(
+                ROOT / "hardware" / "build" / "audio_vectors" / "stem_frontend"
             )
         completed = subprocess.run(
             [str(executable)], check=False, capture_output=True, text=True,
