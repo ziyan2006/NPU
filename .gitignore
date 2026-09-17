@@ -44,6 +44,8 @@ hardware/boards/**/vendor_reference_local/
 
 # Generated local Vitis task images embed private model weights/test tensors.
 software/bringup/navigator_vitis/generated/
+# Generated STEM payload embeds private model weights; filterbanks are reproducible.
+software/audio_player/generated/
 clockInfo.txt
 tight_setup_hold_pins.txt
 

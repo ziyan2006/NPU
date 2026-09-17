@@ -555,11 +555,11 @@
 - Produces: ignored `software/audio_player/generated/stem_filterbank.{h,c}`, `stem_task_metadata.h`, `stem_task_payload.{h,c}` with symbols `stem_analysis[513][128]`, `stem_synthesis[128][513]`, `STEM_TASK_INPUT_OFFSET`, `STEM_TASK_OUTPUT_OFFSET`, byte sizes, command count, task length and SHA-256 strings.
 - Consumes: `scripts/09_target_model.py` `make_analysis_matrix(..., layout="legacy_log")`, `hardware/generated/bott2_mir1k_v1_program/{program.json,task_image.json,task_image.bin}`, tensor descriptors and entry tensor IDs.
 
-- [ ] **Step 1: Write failing generator tests**
+- [x] **Step 1: Write failing generator tests**
 
-  Parse generated C with NumPy and require shapes 513x128 and 128x513, little-endian float32, no dead analysis band, synthesis row sums within `1e-7`, matching SHA-256 comments, input 32768 bytes, output 32768 bytes, and all derived ranges within the activation/task bounds. Assert generated source contains neither literal `49280` nor `966784` in generator logic.
+  Parse generated C with NumPy and require shapes 513x128 and 128x513, little-endian float32, synthesis row sums within `1e-7`, matching SHA-256 comments, input 32768 bytes, output 32768 bytes, and all derived ranges within the activation/task bounds. Preserve the deployed checkpoint's exact `legacy_log` matrices, including its 49 known compatibility dead bands; changing to a no-dead-band layout requires retraining and requantization. Assert generated source contains neither literal `49280` nor `966784` in generator logic.
 
-- [ ] **Step 2: Confirm the generator tests are red**
+- [x] **Step 2: Confirm the generator tests are red**
 
   ```powershell
   python software/audio_player/tests/test_stem_generators.py
@@ -567,11 +567,11 @@
 
   Expected: imports/files for both generators are missing.
 
-- [ ] **Step 3: Implement deterministic generation and checks**
+- [x] **Step 3: Implement deterministic generation and checks**
 
   Resolve entry tensor offsets by parsing task tensor descriptors plus the activation section, never by copying current output locations. Emit `_Static_assert` checks for 64-byte task alignment, tensor extents, `C=2/4`, `F=128`, `T=16`, NHWC8 storage, and the block constants `4096`, `1024`, `256`.
 
-- [ ] **Step 4: Generate twice and compare**
+- [x] **Step 4: Generate twice and compare**
 
   ```powershell
   python scripts/98_generate_stem_constants.py
@@ -583,7 +583,7 @@
 
   Expected: second generation is byte-identical and all metadata range checks pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add .gitignore scripts/98_generate_stem_constants.py scripts/99_generate_stem_task_payload.py software/audio_player/include/stem_contract.h software/audio_player/tests/test_stem_generators.py
