@@ -1,0 +1,7 @@
+// Generated inputs only: build the files before invoking Bootgen.
+the_ROM_image:
+{
+  [bootloader] hardware/build/navigator_sd_coldboot_runner/fsbl_rewrapped.elf
+  hardware/build/navigator_z7020_vendor_v37_export/stem_npu_navigator_z7020_candidate.bit
+  hardware/build/navigator_sd_coldboot_runner/navigator_sd_coldboot_runner.elf
+}

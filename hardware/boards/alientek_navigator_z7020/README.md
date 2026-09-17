@@ -198,8 +198,10 @@ xsdb scripts/72_probe_navigator_sd_npu_csr.tcl
 `software/bringup/minimal_a9/navigator_sd_coldboot_runner.c` 是一个不依赖 Vitis BSP
 的替代应用：FSBL handoff 后，它先调用候选 XSA 导出的 `ps7_post_config()`，再访问
 NPU。此调用只释放 PL reset/level shifter，**不调用会重置 DDR 的 `ps7_init()`**。在
-实板上，经 JTAG 易失下载该 runner 后，它自己完成 post-config，NPU CSR 读回
-`IP_ID=0x3155504E`、`STATUS=IDLE|DONE`、`ERROR_CODE=0`，并完成同一完整任务。
+实板上，经 JTAG 易失下载该 runner 后，NPU CSR 读回
+`IP_ID=0x3155504E`、`STATUS=IDLE|DONE`、`ERROR_CODE=0`。这证明 post-config 后
+硬件可访问且一次任务结束时未报告硬件错误；新的 runner UART 完整 PASS 日志仍应在
+下一次 JTAG 运行时记录，之后才可将其表述为完整任务的独立验证。
 
 构建命令如下；task payload 与 Vivado 导出的 `ps7_init.c/h` 都是本地忽略文件，故 ELF
 只会出现在忽略的 `hardware/build/` 下：
@@ -212,6 +214,21 @@ xsdb scripts/75_run_navigator_sd_coldboot_runner_jtag.tcl `
 
 后一个命令只覆盖易失 DDR 以验证应用；它不是 SD 写入。将该 ELF 封装进新的 `BOOT.BIN`
 前，必须先备份当前 SD 卡，并从当前启动镜像提取/重建可审计的 FSBL 组成物。
+
+当前可复现的候选镜像流程为：在板卡已从原 SD 镜像启动、JTAG 已连接时，先只读导出
+OCM 中的 FSBL，再封装候选镜像。两条命令均只在本机 `hardware/build/` 生成文件：
+
+```powershell
+xsdb scripts/76_dump_navigator_sd_fsbl.tcl `
+  hardware/build/navigator_sd_coldboot_runner/fsbl_raw.bin
+powershell -ExecutionPolicy Bypass -File scripts/77_build_navigator_sd_boot_image.ps1
+```
+
+`scripts/77_*` 会用 Bootgen 回读候选 `BOOT.BIN`。当前实测的结构为 3 个 image：
+`fsbl_rewrapped.elf`（`0x18008` bytes）、候选 NPU bitstream（`0xF6EC0` bytes）、
+以及加载到 `0x1000_0000`、从 `0x1000_02D0` 执行的 SD runner。它不复制文件到 SD；
+待 SD 卡在 Windows 中挂载后，必须先创建完整备份并核对候选 SHA-256，再替换根目录的
+`BOOT.BIN` 进行冷启动验证。
 
 ## 2026-09-17 真实板 JTAG 记录
 
