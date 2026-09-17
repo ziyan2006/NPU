@@ -188,11 +188,11 @@
 - Consumes: KEY0 active-low asynchronous input, `clk_audio`, one `sample_tick` per stereo frame, and FIFO `{mix_l,mix_r,vocal_l,vocal_r}` values.
 - Produces: one-cycle `press_event`, `target_stem`, `ramping`, `gain_q15[15:0]`, saturated `out_left/right[15:0]`.
 
-- [ ] **Step 1: Write the failing bounce/ramp/saturation test**
+- [x] **Step 1: Write the failing bounce/ramp/saturation test**
 
   Replay a press waveform with 1-10 ms chatter, 21 ms stable low, held-low time and release chatter; demand one toggle. Check gain reaches 32767 on sample 1323, reverses continuously at sample 400, and these vectors: `32767-(-32768)` saturates to `32767`, `-32768-32767` saturates to `-32768`.
 
-- [ ] **Step 2: Confirm the red test**
+- [x] **Step 2: Confirm the red test**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case key_mixer
@@ -200,11 +200,11 @@
 
   Expected: compile failure naming the two missing modules.
 
-- [ ] **Step 3: Implement debounce and exact ramp accumulation**
+- [x] **Step 3: Implement debounce and exact ramp accumulation**
 
   Count `ceil(clk_audio_hz/50)` identical synchronized samples before accepting a level. For the ramp, use a fractional accumulator so 1323 ticks cover the full 0..32767 range without a final jump: each tick adds/subtracts quotient 24 and distributes remainder 1015; clamp at the target. Compute signed 32-bit `mix - ((vocal*gain + 16384) >>> 15)` and saturate to int16.
 
-- [ ] **Step 4: Run the test suite**
+- [x] **Step 4: Run the test suite**
 
   ```powershell
   python scripts/_test_audio_rtl.py --case key_mixer
@@ -213,7 +213,7 @@
 
   Expected: all bounce, reversal and arithmetic assertions pass.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add hardware/rtl/audio/audio_key_debounce.sv hardware/rtl/audio/audio_stem_mixer.sv hardware/rtl/tb/tb_audio_key_mixer.sv scripts/_test_audio_rtl.py

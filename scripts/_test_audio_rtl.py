@@ -29,6 +29,15 @@ CASES = {
         ],
         "audio_async_fifo: PASS",
     ),
+    "key_mixer": (
+        "tb_audio_key_mixer",
+        [
+            RTL / "audio" / "audio_key_debounce.sv",
+            RTL / "audio" / "audio_stem_mixer.sv",
+            RTL / "tb" / "tb_audio_key_mixer.sv",
+        ],
+        "audio_key_mixer: PASS",
+    ),
 }
 
 
