@@ -1,8 +1,8 @@
 # Place and route the generic XC7Z020 reference SoC without generating a
-# bitstream.  The preceding reference project is intentionally board-neutral;
-# actual DDR/MIO configuration still has to replace the generic PS settings.
+# bitstream.  Use a board-specific profile in the preceding project step;
+# timing closure does not validate physical DDR compatibility.
 # Usage:
-#   vivado -mode batch -source scripts/40_implement_reference_zynq_soc.tcl -- \
+#   vivado -mode batch -source scripts/40_implement_reference_zynq_soc.tcl -tclargs \
 #     ?project_directory? ?report_directory?
 
 set script_dir [file dirname [file normalize [info script]]]

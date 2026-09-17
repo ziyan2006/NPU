@@ -11,14 +11,14 @@
 | 维度 | 状态 |
 |---|---|
 | **产品** | 板上一个按键：按下人声消失、器乐继续；再按恢复。**只输出伴奏**，模型常开，按键只切一个乘数 |
-| **平台** | Xilinx Zynq-7020；领航者候选器件 `XC7Z020CLG400-2`（待实物丝印确认） |
+| **平台** | 第三方复刻的领航者 Zynq-7020；卖家称参考 V3.7（WM8960）资料，芯片顶面可见 `XC7Z020` / `CLG400`，`-2` 速度级别由卖家提供、尚未经独立核验 |
 | **算法** | 因果频域 U-Net，2 stem（预测人声复掩码，伴奏 = 混音 − 人声） |
 | **规模** | **0.5297 M 参数 · 517 KB INT8 权重 · 1.226 GMAC/音频秒 · 推理 RTF 0.007–0.014** |
 | **量化** | INT8 权重（per-channel）× **INT12 激活** × uint8 掩码，INT32 累加 → **deploy12 ≈ 29.7 dB，不可闻** |
 | **延迟** | 通路 **133.5 ms**（恒定）· 按键响应 **≈30 ms** · 冷启动 **≈110 ms** |
 | **训练** | 无标注音乐 + HTDemucs 蒸馏（教师 80 MB 已就绪）；v1→v4 四轮 + 3 个损失探针 + K 片段实验 |
 | **出货权重** | **`models/student_k3s_model.pt`** + 推理期 `<250 Hz` 掩码置 0 |
-| **NPU RTL** | 完整 `npu_top` 的 1,869 条真实命令与整数参考逐字节一致，3.254 M cycle / **32.54 ms @100 MHz**；IP 封装、可移植驱动和 PS7 GP0/HP0/IRQ 参考系统已完成；领航者 `-2` 最小 JTAG 候选 SoC post-route 为 25,436 LUT / 25,293 FF / 61 BRAM36 / 72 DSP，WNS `+0.461 ns`、WHS `+0.032 ns` |
+| **NPU RTL** | 完整 `npu_top` 的 1,869 条真实命令与整数参考逐字节一致；实板零/固定非零输入均逐字节通过，约 **3.346 M cycle / 33.46 ms @100 MHz**；PS7 GP0/HP0/IRQ SoC 的 post-route 为 25,436 LUT / 25,293 FF / 61 BRAM36 / 72 DSP，WNS `+0.461 ns`、WHS `+0.032 ns` |
 
 ---
 
@@ -62,8 +62,9 @@ out = mix_delay − g · vocal_est
 - ✅ PL 侧功能 RTL：CSR、Command Processor、task loader/fetch、共享 AXI、DMA/Scratchpad、CONV2D+post、VEC_ADD、UPSAMPLE2X 和完整命令顶层均已集成
 - ✅ 整程序验证：真实 1,869-command task image 对 32,768-byte 输出完成独立逐字节位精确比对，周期满足 `<46 ms`
 - ✅ 通用 XC7Z020 参考器件：NPU IP、PS 软件驱动核心、GP0/HP0/IRQ SoC 集成、100 MHz 完整布局布线和上板前清单已完成
-- ✅ 已建立正点原子领航者 ZYNQ-7020 的最小 JTAG 候选配置、身份确认门和离线构建流程
-- 🚧 仅剩实物相关工作：核对芯片/PCB 丝印与官方 preset、选择 bare-metal/Linux 适配、生成候选 bitstream 并完成端到端板测
+- ✅ 已把厂商 V3.7（WM8960）原理图、引脚表和 PS7 示例配置复制为本地参考，并将 DDR/MIO 参数接入 NPU 工程；完成 100 MHz 离线布局布线及检查，详见 [板卡 README](hardware/boards/alientek_navigator_z7020/README.md#v37-厂商配置的离线构建)。原厂文件不随公开仓库推送
+- ✅ 已建立实物身份确认与 bitstream/XSA 导出门，并完成 JTAG-only 的 DDR/CSR、最小任务及完整 NPU 端到端验证
+- 🚧 用户已确认两颗 DDR 均为 `NT5CC256M16EP-EK`；FPGA `-2` 来自卖家说法而非独立核验。实物为无底板版本丝印的第三方复刻板，V3.7 只是卖家建议的参考资料。Linux、QSPI/eMMC、30 分钟稳定性和 WM8960 音频通路属于后续阶段
 
 ---
 

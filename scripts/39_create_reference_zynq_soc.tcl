@@ -3,7 +3,7 @@
 # does not generate a bitstream: PS DDR/MIO settings must come from the actual
 # board preset before implementation.
 # Usage:
-#   vivado -mode batch -source scripts/39_create_reference_zynq_soc.tcl -- \
+#   vivado -mode batch -source scripts/39_create_reference_zynq_soc.tcl -tclargs \
 #     ?part? ?ip_repository? ?project_directory? ?board_profile? ?report_directory?
 
 set part [expr {$argc >= 1 ? [lindex $argv 0] : "xc7z020clg400-1"}]

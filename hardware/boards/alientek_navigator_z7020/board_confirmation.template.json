@@ -1,13 +1,20 @@
 {
   "confirmed_by": null,
   "confirmed_date": null,
+  "board_origin": "third_party_clone",
+  "reference_profile": "alientek_navigator_v3.7_wm8960",
+  "reference_basis": "seller_statement",
   "fpga_marking": null,
+  "fpga_marking_basis": null,
+  "fpga_speed_grade": "2",
+  "fpga_speed_grade_basis": "seller_statement",
   "core_board_revision": null,
   "base_board_revision": null,
-  "ddr_marking": null,
+  "base_board_revision_marking": "absent",
+  "ddr_markings": [null, null],
   "ethernet_phy_marking": null,
   "boot_mode_for_first_test": "JTAG",
-  "vendor_ps7_preset_path": null,
-  "vendor_xdc_path": null,
+  "jtag_only_prototype": true,
+  "no_flash_write": true,
   "notes": null
 }

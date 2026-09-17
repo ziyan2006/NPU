@@ -1,18 +1,32 @@
 {
   "schema_version": 1,
   "status": "provisional_pending_silkscreen_confirmation",
-  "vendor": "ALIENTEK / 正点原子",
+  "vendor": "third-party clone; ALIENTEK / 正点原子 reference design",
+  "board_origin": "third_party_clone",
+  "reference_profile": "alientek_navigator_v3.7_wm8960",
+  "reference_basis": "seller statement, not a verified official PCB revision",
   "family": "Navigator / 领航者 ZYNQ",
   "variant": "ZYNQ-7020 candidate",
   "fpga_part": "xc7z020clg400-2",
+  "observed_chip_top_marking": "XC7Z020 CLG400ABX2317",
+  "speed_grade_evidence": "PCB legend says XC7Z020-2CLG400I; chip top package/date line does not establish speed grade",
+  "seller_reported_speed_grade": "-2",
+  "speed_grade_confirmation_basis": "seller statement relayed by user; not independently verified",
   "ps_clock_mhz": 33.333333,
   "pl_oscillator_mhz": 50.0,
   "ddr": {
-    "physical_part": "NT5CC256M16",
+    "schematic_part": "NT5CC256M16",
+    "user_reported_marking": "NT5CC256M16EP-EK",
+    "user_reported_device_count": 2,
+    "user_reported_marking_date": "2026-09-16",
+    "physical_marking_confirmed": true,
+    "marking_confirmation_basis": "user statement; DDR read/write not yet tested on board",
     "device_count": 2,
     "total_bytes": 1073741824,
     "bus_width_bits": 32,
-    "vivado_compatible_part": "MT41J256M16 RE-125",
+    "vivado_compatible_part": "MT41K256M16 RE-125",
+    "legacy_generic_part": "MT41J256M16 RE-125",
+    "vendor_v37_ps7_reference_sha256": "591462696860ad9e4bdc03c9f5b58e95097c329cd2d308b8e806bb9bcedc7f68",
     "trace_delays_confirmed": false
   },
   "uart": {
@@ -28,7 +42,10 @@
   "revision_sensitive": {
     "ethernet_phy": ["YT8521S", "RTL8211E-VL"],
     "core_board_revision": null,
-    "base_board_revision": null
+    "base_board_revision": null,
+    "base_board_revision_marking": "absent",
+    "seller_claimed_reference_revision": "3.7",
+    "base_board_revision_confirmed": false
   },
   "npu_integration": {
     "csr_base": "0x43c00000",

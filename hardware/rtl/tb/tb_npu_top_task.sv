@@ -219,6 +219,14 @@ module tb_npu_top_task;
     end
   endtask
 
+  integer expected_commands;
+  integer max_sim_ns;
+  initial begin
+    if ($value$plusargs("MAX_SIM_NS=%d", max_sim_ns)) begin
+      #(max_sim_ns);
+      $fatal(1, "npu_top task timed out after %0d ns", max_sim_ns);
+    end
+  end
   initial begin
     if (!$value$plusargs("IMAGE=%s", image_hex)
         || !$value$plusargs("IMAGE_BYTES=%d", image_bytes)
@@ -226,6 +234,8 @@ module tb_npu_top_task;
         || !$value$plusargs("OUTPUT_OFFSET=%d", output_offset)
         || !$value$plusargs("OUTPUT_BYTES=%d", output_bytes))
       $fatal(1, "missing plusargs");
+    if (!$value$plusargs("EXPECTED_COMMANDS=%d", expected_commands))
+      expected_commands = 1869;
     $readmemh(image_hex, memory, 0, image_bytes / 8 - 1);
     repeat (10) @(posedge aclk);
     aresetn <= 1;
@@ -250,7 +260,7 @@ module tb_npu_top_task;
     if (read_value != 32'h1357_2468)
       $fatal(1, "completed tag mismatch");
     csr_read(12'h04c, read_value);
-    if (read_value != 1869)
+    if (read_value != expected_commands)
       $fatal(1, "retired commands mismatch %0d", read_value);
     csr_read(12'h050, read_value);
     $display("npu_top task: PASS cycles=%0d CSR_cycles_low=%0d",

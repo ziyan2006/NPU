@@ -1,0 +1,23 @@
+Copyright 1986-2022 Xilinx, Inc. All Rights Reserved. Copyright 2022-2026 Advanced Micro Devices, Inc. All Rights Reserved.
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+| Tool Version : Vivado v.2026.1 (win64) Build 6511674 Tue Jun 16 11:02:23 MDT 2026
+| Date         : Wed Sep 16 18:57:33 2026
+| Host         : RAW2332 running 64-bit major release  (build 9200)
+| Command      : report_clock_interaction -file D:/WORKBUDDY/STEM/npu-stem-repo/hardware/reports/vivado_2026_1/navigator_z7020_vendor_v37_impl/clock_interaction.rpt
+| Design       : npu_soc_wrapper
+| Device       : 7z020-clg400
+| Speed File   : -2  PRODUCTION 1.12 2019-11-22
+| Design State : Physopt postRoute
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------
+
+Clock Interaction Report
+
+Clock Interaction Table
+-----------------------
+
+                            WNS                            TNS Failing  TNS Total    WNS Path         Clock-Pair           Inter-Clock         
+From Clock    To Clock      Clock Edges  WNS(ns)  TNS(ns)    Endpoints    Endpoints  Requirement(ns)  Classification       Constraints         
+------------  ------------  -----------  -------  -------  -----------  -----------  ---------------  -------------------  ------------------  
+clk_fpga_0    clk_fpga_0    rise - rise     0.46     0.00            0        74889            10.00  Clean                Partial False Path  
+
+
