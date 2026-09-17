@@ -60,14 +60,23 @@ mwr -address-space AP0 -force [expr {$result_base + 0x60}] $maximum_polls
 targets -set -filter {name =~ "ARM Cortex-A9 MPCore #0"}
 dow $elf_file
 con
-for {set attempt 0} {$attempt < 200} {incr attempt} {
+set complete 0
+for {set attempt 0} {$attempt < 400} {incr attempt} {
   after 25
   targets -set -filter {name == "APU"}
-  set result [mrd -address-space AP0 -force -value $result_base 11]
-  if {[lindex $result 0] != 0x4e505401} { break }
+  set result [mrd -address-space AP0 -force -value $result_base 16]
+  set result_code [expr {[lindex $result 0]}]
+  if {$result_code == 0x4e5054a5 || $result_code == 0x4e5054c1 ||
+      $result_code == 0x4e5054c2 || $result_code == 0x4e5054c3 ||
+      $result_code == 0x4e5054c4 || $result_code == 0x4e5054c5 ||
+      $result_code == 0x4e5054c6} {
+    set complete 1
+    break
+  }
 }
 catch {stop}
 puts "NPU_A9_TASK results=$result"
+if {!$complete} { error "A9 task runner did not publish a terminal status" }
 if {[lindex $result 0] != 0x4e5054a5} { error "A9 task runner failed; code=[lindex $result 0]" }
 if {[lindex $result 4] != $task_tag || [lindex $result 5] != 0 || [lindex $result 10] != $expected_fnv1a} {
   error "A9 task completion or output checksum mismatch"

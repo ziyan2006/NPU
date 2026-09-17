@@ -76,6 +76,11 @@ int main(void)
         xil_printf("NPU DRIVER INIT FAIL %d\r\n", (int)result);
         goto done;
     }
+    result = npu_soft_reset(&npu);
+    if (result != NPU_OK) {
+        xil_printf("NPU DRIVER RESET FAIL %d\r\n", (int)result);
+        goto done;
+    }
     result = npu_vitis_task_buffer_init(&task_buffer, npu_task_ddr,
                                         sizeof(npu_task_ddr));
     if (result == NPU_OK)

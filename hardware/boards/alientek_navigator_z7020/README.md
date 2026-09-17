@@ -5,8 +5,9 @@ V3.7（WM8960）资料配置。这里的“V3.7”仅指**参考资料/兼容性
 实物 PCB 版本。厂商资料的 PS7 DDR/MIO 参数已接入 NPU 离线工程并完成布局布线；
 两颗 DDR 型号已由用户确认；FPGA `-2` 速度级别由卖家提供、用户转述，尚未经
 AMD 查询或原厂包装标签独立核验。已通过 JTAG 对前 64 MiB DDR 做了双图案读回验证；
-全容量稳定性和正式 Vitis 裸机软件仍待验证；完整 NPU 任务已完成两组 JTAG/DDR
-逐字节输出验证，详见本页的真实板记录。
+独立 GNU Arm A9 裸机驱动已完成一次完整 NPU task 的实测；全容量稳定性和正式
+Vitis/BSP 软件仍待验证。完整 NPU 任务已完成两组 JTAG/DDR 逐字节输出验证，
+详见本页的真实板记录。
 
 ## 已确认度较高的硬件
 
@@ -146,7 +147,7 @@ vivado -mode batch -nolog -nojournal `
    Vitis/BSP 版本仍待执行；
 3. 提交最小 task，核对完成 tag、错误码和 cycle；**已完成**；
 4. 提交完整 1,869-command task，逐字节比对 32,768-byte golden；**已完成零输入与固定非零输入两组**；
-5. 用 A9 裸机驱动提交同一完整 task，并核对 completed tag、错误码、retired、cycle 和输出校验值；脚本和 ELF 已离线构建，尚待下次接板实测；
+5. 用 A9 裸机驱动提交同一完整 task，并核对 completed tag、错误码、retired、cycle 和输出校验值；**已用固定非零 task 通过**；
 6. 连续运行 30 分钟并记录 deadline miss、DMA error、watchdog；
 7. 上述全部通过后，才启用 QSPI/eMMC 启动和 WM8960/音频通路。
 
@@ -178,6 +179,13 @@ vivado -mode batch -nolog -nojournal `
   SHA-256 为 `f1ce7318e5236f7f27a5c32acb875704d6886a3ba9909c0793c0b2d6752f31ba`。
   固定非零输入（seed `0x4e505531`）用时 `3,346,190` cycles，输出也逐字节一致，SHA-256 为
   `d2264856e34e53cc1a0107f9b14a54ab041c11cc6c3450e5e975e81b05650efa`。
+- `scripts/67_run_navigator_a9_task.tcl` 通过 `software/src/npu_driver.c` 的 A9#0
+  freestanding 路径提交同一固定非零完整 task：提交后 CSR 读回
+  `TASK_BASE=0x01000000`、`TASK_BYTES=0x001C4140`、busy 状态；完成 tag
+  `0x41395053`、错误码 `0`、retired `1,869`、总计 `3,355,380` cycles
+  （约 `33.55 ms @100 MHz`）。A9 对 32,768-byte 输出计算的 FNV-1a 为
+  `0x4DB54515`，与 host golden 一致。该路径仅使用 JTAG 易失下载和 DDR，
+  不使用 Vitis BSP，也不写入非易失存储。
 - 原始 JTAG 链路在连续大块下载或反复 PS7 初始化后曾出现 AP/USB 超时。稳定复现路径是：
   用 `scripts/61_run_navigator_end_task_pair.tcl` 完成一次初始化和最小任务检查，再用
   `scripts/62_run_navigator_resident_task.tcl` 提交完整分块任务；两者均只使用 JTAG 与易失 DDR。

@@ -19,6 +19,7 @@
 #define BAD_SUBMIT              0x4e5054c3u
 #define BAD_WAIT                0x4e5054c4u
 #define BAD_OUTPUT              0x4e5054c5u
+#define BAD_RESET               0x4e5054c6u
 
 enum {
     CFG_MAGIC = CONFIG_INDEX,
@@ -121,9 +122,26 @@ int main(void)
         result[0] = BAD_INIT;
         return 0;
     }
+    /* A JTAG reconfiguration leaves the CSR block idle, but a software task
+     * must also clear the core's loader/event state before its first
+     * doorbell.  This mirrors the known-good JTAG submission sequence. */
+    rc = npu_soft_reset(&device);
+    result[11] = (uint32_t)rc;
+    if (rc != NPU_OK) {
+        result[0] = BAD_RESET;
+        return 0;
+    }
+    /* GP0 writes are ordered, but let the one-cycle PL reset pulse retire
+     * before publishing a new doorbell on a freshly configured fabric. */
+    for (volatile uint32_t settle = 0u; settle != 1024u; ++settle)
+        __asm__ volatile("nop");
     rc = npu_submit(&device, task_base, (void *)task_base, task_bytes, tag,
                     watchdog);
     result[2] = (uint32_t)rc;
+    result[12] = npu_read_register(&device, NPU_REG_TASK_BASE_LO);
+    result[13] = npu_read_register(&device, NPU_REG_TASK_BASE_HI);
+    result[14] = npu_read_register(&device, NPU_REG_TASK_BYTES);
+    result[15] = npu_read_register(&device, NPU_REG_STATUS);
     if (rc != NPU_OK) {
         result[0] = BAD_SUBMIT;
         return 0;

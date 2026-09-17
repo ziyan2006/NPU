@@ -64,7 +64,7 @@ out = mix_delay − g · vocal_est
 - ✅ 通用 XC7Z020 参考器件：NPU IP、PS 软件驱动核心、GP0/HP0/IRQ SoC 集成、100 MHz 完整布局布线和上板前清单已完成
 - ✅ 已把厂商 V3.7（WM8960）原理图、引脚表和 PS7 示例配置复制为本地参考，并将 DDR/MIO 参数接入 NPU 工程；完成 100 MHz 离线布局布线及检查，详见 [板卡 README](hardware/boards/alientek_navigator_z7020/README.md#v37-厂商配置的离线构建)。原厂文件不随公开仓库推送
 - ✅ 已建立实物身份确认与 bitstream/XSA 导出门，并完成 JTAG-only 的 DDR/CSR、最小任务及完整 NPU 端到端验证
-- 🚧 用户已确认两颗 DDR 均为 `NT5CC256M16EP-EK`；FPGA `-2` 来自卖家说法而非独立核验。实物为无底板版本丝印的第三方复刻板，V3.7 只是卖家建议的参考资料。独立 GNU Arm A9 任务运行器已离线构建、待接板实测；本机 Vitis 2026.1 的 Zynq 平台服务异常，Linux、QSPI/eMMC、30 分钟稳定性和 WM8960 音频通路属于后续阶段
+- 🚧 用户已确认两颗 DDR 均为 `NT5CC256M16EP-EK`；FPGA `-2` 来自卖家说法而非独立核验。实物为无底板版本丝印的第三方复刻板，V3.7 只是卖家建议的参考资料。独立 GNU Arm A9 任务运行器已在实物完成完整非零 task 与 golden 输出校验；本机 Vitis 2026.1 的 Zynq 平台服务异常，Linux、QSPI/eMMC、30 分钟稳定性和 WM8960 音频通路属于后续阶段
 
 ---
 
