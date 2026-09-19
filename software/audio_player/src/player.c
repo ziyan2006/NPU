@@ -78,7 +78,9 @@ static void emit_telemetry(player_t *player)
         line, sizeof(line),
         "[AUDIO] sec=%lu state=%s stem=%u ramp=%u fifo=%u fifo_min=%u "
         "uf=%lu of=%lu dec_err=%lu npu_err=%lu codec_err=%lu "
-        "deadline_miss=%lu blk_us_avg=%lu blk_us_max=%lu",
+        "deadline_miss=%lu blk_us_avg=%lu blk_us_max=%lu "
+        "decfe_us_avg=%lu decfe_us_max=%lu npu_us_avg=%lu npu_us_max=%lu "
+        "sink_us_avg=%lu sink_us_max=%lu",
         (unsigned long)player->telemetry.seconds,
         player_state_name(player->state),
         (unsigned)player->telemetry.stem_target,
@@ -92,7 +94,13 @@ static void emit_telemetry(player_t *player)
         (unsigned long)player->telemetry.codec_errors,
         (unsigned long)player->telemetry.deadline_miss,
         (unsigned long)player->telemetry.block_us_average,
-        (unsigned long)player->telemetry.block_us_max);
+        (unsigned long)player->telemetry.block_us_max,
+        (unsigned long)player->telemetry.decode_frontend_us_average,
+        (unsigned long)player->telemetry.decode_frontend_us_max,
+        (unsigned long)player->telemetry.npu_us_average,
+        (unsigned long)player->telemetry.npu_us_max,
+        (unsigned long)player->telemetry.backend_sink_us_average,
+        (unsigned long)player->telemetry.backend_sink_us_max);
     player->deps.uart_line(player->deps.context, line);
     player->next_telemetry_us = now + 1000000u;
 }

@@ -44,6 +44,40 @@ FSBL、音频 bitstream、对应 ELF 三个逻辑镜像且顺序固定，同时�
 Tone、Wav、Mp3Bypass、FullStem 顺序逐级验收；前一级失败时不要继续后一级。
 当前四套镜像仅完成离线构建和静态审计，不能记为扬声器或 FullStem 实板通过。
 
+## 音频实板验收与串口监控
+
+完整验收记录模板位于 `hardware/reports/audio_board_acceptance.md`。先安装一次串口依赖，
+再由 Windows 查找实际端口；不要默认照抄示例中的 COM 号：
+
+```powershell
+python -m pip install pyserial
+Get-PnpDevice -Class Ports | Format-Table FriendlyName,InstanceId
+$env:STEM_UART_PORT = 'COM7'  # 改成上一步识别出的开发板 UART
+```
+
+每一级均应断电后把对应目录里的 `BOOT.BIN` **人工**复制到 FAT32 SD 根目录，
+JTAG 保持断开，然后冷启动。顺序固定为 Tone、WAV、MP3 Bypass、FullStem；分别准备
+无媒体文件、`test.wav`、`music.mp3`、`music.mp3`。某一级失败时保留串口日志和当前
+SD 内容，不继续后一级。
+
+FullStem 进入 `PLAY` 后启动 30 分钟监控：
+
+```powershell
+python scripts/104_monitor_audio_uart.py `
+  --port $env:STEM_UART_PORT `
+  --baud 115200 `
+  --seconds 1800 `
+  --output hardware/build/navigator_audio_acceptance
+```
+
+监控器把所有串口行写为带 UTC 时间的 JSONL，并生成 summary JSON。验收期间至少按
+KEY0 两次。只有连续 1800 个 `PLAY` 秒、至少两次 `stem` 目标变化、串口无秒数缺口、
+`uf/of/dec_err/npu_err/codec_err/deadline_miss` 全为零且
+`blk_us_max <= 92880` 时才返回 0 并打印 `AUDIO_BOARD_ACCEPTANCE: PASS`。
+日志同时记录 decode+frontend、NPU、backend+sink 的平均/峰值耗时，便于定位超时阶段。
+本地捕获目录在 `.gitignore` 覆盖的 `hardware/build/` 下；只把审核后的摘要和必要证据
+抄入验收报告，不提交音乐或含版权的原始录音。
+
 ## 工件边界
 
 - CSR：`0x43C0_0000`，4 KiB；

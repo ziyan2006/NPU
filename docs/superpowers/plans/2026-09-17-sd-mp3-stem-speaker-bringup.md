@@ -805,11 +805,11 @@
 - Consumes: validated handoff FSBL, audio bitstream, stage-specific ELF and Bootgen 2026.1.
 - Produces: ignored `hardware/build/navigator_audio_boot/{tone,wav,mp3_bypass,stem}/BOOT.BIN`, readback text and SHA-256 manifest; never writes an SD card automatically.
 
-- [ ] **Step 1: Write a failing static image gate**
+- [x] **Step 1: Write a failing static image gate**
 
   The gate must parse each Bootgen readback and require exactly FSBL, bitstream and matching ELF in that order; verify bitstream ID/address map, FSBL validated hash, ELF build mode string and no JTAG dependency. It must also run every existing script numbered 79, 82, 85, 86, 89 and 92 that is applicable without hardware.
 
-- [ ] **Step 2: Confirm the image gate is red**
+- [x] **Step 2: Confirm the image gate is red**
 
   ```powershell
   powershell -ExecutionPolicy Bypass -File scripts/103_test_navigator_audio_boot.ps1
@@ -817,11 +817,11 @@
 
   Expected: nonzero exit because staged BIFs and images are absent.
 
-- [ ] **Step 3: Implement deterministic staged image build**
+- [x] **Step 3: Implement deterministic staged image build**
 
   Reuse `scripts/91_patch_navigator_sd_fsbl_handoff.ps1`; reject an FSBL hash mismatch. Build all application ELFs through `101`, invoke Bootgen with explicit BIF/output paths, read every image back, and write a JSON manifest containing input/output SHA-256, Vivado/Vitis version, Git commit and build mode. Do not copy to removable media in this script.
 
-- [ ] **Step 4: Build and run all static regressions**
+- [x] **Step 4: Build and run all static regressions**
 
   ```powershell
   powershell -ExecutionPolicy Bypass -File scripts/102_build_navigator_audio_boot.ps1 -Clean
@@ -832,7 +832,7 @@
 
   Expected: four images pass partition/hash inspection, audio/NPU gates pass, and the previous autonomous NPU image remains reproducible.
 
-- [ ] **Step 5: Commit**
+- [x] **Step 5: Commit**
 
   ```powershell
   git add software/audio_player/boot scripts/102_build_navigator_audio_boot.ps1 scripts/103_test_navigator_audio_boot.ps1 software/NAVIGATOR_BRINGUP.md hardware/boards/alientek_navigator_z7020/README.md
@@ -851,11 +851,11 @@
 - Consumes: a user-selected UART COM port at the board's documented baud rate and newline-delimited telemetry containing `seconds`, stage cycle metrics, FIFO min/current, underflow, overflow, decoder errors, NPU errors, codec errors and STEM target.
 - Produces: timestamped JSONL capture plus final JSON summary; exits zero only after 1800 consecutive PLAY seconds with all four hardware/error counters zero and no missed model deadline.
 
-- [ ] **Step 1: Write failing log-parser/acceptance tests**
+- [x] **Step 1: Write failing log-parser/acceptance tests**
 
   Feed recorded synthetic logs for success, heartbeat gap, underflow, overflow, NPU error, codec NACK, deadline miss, KEY0 target toggles and early EOF. Require a nonzero exit for every failure log and zero only for a generated 1800-second success log.
 
-- [ ] **Step 2: Confirm monitor tests are red**
+- [x] **Step 2: Confirm monitor tests are red**
 
   ```powershell
   python software/audio_player/tests/test_uart_monitor.py
@@ -863,7 +863,7 @@
 
   Expected: import failure because `104_monitor_audio_uart.py` is absent.
 
-- [ ] **Step 3: Implement monitor and board runbook**
+- [x] **Step 3: Implement monitor and board runbook**
 
   Discover ports with `Get-PnpDevice -Class Ports`, then set `$env:STEM_UART_PORT` to the actual board port. The runbook records: tone LRCLK measured near 44.1 kHz and no NACK; deterministic PCM played count; WAV playback; MP3 bypass; dynamic NPU golden; full pipeline deadlines; repeated KEY0 transitions with no click; power-cycle cold boot with JTAG disconnected; final 30-minute counters. Record exact BOOT.BIN SHA-256 and Git commit in the report.
 

@@ -267,6 +267,12 @@ static void test_sixty_second_playback(void)
     assert(fake.line_count <= 61u);
     assert(strstr(fake.last_line, "[AUDIO] sec=") != NULL);
     assert(strstr(fake.last_line, "deadline_miss=0") != NULL);
+    assert(strstr(fake.last_line, "decfe_us_avg=25000") != NULL);
+    assert(strstr(fake.last_line, "decfe_us_max=25000") != NULL);
+    assert(strstr(fake.last_line, "npu_us_avg=40000") != NULL);
+    assert(strstr(fake.last_line, "npu_us_max=40000") != NULL);
+    assert(strstr(fake.last_line, "sink_us_avg=20000") != NULL);
+    assert(strstr(fake.last_line, "sink_us_max=20000") != NULL);
 }
 
 static void test_npu_failure_latches_bypass(void)
