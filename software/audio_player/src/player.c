@@ -53,6 +53,7 @@ static void update_audio_status(player_t *player)
     memset(&status, 0, sizeof(status));
     player->deps.audio_status(player->deps.context, &status);
     player->telemetry.fifo_level = status.fifo_level;
+    player->telemetry.played_frames = status.played_frames;
     if (status.fifo_level < player->telemetry.fifo_minimum)
         player->telemetry.fifo_minimum = status.fifo_level;
     player->telemetry.underflows = status.underflows;
@@ -76,7 +77,8 @@ static void emit_telemetry(player_t *player)
     player->telemetry.seconds = (uint32_t)(now / 1000000u);
     (void)snprintf(
         line, sizeof(line),
-        "[AUDIO] sec=%lu state=%s stem=%u ramp=%u fifo=%u fifo_min=%u "
+        "[AUDIO] sec=%lu state=%s stem=%u ramp=%u played=%lu "
+        "fifo=%u fifo_min=%u "
         "uf=%lu of=%lu dec_err=%lu npu_err=%lu codec_err=%lu "
         "deadline_miss=%lu blk_us_avg=%lu blk_us_max=%lu "
         "decfe_us_avg=%lu decfe_us_max=%lu npu_us_avg=%lu npu_us_max=%lu "
@@ -85,6 +87,7 @@ static void emit_telemetry(player_t *player)
         player_state_name(player->state),
         (unsigned)player->telemetry.stem_target,
         (unsigned)player->telemetry.stem_ramping,
+        (unsigned long)player->telemetry.played_frames,
         (unsigned)player->telemetry.fifo_level,
         (unsigned)player->telemetry.fifo_minimum,
         (unsigned long)player->telemetry.underflows,

@@ -123,9 +123,9 @@ def main() -> None:
     if len(audio_rows) != 1 or len(audio_rows[0]) < 10:
         raise AssertionError("audio hierarchy is absent from utilization")
     audio_ramb36 = int(audio_rows[0][7])
-    if audio_ramb36 != 16:
+    if audio_ramb36 != 32:
         raise AssertionError(
-            f"8192x64 audio FIFO requires 16 RAMB36, got {audio_ramb36}"
+            f"16384x64 audio FIFO requires 32 RAMB36, got {audio_ramb36}"
         )
     cdc = read(REPORT / "cdc.rpt")
     cdc_rows = [

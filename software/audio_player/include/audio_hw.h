@@ -11,7 +11,7 @@ extern "C" {
 
 #define AUDIO_HW_BASE_ADDRESS       0x43c10000u
 #define AUDIO_HW_IP_ID              0x31445541u
-#define AUDIO_HW_FIFO_CAPACITY      8192u
+#define AUDIO_HW_FIFO_CAPACITY      16384u
 
 #define AUDIO_HW_REG_IP_ID          0x000u
 #define AUDIO_HW_REG_CONTROL        0x008u

@@ -19,10 +19,13 @@ extern "C" {
 #define PLAYER_ANALYSIS_WINDOW_FRAMES \
     (STEM_BLOCK_SAMPLES + PLAYER_LOOKAHEAD_FRAMES)
 #define PLAYER_PREFILL_FRAMES \
-    (STEM_BACKEND_STARTUP_FRAMES + STEM_BLOCK_SAMPLES)
+    (STEM_BACKEND_STARTUP_FRAMES + 3u * STEM_BLOCK_SAMPLES)
 #define PLAYER_FADE_FRAMES 1323u
 #define PLAYER_BLOCK_DEADLINE_US 92880u
 #define PLAYER_TELEMETRY_LINE_BYTES 512u
+
+_Static_assert(PLAYER_PREFILL_FRAMES <= AUDIO_HW_FIFO_CAPACITY,
+               "FullStem prefill must fit in the hardware FIFO");
 
 typedef enum {
     PLAYER_BOOT = 0,
@@ -62,6 +65,7 @@ typedef struct {
 
 typedef struct {
     uint16_t fifo_level;
+    uint32_t played_frames;
     uint8_t stem_target;
     uint8_t stem_ramping;
     uint8_t codec_error;
@@ -85,6 +89,7 @@ typedef struct {
     uint32_t backend_sink_us_max;
     uint16_t fifo_level;
     uint16_t fifo_minimum;
+    uint32_t played_frames;
     uint8_t stem_target;
     uint8_t stem_ramping;
     uint32_t underflows;

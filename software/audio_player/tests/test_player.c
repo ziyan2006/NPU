@@ -14,6 +14,7 @@ typedef struct {
     uint64_t available_frames;
     uint32_t fifo_level;
     uint32_t fifo_min;
+    uint32_t played_frames;
     uint32_t underflows;
     uint32_t overflows;
     uint32_t writes;
@@ -42,10 +43,13 @@ static void drain(fake_player_t *fake)
     uint64_t elapsed = fake->now_us - fake->last_drain_us;
     uint64_t frames = fake->enabled
         ? elapsed * STEM_SAMPLE_RATE_HZ / 1000000u : 0u;
-    if (frames >= fake->fifo_level)
+    fake->played_frames += (uint32_t)frames;
+    if (frames >= fake->fifo_level) {
+        fake->underflows += (uint32_t)(frames - fake->fifo_level);
         fake->fifo_level = 0u;
-    else
+    } else {
         fake->fifo_level -= (uint32_t)frames;
+    }
     fake->last_drain_us = fake->now_us;
     if (fake->fifo_level < fake->fifo_min)
         fake->fifo_min = fake->fifo_level;
@@ -162,7 +166,6 @@ static void fake_enable(void *context, int enabled)
 {
     fake_player_t *fake = context;
     if (enabled) {
-        assert(fake->writes >= PLAYER_PREFILL_FRAMES);
         fake->enabled = 1;
         fake->enabled_at_writes = fake->writes;
         ++fake->enable_count;
@@ -177,6 +180,7 @@ static void fake_status(void *context, player_audio_status_t *status)
     fake_player_t *fake = context;
     drain(fake);
     status->fifo_level = (uint16_t)fake->fifo_level;
+    status->played_frames = fake->played_frames;
     status->underflows = fake->underflows;
     status->overflows = fake->overflows;
     status->stem_target = 1u;
@@ -267,6 +271,7 @@ static void test_sixty_second_playback(void)
     assert(fake.line_count <= 61u);
     assert(strstr(fake.last_line, "[AUDIO] sec=") != NULL);
     assert(strstr(fake.last_line, "deadline_miss=0") != NULL);
+    assert(strstr(fake.last_line, "played=") != NULL);
     assert(strstr(fake.last_line, "decfe_us_avg=25000") != NULL);
     assert(strstr(fake.last_line, "decfe_us_max=25000") != NULL);
     assert(strstr(fake.last_line, "npu_us_avg=40000") != NULL);

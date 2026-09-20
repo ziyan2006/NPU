@@ -503,6 +503,8 @@ static void full_audio_status(void *context, player_audio_status_t *status)
     hardware_status = player_platform_audio_read(AUDIO_HW_REG_STATUS);
     status->fifo_level = (uint16_t)player_platform_audio_read(
         AUDIO_HW_REG_FIFO_LEVEL);
+    status->played_frames = player_platform_audio_read(
+        AUDIO_HW_REG_PLAYED_FRAMES);
     status->underflows = player_platform_audio_read(
         AUDIO_HW_REG_UNDERFLOW_COUNT);
     status->overflows = player_platform_audio_read(
@@ -571,6 +573,8 @@ static int run_player(audio_hw_t *hardware)
     deps.uart_line = full_uart_line;
     if (player_init(&full_player, &deps) != PLAYER_OK)
         return 0;
+    player_platform_audio_write(AUDIO_HW_REG_UNDERFLOW_COUNT, 1u);
+    player_platform_audio_write(AUDIO_HW_REG_OVERFLOW_COUNT, 1u);
     player_platform_log("FULL_STEM");
     while (full_player.state != PLAYER_DONE
            && full_player.state != PLAYER_FAIL_MUTE)

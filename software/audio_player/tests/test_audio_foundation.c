@@ -113,7 +113,8 @@ static void test_audio_hw(void)
     audio_frame_t frame = {0x1234, -2, 0x3456, -4};
 
     direct_registers[AUDIO_HW_REG_IP_ID / 4u] = AUDIO_HW_IP_ID;
-    direct_registers[AUDIO_HW_REG_FIFO_CAPACITY / 4u] = 8192u;
+    direct_registers[AUDIO_HW_REG_FIFO_CAPACITY / 4u] =
+        AUDIO_HW_FIFO_CAPACITY;
     assert(audio_hw_init(&hardware, (uintptr_t)direct_registers)
            == AUDIO_HW_OK);
     direct_registers[AUDIO_HW_REG_IP_ID / 4u] = 0u;
@@ -124,14 +125,15 @@ static void test_audio_hw(void)
 
     memset(&log, 0, sizeof(log));
     log.registers[AUDIO_HW_REG_IP_ID / 4u] = AUDIO_HW_IP_ID;
-    log.registers[AUDIO_HW_REG_FIFO_CAPACITY / 4u] = 8192u;
+    log.registers[AUDIO_HW_REG_FIFO_CAPACITY / 4u] =
+        AUDIO_HW_FIFO_CAPACITY;
     log.registers[AUDIO_HW_REG_FIFO_LEVEL / 4u] = 17u;
     io.read32 = recorded_read;
     io.write32 = recorded_write;
     io.context = &log;
     assert(audio_hw_init_with_io(&hardware, 0x43c10000u, &io)
            == AUDIO_HW_OK);
-    assert(audio_hw_space(&hardware) == 8175u);
+    assert(audio_hw_space(&hardware) == AUDIO_HW_FIFO_CAPACITY - 17u);
     assert(audio_hw_write_frame(&hardware, &frame) == AUDIO_HW_OK);
     assert(log.write_count == 2u);
     assert(log.write_offsets[0] == AUDIO_HW_REG_MIX_FRAME);
@@ -140,7 +142,7 @@ static void test_audio_hw(void)
     assert(log.write_values[1] == 0xfffc3456u);
     assert(hardware.submitted_frames == 1u);
 
-    log.registers[AUDIO_HW_REG_FIFO_LEVEL / 4u] = 8192u;
+    log.registers[AUDIO_HW_REG_FIFO_LEVEL / 4u] = AUDIO_HW_FIFO_CAPACITY;
     assert(audio_hw_write_frame(&hardware, &frame) == AUDIO_HW_E_FULL);
     assert(log.write_count == 2u);
     assert(hardware.submitted_frames == 1u);

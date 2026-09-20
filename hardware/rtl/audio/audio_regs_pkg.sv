@@ -1,7 +1,7 @@
 package audio_regs_pkg;
   localparam logic [31:0] AUDIO_IP_ID = 32'h3144_5541; // "AUD1"
   localparam logic [31:0] AUDIO_VERSION = 32'h0001_0000;
-  localparam logic [31:0] AUDIO_FIFO_CAPACITY = 32'd8192;
+  localparam logic [31:0] AUDIO_FIFO_CAPACITY = 32'd16384;
 
   localparam logic [11:0] AUDIO_REG_IP_ID = 12'h000;
   localparam logic [11:0] AUDIO_REG_VERSION = 12'h004;

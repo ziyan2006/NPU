@@ -47,11 +47,11 @@ module audio_out_axi #(
   logic [63:0] frame_wr_data;
 
   logic fifo_full;
-  logic [13:0] fifo_wr_level;
+  logic [14:0] fifo_wr_level;
   logic fifo_rd_valid;
   logic [63:0] fifo_rd_data;
   logic fifo_rd_empty;
-  logic [13:0] fifo_rd_level;
+  logic [14:0] fifo_rd_level;
   logic fifo_rd_ready;
   logic fifo_empty_audio_q;
 

@@ -4,7 +4,7 @@
 
 **Goal:** 在领航者 Zynq-7020 复刻板上实现无需 JTAG 的 MicroSD 冷启动，读取 `/music.mp3`，经 A9 解码和现有 PL NPU 分离后从 WM8960 板载扬声器播放，并用 KEY0 在原音与去人声之间切换。
 
-**Architecture:** Cortex-A9 standalone 应用负责 FatFs、MP3 解码、连续 STFT/iSTFT、任务 tensor 更新和调度；现有 `0x43C00000` NPU 只执行冻结的 16-frame mask 网络。新增 `0x43C10000` 音频 PL 外设负责 8192x64-bit 异步 FIFO、KEY0 消抖、消费端 Q1.15 混音、I2S TX、WM8960 初始化和测试音。
+**Architecture:** Cortex-A9 standalone 应用负责 FatFs、MP3 解码、连续 STFT/iSTFT、任务 tensor 更新和调度；现有 `0x43C00000` NPU 只执行冻结的 16-frame mask 网络。新增 `0x43C10000` 音频 PL 外设负责 16384x64-bit 异步 FIFO、KEY0 消抖、消费端 Q1.15 混音、I2S TX、WM8960 初始化和测试音。
 
 **Tech Stack:** SystemVerilog, AXI4-Lite, Xilinx XPM/BRAM, Vivado 2026.1 Tcl, Vitis 2026.1 standalone BSP, C11, xilffs/FatFs, pinned minimp3, pinned KissFFT float32, Python 3/NumPy/PyTorch, Icarus Verilog, GNU Arm A9 toolchain, Bootgen.
 
@@ -18,7 +18,7 @@
 - Audio output is 44.1 kHz stereo, 24-bit I2S in 32-bit slots; PL is clock master and WM8960 is slave.
 - KEY0 is `L14`, active-low, two-flop synchronized, debounced for 20 ms; reset state is STEM off.
 - STEM gain is Q1.15 and ramps over exactly 1323 samples (30 ms at 44.1 kHz); a press during a ramp reverses from the current gain.
-- FIFO entries are `{vocal_right[15:0], vocal_left[15:0], mix_right[15:0], mix_left[15:0]}` and depth is exactly 8192 frames.
+- FIFO entries are `{vocal_right[15:0], vocal_left[15:0], mix_right[15:0], mix_left[15:0]}` and depth is exactly 16384 frames.
 - Model contract is `N_FFT=1024`, `hop=256`, periodic Hann, 513 bins, `legacy_log` 128 bands, 16 frames/block, INT12 input in NHWC8, Q1.11 output in NHWC8, and 250 Hz/44-band low-frequency protection.
 - Task offsets, sizes, command count and tensor addresses come from generated metadata; software must not embed current offsets `49280` or `966784` as literals.
 - Existing `npu_submit()` semantics and all current NPU/FSBL/SD cold-boot regressions remain unchanged.
@@ -34,7 +34,7 @@
 
 - `hardware/rtl/audio/audio_regs_pkg.sv`: canonical register offsets, ID, status/control bits and FIFO frame packing.
 - `hardware/rtl/audio/audio_axi_csr.sv`: AXI4-Lite slave, atomic two-write frame staging, W1C counters and control/status crossing endpoints.
-- `hardware/rtl/audio/audio_async_fifo.sv`: 8192x64 dual-clock FIFO using inferred block RAM and Gray-coded pointers.
+- `hardware/rtl/audio/audio_async_fifo.sv`: 16384x64 dual-clock FIFO using inferred block RAM and Gray-coded pointers.
 - `hardware/rtl/audio/audio_key_debounce.sv`: synchronizer, 20 ms stable-level filter and one-cycle press event.
 - `hardware/rtl/audio/audio_stem_mixer.sv`: 1323-sample Q1.15 ramp, reversible target and saturated stereo subtraction.
 - `hardware/rtl/audio/audio_i2s_tx.sv`: 64-BCLK stereo frame serializer with 24 valid MSBs per 32-bit slot.
@@ -133,7 +133,7 @@
   git commit -m "feat(audio): define AXI audio register contract"
   ```
 
-### Task 2: Implement the 8192-Frame Asynchronous FIFO
+### Task 2: Implement the 16384-Frame Asynchronous FIFO
 
 **Files:**
 - Create: `hardware/rtl/audio/audio_async_fifo.sv`
@@ -142,7 +142,7 @@
 
 **Interfaces:**
 - Consumes: `wr_clk`, `wr_reset_n`, `wr_valid`, `wr_data[63:0]`, `rd_clk`, `rd_reset_n`, `rd_ready`.
-- Produces: `wr_full`, write-domain `wr_level[13:0]`, `rd_valid`, `rd_data[63:0]`, read-domain `rd_empty`, `rd_level[13:0]`; capacity is exactly 8192 and accepted transfers are `wr_valid && !wr_full` / `rd_ready && rd_valid`.
+- Produces: `wr_full`, write-domain `wr_level[14:0]`, `rd_valid`, `rd_data[63:0]`, read-domain `rd_empty`, `rd_level[14:0]`; capacity is exactly 16384 and accepted transfers are `wr_valid && !wr_full` / `rd_ready && rd_valid`.
 
 - [x] **Step 1: Add a failing dual-clock FIFO test**
 
@@ -350,7 +350,7 @@
 
 - [x] **Step 1: Write the failing integration test and audit**
 
-  The top test writes two FIFO frames, enables playback, toggles KEY0 and checks register counters against serialized samples. The Python audit must fail unless `xc7z020clg400-2`, both address segments, exact pins, 8192-depth BRAM inference, routed status, no critical DRC and nonnegative WNS are present.
+  The top test writes two FIFO frames, enables playback, toggles KEY0 and checks register counters against serialized samples. The Python audit must fail unless `xc7z020clg400-2`, both address segments, exact pins, 16384-depth BRAM inference, routed status, no critical DRC and nonnegative WNS are present.
 
 - [x] **Step 2: Confirm simulation and audit are red**
 
@@ -768,7 +768,7 @@
 
 - [ ] **Step 3: Implement bounded cooperative scheduling**
 
-  Decode into `pcm_ring`, feed exactly 4096 new frames per model block, run NPU regardless of STEM target, and use absolute sample indices to join finalized vocal frames to the retained original PCM. After two initial NPU blocks, 7680 aligned frames are available, which satisfies prefill without filling the 8192-frame FIFO completely. Write delayed-mix/vocal pairs whenever FIFO space exists, and stop starting work when output backpressure would overflow bounded rings. Track maximum/average cycles for decode+frontend, NPU and backend+sink; track FIFO minimum/current level and all error counters.
+  Decode into `pcm_ring`, feed exactly 4096 new frames per model block, run NPU regardless of STEM target, and use absolute sample indices to join finalized vocal frames to the retained original PCM. After four initial NPU blocks, 15872 aligned frames are available, which nearly fills the 16384-frame FIFO before playback. Write delayed-mix/vocal pairs whenever FIFO space exists, and stop starting work when output backpressure would overflow bounded rings. Track maximum/average cycles for decode+frontend, NPU and backend+sink; track played frames, FIFO minimum/current level and all error counters.
 
 - [ ] **Step 4: Run all host software tests and build full ELF**
 

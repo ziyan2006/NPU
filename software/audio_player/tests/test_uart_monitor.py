@@ -29,6 +29,7 @@ def telemetry_line(second: int, **overrides: int | str) -> str:
         "state": "PLAY",
         "stem": 0 if second < 600 or second >= 1200 else 1,
         "ramp": 0,
+        "played": second * 44100,
         "fifo": 4096,
         "fifo_min": 2048,
         "uf": 0,

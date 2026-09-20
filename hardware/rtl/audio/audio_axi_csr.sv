@@ -24,7 +24,7 @@ module audio_axi_csr (
 
   input  logic         fifo_full_i,
   input  logic         fifo_empty_i,
-  input  logic [13:0]  fifo_level_i,
+  input  logic [14:0]  fifo_level_i,
   input  logic         underflow_pulse_i,
   input  logic         overflow_pulse_i,
   input  logic [31:0]  played_frames_i,
@@ -122,7 +122,7 @@ module audio_axi_csr (
       };
       AUDIO_REG_MIX_FRAME: read_data = mix_stage_q;
       AUDIO_REG_VOCAL_FRAME: read_data = vocal_stage_q;
-      AUDIO_REG_FIFO_LEVEL: read_data = {18'd0, fifo_level_i};
+      AUDIO_REG_FIFO_LEVEL: read_data = {17'd0, fifo_level_i};
       AUDIO_REG_FIFO_CAPACITY: read_data = AUDIO_FIFO_CAPACITY;
       AUDIO_REG_UNDERFLOW_COUNT: read_data = underflow_count_q;
       AUDIO_REG_OVERFLOW_COUNT: read_data = overflow_count_q;

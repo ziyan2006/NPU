@@ -25,7 +25,7 @@ module tb_audio_axi_csr;
 
   logic fifo_full = 0;
   logic fifo_empty = 1;
-  logic [13:0] fifo_level = 0;
+  logic [14:0] fifo_level = 0;
   logic underflow_pulse = 0;
   logic overflow_pulse = 0;
   logic [31:0] played_frames = 32'h1234_5678;
@@ -155,7 +155,7 @@ module tb_audio_axi_csr;
 
     axi_read(AUDIO_REG_IP_ID, AUDIO_IP_ID, 2'b00);
     axi_read(AUDIO_REG_VERSION, AUDIO_VERSION, 2'b00);
-    axi_read(AUDIO_REG_FIFO_CAPACITY, 32'd8192, 2'b00);
+    axi_read(AUDIO_REG_FIFO_CAPACITY, 32'd16384, 2'b00);
     axi_read(AUDIO_REG_STATUS, 32'h0000_0025, 2'b00);
 
     axi_write(AUDIO_REG_CONTROL, 32'h0000_000f, 4'h1, 0, 2'b00);

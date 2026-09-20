@@ -112,7 +112,7 @@ FatFs -> MP3 decoder -> stereo PCM ring
 - 现有 NPU：执行冻结的 16-frame 频谱掩码网络；
 - 新增音频 PL：PCM FIFO、按钮消抖、逐采样 STEM 混音、I2S TX、WM8960 配置和计数器；
 - DDR：任务镜像、MP3/PCM 环形缓冲和前后处理工作区；
-- BRAM：8192 个 64-bit 音频帧的异步 FIFO。
+- BRAM：16384 个 64-bit 音频帧的异步 FIFO。
 
 ## 5. 时钟与 WM8960
 
@@ -149,7 +149,7 @@ I2S 每声道使用 32-bit slot，其中有效样本为高 24 bit。A9 提供的
 新增独立 `audio_out_axi` 子系统，不修改 `npu_top` 内部计算逻辑：
 
 - AXI4-Lite CSR/数据写接口；
-- 64-bit、8192-depth 异步 FIFO；
+- 64-bit、16384-depth 异步 FIFO；
 - KEY0 两级同步、20 ms 消抖和单次按下事件；
 - Q1.15 STEM 增益斜坡；
 - 饱和混音器；
@@ -167,7 +167,7 @@ bits 47:32  vocal_estimate_left
 bits 63:48  vocal_estimate_right
 ```
 
-8192 帧约等于 185.8 ms 音频，用于吸收 MP3 解码和 A9 前后处理抖动。它不能掩盖平均处理速度慢于实时的问题。
+16384 帧约等于 371.5 ms 音频，用于吸收 MP3 解码、A9 前后处理和 UART 遥测抖动。它不能掩盖平均处理速度慢于实时的问题。
 
 ### 6.2 AXI 地址
 
@@ -184,7 +184,7 @@ bits 63:48  vocal_estimate_right
 | `0x10` | `MIX_FRAME` | 暂存 `{right,left}` |
 | `0x14` | `VOCAL_FRAME` | 写 `{right,left}` 并原子提交完整 64-bit 条目 |
 | `0x18` | `FIFO_LEVEL` | 当前帧数 |
-| `0x1C` | `FIFO_CAPACITY` | 固定 8192 |
+| `0x1C` | `FIFO_CAPACITY` | 固定 16384 |
 | `0x20` | `UNDERFLOW_COUNT` | 饱和计数器，W1C |
 | `0x24` | `OVERFLOW_COUNT` | 饱和计数器，W1C |
 | `0x28` | `PLAYED_FRAMES` | 已消费帧数 |

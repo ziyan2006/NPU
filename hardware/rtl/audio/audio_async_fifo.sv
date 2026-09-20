@@ -1,8 +1,8 @@
 `timescale 1ns/1ps
 
 module audio_async_fifo #(
-  parameter integer DEPTH = 8192,
-  parameter integer ADDR_WIDTH = 13
+  parameter integer DEPTH = 16384,
+  parameter integer ADDR_WIDTH = 14
 ) (
   input  logic                  wr_clk_i,
   input  logic                  wr_rst_ni,

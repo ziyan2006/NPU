@@ -1,21 +1,21 @@
 `timescale 1ns/1ps
 
 module tb_audio_async_fifo;
-  localparam integer DEPTH = 8192;
+  localparam integer DEPTH = 16384;
 
   logic wr_clk = 0;
   logic wr_rst_n = 0;
   logic wr_valid = 0;
   logic [63:0] wr_data = 0;
   logic wr_full;
-  logic [13:0] wr_level;
+  logic [14:0] wr_level;
   logic rd_clk = 0;
   logic rd_rst_n = 0;
   logic rd_ready = 0;
   logic rd_valid;
   logic [63:0] rd_data;
   logic rd_empty;
-  logic [13:0] rd_level;
+  logic [14:0] rd_level;
   integer seed;
   integer index;
   integer expected;

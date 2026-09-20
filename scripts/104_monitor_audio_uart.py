@@ -33,6 +33,7 @@ REQUIRED_FIELDS = (
     "state",
     "stem",
     "ramp",
+    "played",
     "fifo",
     "fifo_min",
     "uf",
