@@ -93,11 +93,16 @@ void player_platform_status(uint32_t played, uint32_t level,
                             uint32_t minimum_level, uint32_t underflows,
                             uint32_t overflows, uint32_t codec_status)
 {
-    xil_printf("[AUDIO] played=%lu fifo=%lu fifo_min=%lu uf=%lu of=%lu "
-               "codec=%08lx\r\n",
-               (unsigned long)played, (unsigned long)level,
-               (unsigned long)minimum_level, (unsigned long)underflows,
-               (unsigned long)overflows, (unsigned long)codec_status);
+    /*
+     * Vitis 2026.1 xil_printf interprets every %l conversion as a 64-bit
+     * argument on Cortex-A9, although unsigned long is 32-bit for AAPCS32.
+     * Keep these CSR/counter arguments and conversions explicitly 32-bit.
+     */
+    xil_printf("[AUDIO] played=%u fifo=%u fifo_min=%u uf=%u of=%u "
+               "codec=%08x\r\n",
+               (unsigned int)played, (unsigned int)level,
+               (unsigned int)minimum_level, (unsigned int)underflows,
+               (unsigned int)overflows, (unsigned int)codec_status);
 }
 
 int player_platform_mount(void)

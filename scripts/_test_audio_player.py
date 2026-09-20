@@ -113,6 +113,15 @@ def load_workspace_builder():
 def test_vitis_layout() -> None:
     builder = load_workspace_builder()
     toolchain = builder.resolve_toolchain()
+    platform_source = (
+        PLAYER / "src" / "player_platform_vitis.c"
+    ).read_text(encoding="utf-8")
+    long_formats = ("%lu", "%ld", "%li", "%lx", "%lX")
+    if any(item in platform_source for item in long_formats):
+        raise AssertionError(
+            "xil_printf treats %l as a 64-bit argument on Cortex-A9; "
+            "use 32-bit %u/%x formats for audio status"
+        )
     for name in ("sdtgen", "create_bsp", "config_bsp", "build_bsp",
                  "create_app", "build_app"):
         if not Path(toolchain[name]).is_file():
