@@ -576,6 +576,7 @@ static int run_player(audio_hw_t *hardware)
     player_platform_audio_write(AUDIO_HW_REG_UNDERFLOW_COUNT, 1u);
     player_platform_audio_write(AUDIO_HW_REG_OVERFLOW_COUNT, 1u);
     player_platform_log("FULL_STEM");
+    player_platform_log("AUDIO_RUNTIME=sparse-timefix-v1");
     while (full_player.state != PLAYER_DONE
            && full_player.state != PLAYER_FAIL_MUTE)
         player_step(&full_player);

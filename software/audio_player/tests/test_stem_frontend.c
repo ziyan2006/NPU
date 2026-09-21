@@ -262,6 +262,20 @@ int main(void)
         fprintf(stderr, "frontend state/error contract failed\n");
         return 3;
     }
+    size_t filter_terms = 0u;
+    for (size_t band = 0u; band < STEM_BAND_COUNT; ++band) {
+        size_t begin = empty.analysis_begin[band];
+        size_t end = empty.analysis_end[band];
+        if (begin > end || end > STEM_FFT_BINS)
+            return 3;
+        filter_terms += end - begin;
+        for (size_t bin = 0u; bin < STEM_FFT_BINS; ++bin) {
+            if ((bin < begin || bin >= end) && stem_analysis[bin][band] != 0.0f)
+                return 3;
+        }
+    }
+    if (filter_terms == 0u || filter_terms > 2u * STEM_FFT_BINS)
+        return 3;
     for (size_t index = 0; index < ARRAY_COUNT(CASES); ++index) {
         run_case(directory, &CASES[index]);
     }

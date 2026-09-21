@@ -16,6 +16,16 @@ uint32_t player_platform_audio_read(uint32_t offset);
 void player_platform_audio_write(uint32_t offset, uint32_t value);
 uint32_t player_platform_milliseconds(void);
 uint64_t player_platform_microseconds(void);
+
+/* Accept the BSP frequency as a value: its macro may expand to CPU_HZ/2
+ * without parentheses. Split seconds to avoid overflowing ticks * units. */
+static inline uint64_t player_ticks_to_units(uint64_t ticks,
+                                            uint64_t frequency,
+                                            uint32_t units_per_second)
+{
+    return (ticks / frequency) * units_per_second
+        + ((ticks % frequency) * units_per_second) / frequency;
+}
 void player_platform_delay_ms(uint32_t milliseconds);
 void player_platform_log(const char *message);
 void player_platform_status(uint32_t played, uint32_t level,

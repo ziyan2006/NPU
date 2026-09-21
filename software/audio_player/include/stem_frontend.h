@@ -38,6 +38,8 @@ typedef struct {
     stem_fft_config_storage_t fft_storage;
     float window[STEM_FFT_SIZE];
     float fft_input[STEM_FFT_SIZE];
+    uint16_t analysis_begin[STEM_BAND_COUNT];
+    uint16_t analysis_end[STEM_BAND_COUNT];
     int16_t pcm[STEM_FRONTEND_PCM_CAPACITY][STEM_INPUT_CHANNELS];
     uint64_t samples_written;
     uint64_t next_frame;

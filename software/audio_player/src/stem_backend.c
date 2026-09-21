@@ -43,6 +43,17 @@ stem_backend_result_t stem_backend_init(stem_backend_t *backend)
         float phase = 2.0f * STEM_PI_F * (float)sample / (float)STEM_FFT_SIZE;
         backend->window[sample] = 0.5f - 0.5f * cosf(phase);
     }
+    /* Skip only leading/trailing zero coefficients, including protected
+     * bands. This preserves the original summation order exactly. */
+    for (size_t bin = 0u; bin < STEM_FFT_BINS; ++bin) {
+        size_t begin = STEM_BACKEND_PROTECTED_BANDS, end = STEM_BAND_COUNT;
+        while (begin < end && stem_synthesis[begin][bin] == 0.0f)
+            ++begin;
+        while (end > begin && stem_synthesis[end - 1u][bin] == 0.0f)
+            --end;
+        backend->synthesis_begin[bin] = (uint16_t)begin;
+        backend->synthesis_end[bin] = (uint16_t)end;
+    }
     backend->last_result = STEM_BACKEND_OK;
     return STEM_BACKEND_OK;
 }
@@ -63,8 +74,8 @@ static void synthesize_frame(stem_backend_t *backend,
     }
     for (size_t bin = 0u; bin < STEM_FFT_BINS; ++bin) {
         float mask = 0.0f;
-        for (size_t band = STEM_BACKEND_PROTECTED_BANDS;
-             band < STEM_BAND_COUNT; ++band) {
+        for (size_t band = backend->synthesis_begin[bin];
+             band < backend->synthesis_end[bin]; ++band) {
             mask += band_mask[band] * stem_synthesis[band][bin];
         }
         backend->masked_bins[bin].r =

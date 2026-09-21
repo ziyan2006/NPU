@@ -35,6 +35,8 @@ typedef struct {
     kiss_fft_cpx masked_bins[STEM_FFT_BINS];
     float inverse_samples[STEM_FFT_SIZE];
     float window[STEM_FFT_SIZE];
+    uint16_t synthesis_begin[STEM_FFT_BINS];
+    uint16_t synthesis_end[STEM_FFT_BINS];
     float accumulation[STEM_INPUT_CHANNELS][STEM_BACKEND_OLA_CAPACITY];
     float window_square[STEM_BACKEND_OLA_CAPACITY];
     float delayed_pcm[STEM_BACKEND_OLA_CAPACITY][STEM_INPUT_CHANNELS];

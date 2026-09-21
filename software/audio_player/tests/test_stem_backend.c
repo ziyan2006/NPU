@@ -1,5 +1,6 @@
 /* SPDX-License-Identifier: MIT */
 #include "stem_backend.h"
+#include "stem_filterbank.h"
 
 #include <math.h>
 #include <stdint.h>
@@ -168,6 +169,25 @@ int main(void)
 {
     const char *directory = getenv("STEM_VECTOR_DIR");
     size_t vocal_peak = 0u;
+    stem_backend_t sparse;
+    size_t filter_terms = 0u;
+    if (stem_backend_init(&sparse) != STEM_BACKEND_OK)
+        return 3;
+    for (size_t bin = 0u; bin < STEM_FFT_BINS; ++bin) {
+        size_t begin = sparse.synthesis_begin[bin];
+        size_t end = sparse.synthesis_end[bin];
+        if (begin < STEM_BACKEND_PROTECTED_BANDS || begin > end
+            || end > STEM_BAND_COUNT)
+            return 3;
+        filter_terms += end - begin;
+        for (size_t band = STEM_BACKEND_PROTECTED_BANDS;
+             band < STEM_BAND_COUNT; ++band) {
+            if ((band < begin || band >= end) && stem_synthesis[band][bin] != 0.0f)
+                return 3;
+        }
+    }
+    if (filter_terms == 0u || filter_terms > 2u * STEM_FFT_BINS)
+        return 3;
     if (directory == NULL || directory[0] == '\0')
         return 2;
     if (stem_backend_init(NULL) != STEM_BACKEND_E_INVALID

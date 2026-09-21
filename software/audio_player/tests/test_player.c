@@ -254,6 +254,14 @@ static void test_sixty_second_playback(void)
     initialize_fake(&fake);
     player_deps_t deps = make_deps(&fake);
     assert(player_init(&player, &deps) == PLAYER_OK);
+    while (!player.audio_enabled) {
+        player_step(&player);
+        assert(player.state != PLAYER_FAIL_MUTE);
+        if (!player.audio_enabled)
+            assert(player.telemetry.fifo_minimum == AUDIO_HW_FIFO_CAPACITY);
+    }
+    player_step(&player);
+    assert(player.telemetry.fifo_minimum > 0u);
     run_until_terminal(&player, &fake);
     assert(player.state == PLAYER_DONE);
     assert(fake.enable_count == 1u && fake.disable_count >= 1u);

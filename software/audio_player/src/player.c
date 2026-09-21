@@ -54,7 +54,8 @@ static void update_audio_status(player_t *player)
     player->deps.audio_status(player->deps.context, &status);
     player->telemetry.fifo_level = status.fifo_level;
     player->telemetry.played_frames = status.played_frames;
-    if (status.fifo_level < player->telemetry.fifo_minimum)
+    if (player->audio_enabled
+        && status.fifo_level < player->telemetry.fifo_minimum)
         player->telemetry.fifo_minimum = status.fifo_level;
     player->telemetry.underflows = status.underflows;
     player->telemetry.overflows = status.overflows;

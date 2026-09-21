@@ -2,6 +2,7 @@
 #include "audio_hw.h"
 #include "pcm_ring.h"
 #include "wav_source.h"
+#include "player_platform.h"
 
 #include <assert.h>
 #include <stdint.h>
@@ -211,6 +212,15 @@ static void test_wav_source(void)
 
 int main(void)
 {
+    /* Reproduce the unparenthesized Vitis frequency macro. */
+#define TEST_COUNTS_PER_SECOND 666666687u/2
+    assert(player_ticks_to_units(333333343u, TEST_COUNTS_PER_SECOND,
+                                 1000000u) == 1000000u);
+    assert(player_ticks_to_units(333333343u, TEST_COUNTS_PER_SECOND,
+                                 1000u) == 1000u);
+    assert(player_ticks_to_units(UINT64_C(33333334300000000),
+                                 TEST_COUNTS_PER_SECOND, 1000000u)
+           == UINT64_C(100000000000000));
     test_audio_hw();
     test_pcm_ring();
     test_wav_source();

@@ -35,6 +35,17 @@ int player_platform_init(void)
     Xil_DCacheEnable();
     file_open = 0;
     mp3_file_open = 0;
+    /* Read-only evidence of the FSBL's actual clock setup, independent of
+     * the frequencies generated from the application XSA. */
+    xil_printf("[CLOCK] bsp_cpu_hz=%u timer_hz=%u arm_pll=%08x "
+               "arm_clk=%08x io_pll=%08x fclk0=%08x gt_ctrl=%08x\r\n",
+               (unsigned)XPAR_CPU_CORE_CLOCK_FREQ_HZ,
+               (unsigned)(COUNTS_PER_SECOND),
+               (unsigned)Xil_In32(0xf8000100u),
+               (unsigned)Xil_In32(0xf8000120u),
+               (unsigned)Xil_In32(0xf8000108u),
+               (unsigned)Xil_In32(0xf8000170u),
+               (unsigned)Xil_In32(0xf8f00208u));
     return 1;
 }
 
@@ -65,14 +76,14 @@ uint32_t player_platform_milliseconds(void)
 {
     XTime now;
     XTime_GetTime(&now);
-    return (uint32_t)((now * 1000u) / COUNTS_PER_SECOND);
+    return (uint32_t)player_ticks_to_units(now, COUNTS_PER_SECOND, 1000u);
 }
 
 uint64_t player_platform_microseconds(void)
 {
     XTime now;
     XTime_GetTime(&now);
-    return ((uint64_t)now * 1000000u) / COUNTS_PER_SECOND;
+    return player_ticks_to_units(now, COUNTS_PER_SECOND, 1000000u);
 }
 
 void player_platform_delay_ms(uint32_t milliseconds)

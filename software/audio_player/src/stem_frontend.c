@@ -48,6 +48,17 @@ stem_frontend_result_t stem_frontend_init(stem_frontend_t *frontend)
         float phase = 2.0f * STEM_PI_F * (float)sample / (float)STEM_FFT_SIZE;
         frontend->window[sample] = 0.5f - 0.5f * cosf(phase);
     }
+    /* The triangular filterbank is sparse. Cache its exact support once;
+     * retain ascending accumulation order and every nonzero coefficient. */
+    for (size_t band = 0; band < STEM_BAND_COUNT; ++band) {
+        size_t begin = 0u, end = STEM_FFT_BINS;
+        while (begin < end && stem_analysis[begin][band] == 0.0f)
+            ++begin;
+        while (end > begin && stem_analysis[end - 1u][band] == 0.0f)
+            --end;
+        frontend->analysis_begin[band] = (uint16_t)begin;
+        frontend->analysis_end[band] = (uint16_t)end;
+    }
     return STEM_FRONTEND_OK;
 }
 
@@ -117,7 +128,8 @@ stem_frontend_result_t stem_frontend_pack(
             }
             for (size_t band = 0; band < STEM_BAND_COUNT; ++band) {
                 float value = 0.0f;
-                for (size_t bin = 0; bin < STEM_FFT_BINS; ++bin) {
+                for (size_t bin = frontend->analysis_begin[band];
+                     bin < frontend->analysis_end[band]; ++bin) {
                     value += magnitude[bin] * stem_analysis[bin][band];
                 }
                 size_t index = (band * STEM_BLOCK_FRAMES + frame)
