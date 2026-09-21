@@ -48,6 +48,7 @@ typedef struct {
 } stem_backend_t;
 
 stem_backend_result_t stem_backend_init(stem_backend_t *backend);
+float stem_decode_mask_q11(int16_t quantized);
 size_t stem_backend_process(
     stem_backend_t *backend,
     const stem_spectrum_block_t *spectrum,

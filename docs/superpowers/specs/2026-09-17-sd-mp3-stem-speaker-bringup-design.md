@@ -261,7 +261,8 @@ NHWC8 中每个 `(band,time)` 占 16 byte：lane 0/1 为左右声道，lane 2..7
 
 - lane 0/1 是左右 vocal mask；
 - lane 2/3 是独立 accompaniment head，首版不使用；
-- vocal mask 为 `clamp(abs(q) / 2047, 0, 1)`；
+- vocal mask 为 `clamp((q + 2047) / 4094, 0, 1)`；这里的 `q` 是 NPU
+  `TANH_LUT` 输出的 signed Q1.11，必须恢复训练时的 `(tanh + 1) / 2`，不能取绝对值；
 - 前 44 个 band 强制为 0，再通过 128-to-513 synthesis matrix 展开；
 - vocal estimate 为 `iSTFT(mixture_spectrum * vocal_mask)`；
 - 最终伴奏由 PL 在播放时计算 `delayed_mix - vocal_estimate`。

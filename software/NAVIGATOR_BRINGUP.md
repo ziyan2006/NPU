@@ -72,6 +72,12 @@ Tone、Wav、Mp3Bypass、FullStem 顺序逐级验收；前一级失败时不要�
 DDR、SD、UART 和独立的 50 MHz 音频参考时钟均不改变。补丁和镜像须通过静态门禁，
 并用 `[CLOCK]`、`npu_us_avg`、`deadline_miss`、`uf` 完成实板验收。
 
+实时门限通过后的首次试听还暴露了输出格式集成错误：resident task 的输出是
+`TANH_LUT` 产生的 signed Q1.11（`-2047..2047`），训练路径的人声掩码则是
+`(tanh + 1) / 2`。板端必须用 `(q + 2047) / 4094` 解码；旧的 `abs(q)/2047`
+会把 0.5 掩码错误变成 0，并折返整个负半轴，表现为人声估计偏弱和块状伪影。
+该修正不改变 NPU task、时钟或运算量，须用同一首 `music.mp3` 重新 A/B 验收。
+
 完整验收记录模板位于 `hardware/reports/audio_board_acceptance.md`。先安装一次串口依赖，
 再由 Windows 查找实际端口；不要默认照抄示例中的 COM 号：
 

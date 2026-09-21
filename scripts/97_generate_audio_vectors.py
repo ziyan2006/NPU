@@ -309,7 +309,9 @@ def build_backend_mask(name: str, blocks: int) -> np.ndarray:
         (blocks, STEM_BANDS, STEM_FRAMES_PER_BLOCK, STEM_LANES),
         dtype=np.int16,
     )
-    if name == "full":
+    if name == "zero":
+        packed[..., :2] = -2047
+    elif name == "full":
         packed[..., :2] = 2047
     elif name == "random":
         rng = np.random.default_rng(0xBACC0E)
@@ -317,7 +319,7 @@ def build_backend_mask(name: str, blocks: int) -> np.ndarray:
             -4096, 4097, size=packed[..., :2].shape, dtype=np.int16
         )
         packed[0, 44, 0, 0] = -32768
-    elif name != "zero":
+    else:
         raise ValueError(f"unknown backend mask: {name}")
     return packed
 
@@ -345,7 +347,11 @@ def stem_backend_reference(spectrum: np.ndarray, packed: np.ndarray,
             weight[valid_start:valid_end] += window[source_start:source_end] ** 2
             for channel in range(2):
                 quantized = packed[block, :, frame, channel].astype(np.int32)
-                band_mask = np.clip(np.abs(quantized) / 2047.0, 0.0, 1.0)
+                # The compiled task stores signed tanh in Q1.11.  Reconstruct
+                # the training-time mask=(tanh+1)/2; abs(q) would fold the
+                # lower half of the mask range and is not a valid decode.
+                signed_tanh = np.clip(quantized, -2047, 2047)
+                band_mask = (signed_tanh + 2047.0) / 4094.0
                 band_mask[:44] = 0.0
                 bin_mask = band_mask @ synthesis
                 masked = spectrum[block, channel, frame] * bin_mask

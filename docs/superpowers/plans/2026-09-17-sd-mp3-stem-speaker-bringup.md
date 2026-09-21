@@ -710,7 +710,7 @@
 
 - [ ] **Step 1: Write failing backend and alignment tests**
 
-  Compare zero/full/random masks over 20 consecutive blocks with Python. Require `mask=abs(q)/2047`, clamp 0..1, first 44 bands forced zero, inverse FFT normalized by 1/1024, OLA divided by accumulated window-square, block boundaries continuous, and impulse peak of delayed mix equal to vocal estimate peak.
+  Compare zero/full/random masks over 20 consecutive blocks with Python. Require `mask=(q+2047)/4094`, clamp 0..1, first 44 bands forced zero, inverse FFT normalized by 1/1024, OLA divided by accumulated window-square, block boundaries continuous, and impulse peak of delayed mix equal to vocal estimate peak. The affine decode is required because the compiled task exposes signed Q1.11 `tanh`; the earlier `abs(q)/2047` wording was an integration error discovered during board listening.
 
 - [ ] **Step 2: Confirm the backend test is red**
 

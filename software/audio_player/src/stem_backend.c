@@ -14,14 +14,18 @@ static size_t ola_slot(uint64_t sample)
     return (size_t)(sample % STEM_BACKEND_OLA_CAPACITY);
 }
 
-static float decode_mask(int16_t quantized)
+float stem_decode_mask_q11(int16_t quantized)
 {
-    int32_t magnitude = quantized;
-    if (magnitude < 0)
-        magnitude = -magnitude;
-    if (magnitude > 2047)
-        magnitude = 2047;
-    return (float)magnitude / 2047.0f;
+    int32_t signed_tanh = quantized;
+
+    if (signed_tanh < -2047)
+        signed_tanh = -2047;
+    else if (signed_tanh > 2047)
+        signed_tanh = 2047;
+    /* The resident task exposes the signed Q1.11 tanh value.  Training uses
+     * mask=(tanh+1)/2, so folding the sign with abs() is not equivalent: it
+     * maps a 0.5 mask to zero and reverses the lower half of the range. */
+    return (float)(signed_tanh + 2047) / 4094.0f;
 }
 
 stem_backend_result_t stem_backend_init(stem_backend_t *backend)
@@ -70,7 +74,7 @@ static void synthesize_frame(stem_backend_t *backend,
         size_t index = (band * STEM_BLOCK_FRAMES + frame)
             * STEM_NHWC8_LANES + channel;
         band_mask[band] = band < STEM_BACKEND_PROTECTED_BANDS
-            ? 0.0f : decode_mask(output_nhwc8[index]);
+            ? 0.0f : stem_decode_mask_q11(output_nhwc8[index]);
     }
     for (size_t bin = 0u; bin < STEM_FFT_BINS; ++bin) {
         float mask = 0.0f;

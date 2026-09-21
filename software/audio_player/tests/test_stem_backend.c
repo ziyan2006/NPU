@@ -190,6 +190,14 @@ int main(void)
         return 3;
     if (directory == NULL || directory[0] == '\0')
         return 2;
+    if (stem_decode_mask_q11(-2048) != 0.0f
+        || stem_decode_mask_q11(-2047) != 0.0f
+        || fabsf(stem_decode_mask_q11(0) - 0.5f) > 1.0e-7f
+        || stem_decode_mask_q11(2047) != 1.0f
+        || stem_decode_mask_q11(INT16_MAX) != 1.0f) {
+        fprintf(stderr, "signed tanh output was not decoded as (q + 2047) / 4094\n");
+        return 3;
+    }
     if (stem_backend_init(NULL) != STEM_BACKEND_E_INVALID
         || stem_float_to_i16(2.0f) != INT16_MAX
         || stem_float_to_i16(-2.0f) != INT16_MIN
