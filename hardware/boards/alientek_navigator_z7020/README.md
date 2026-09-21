@@ -270,10 +270,12 @@ xsdb scripts/75_run_navigator_sd_coldboot_runner_jtag.tcl `
 ```
 
 后一个命令只覆盖易失 DDR 以验证应用；它不是 SD 写入。`scripts/91_*` 从哈希已锁定
-的原始 FSBL 生成副本，并只把 `0xE6E4` 的 `EAFFFFFE`（原地循环）替换成
-`EBFFCB25`（调用 `FsblHandoff`）；脚本同时核对前一条 `BL LoadBootImage` 和源文件
-SHA-256。修复后 ELF 的 SHA-256 为
-`7B3AD97C0ED47C94533A80B2FB5A3C46F316962C8CB9D9E9AB14483FA56B377E`。
+的原始 FSBL 生成副本，把 `0xE6E4` 的 `EAFFFFFE`（原地循环）替换成
+`EBFFCB25`（调用 `FsblHandoff`），并把三个芯片版本时钟表中的 FCLK0 第二级分频
+从 4 改为 2，使 NPU/AXI 从 50 MHz 达到 XSA 已签核的 100 MHz；CPU、DDR、SD、
+UART 及音频参考时钟不变。脚本同时核对前一条 `BL LoadBootImage`、三个时钟表和
+源文件 SHA-256。修复后 ELF 的 SHA-256 为
+`B9C732AEF65EFA97AE89B8D5EFBD0A2A3265F2275DF9C91B66ADEAE31A7AB584`。
 按以下顺序逐级验证，每次只增加一个变量：
 
 ```powershell

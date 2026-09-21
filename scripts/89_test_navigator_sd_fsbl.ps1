@@ -26,4 +26,29 @@ if ($symbols -notmatch '\bXSdPs_CfgInitialize\b') {
   throw 'generated FSBL does not contain the SD controller driver'
 }
 
-Write-Output 'NPU_SD_FSBL_TEST PASS'
+$bytes = [IO.File]::ReadAllBytes((Resolve-Path -LiteralPath $elf).Path)
+function Count-Pattern([byte[]]$Data, [byte[]]$Pattern) {
+  $count = 0
+  for ($offset = 0; $offset -le $Data.Length - $Pattern.Length; ++$offset) {
+    $matches = $true
+    for ($index = 0; $index -lt $Pattern.Length; ++$index) {
+      if ($Data[$offset + $index] -ne $Pattern[$index]) {
+        $matches = $false
+        break
+      }
+    }
+    if ($matches) { ++$count }
+  }
+  return $count
+}
+$fclkPrefix = [byte[]](0x70,0x01,0x00,0xf8,0x30,0x3f,0xf0,0x03)
+$fclk50 = [byte[]]($fclkPrefix + [byte[]](0x00,0x08,0x40,0x00))
+$fclk100 = [byte[]]($fclkPrefix + [byte[]](0x00,0x08,0x20,0x00))
+if ((Count-Pattern $bytes $fclk50) -ne 0) {
+  throw 'generated FSBL still contains a 50 MHz FCLK0 clock table'
+}
+if ((Count-Pattern $bytes $fclk100) -ne 3) {
+  throw 'generated FSBL does not patch all three FCLK0 tables to 100 MHz'
+}
+
+Write-Output 'NPU_SD_FSBL_TEST PASS fclk0_mhz=100 clock_tables=3'

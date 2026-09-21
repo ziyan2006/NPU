@@ -62,12 +62,15 @@ Tone、Wav、Mp3Bypass、FullStem 顺序逐级验收；前一级失败时不要�
 数值回归测试声称音频实时通过。冷启动先保存 `[CLOCK]` 与连续 `[AUDIO]` 行，
 确认秒数接近墙钟、`uf=0`、所有错误为零、`blk_us_max <= 92880`，再测试 KEY0。
 
-对当前 handoff FSBL 的 ELF 初始化表进行只读检查，还发现 IO PLL 倍频值为
+对原始 handoff FSBL 的 ELF 初始化表进行只读检查，发现 IO PLL 倍频值为
 48、FCLK0 两级分频为 8 和 4（`0xF8000108` 写入 `0x00030000`，
 `0xF8000170` 写入 `0x00400800`），按 33.333333 MHz 晶振推算为 50 MHz。
-因此不能把 XSA 的 100 MHz 静态配置当作 SD 冷启动的实际 NPU 频率。本候选保留
-已经验证能启动的 FSBL，待 `[CLOCK]` 实板读回确认；如实时余量不足，再单独验证
-与设计目标一致的 PL 时钟配置。
+实板日志随后确认完整任务的 NPU 时间约 65.84 ms，整块处理约 93.06 ms，超过
+4096 sample/44.1 kHz 的 92.88 ms 截止时间并导致 FIFO 欠载。当前生成脚本会在
+三个芯片版本初始化表中仅把 FPGA0_CLK_CTRL 第二级分频从 4 改为 2
+（写入 `0x00200800`），使 FCLK0/NPU/AXI 达到 XSA 已签核的 100 MHz；IO PLL、CPU、
+DDR、SD、UART 和独立的 50 MHz 音频参考时钟均不改变。补丁和镜像须通过静态门禁，
+并用 `[CLOCK]`、`npu_us_avg`、`deadline_miss`、`uf` 完成实板验收。
 
 完整验收记录模板位于 `hardware/reports/audio_board_acceptance.md`。先安装一次串口依赖，
 再由 Windows 查找实际端口；不要默认照抄示例中的 COM 号：

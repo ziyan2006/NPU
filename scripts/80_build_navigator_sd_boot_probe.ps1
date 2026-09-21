@@ -5,7 +5,7 @@ $objcopy = Join-Path $toolchain 'arm-none-eabi-objcopy.exe'
 $bootgen = 'C:\AMDDesignTools\2026.1\Vivado\bin\bootgen.bat'
 $out = 'hardware/build/navigator_sd_boot_probe'
 $fsblElf = 'hardware/build/navigator_sd_fsbl/zynq_fsbl.elf'
-$expectedFsblSha256 = '7B3AD97C0ED47C94533A80B2FB5A3C46F316962C8CB9D9E9AB14483FA56B377E'
+$expectedFsblSha256 = 'B9C732AEF65EFA97AE89B8D5EFBD0A2A3265F2275DF9C91B66ADEAE31A7AB584'
 $bif = 'software/bringup/minimal_a9/navigator_sd_boot_probe.bif'
 & powershell -ExecutionPolicy Bypass -File scripts/91_patch_navigator_sd_fsbl_handoff.ps1
 if ($LASTEXITCODE -ne 0) { throw 'handoff-capable FSBL generation failed' }

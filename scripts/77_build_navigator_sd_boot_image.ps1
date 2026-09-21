@@ -2,7 +2,7 @@ $ErrorActionPreference = 'Stop'
 $bootgen = 'C:\AMDDesignTools\2026.1\Vivado\bin\bootgen.bat'
 $out = 'hardware/build/navigator_sd_coldboot_runner'
 $fsblElf = 'hardware/build/navigator_sd_fsbl/zynq_fsbl.elf'
-$expectedFsblSha256 = '7B3AD97C0ED47C94533A80B2FB5A3C46F316962C8CB9D9E9AB14483FA56B377E'
+$expectedFsblSha256 = 'B9C732AEF65EFA97AE89B8D5EFBD0A2A3265F2275DF9C91B66ADEAE31A7AB584'
 $runner = "$out/navigator_sd_coldboot_runner.elf"
 $bif = 'software/bringup/minimal_a9/navigator_sd_coldboot.bif'
 & powershell -ExecutionPolicy Bypass -File scripts/91_patch_navigator_sd_fsbl_handoff.ps1

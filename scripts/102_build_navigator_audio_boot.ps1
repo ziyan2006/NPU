@@ -8,7 +8,7 @@ $buildRoot = Join-Path $repoRoot "hardware/build/navigator_audio_boot"
 $bootgen = "C:\AMDDesignTools\2026.1\Vivado\bin\bootgen.bat"
 $fsbl = Join-Path $repoRoot "hardware/build/navigator_sd_fsbl/zynq_fsbl.elf"
 $bitstream = Join-Path $repoRoot "hardware/build/navigator_z7020_audio_export/stem_npu_audio_navigator_z7020.bit"
-$expectedFsblSha256 = "7B3AD97C0ED47C94533A80B2FB5A3C46F316962C8CB9D9E9AB14483FA56B377E"
+$expectedFsblSha256 = "B9C732AEF65EFA97AE89B8D5EFBD0A2A3265F2275DF9C91B66ADEAE31A7AB584"
 $modes = @(
     @{ Name = "tone"; Bif = "navigator_audio_tone.bif"; Elf = "tone_player.elf"; BuildMode = "Tone" },
     @{ Name = "wav"; Bif = "navigator_audio_wav.bif"; Elf = "wav_player.elf"; BuildMode = "Wav" },
