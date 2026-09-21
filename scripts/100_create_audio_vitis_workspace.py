@@ -386,6 +386,7 @@ def build(mode: str, xsa: Path, clean: bool) -> dict[str, object]:
     shutil.copy2(built_elf, destination)
     inspect_elf(destination)
     description["backend"] = "pyesw"
+    description["build_token"] = os.environ.get("AUDIO_PLAYER_BUILD_TOKEN", "")
     manifest = BUILD_ROOT / f"{description['application']}_build.json"
     manifest.write_text(json.dumps(description, indent=2) + "\n", encoding="utf-8")
     return description

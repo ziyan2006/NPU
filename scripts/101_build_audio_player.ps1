@@ -20,11 +20,6 @@ if ($XsaPath) {
 }
 $env:AUDIO_PLAYER_CLEAN = if ($Clean) { "1" } else { "0" }
 
-& $vitis -s (Join-Path $repoRoot "scripts\100_create_audio_vitis_workspace.py")
-if ($LASTEXITCODE -ne 0) {
-    throw "Navigator audio player Vitis build failed for mode $Mode"
-}
-
 $application = switch ($Mode) {
     "Tone" { "tone_player" }
     "Wav" { "wav_player" }
@@ -34,10 +29,28 @@ $application = switch ($Mode) {
 $buildRoot = Join-Path $repoRoot "hardware\build\navigator_audio_player"
 $elf = Join-Path $buildRoot "$application.elf"
 $manifest = Join-Path $buildRoot "${application}_build.json"
+# Vitis 2026.1's batch launcher can return zero even when its Python script
+# raises.  Remove only the two exact generated receipts before invocation and
+# require a per-run token in the newly written manifest; stale ELFs can then
+# never be mistaken for a successful build.
+if (Test-Path -LiteralPath $elf) { Remove-Item -LiteralPath $elf -Force }
+if (Test-Path -LiteralPath $manifest) { Remove-Item -LiteralPath $manifest -Force }
+$buildToken = [Guid]::NewGuid().ToString("N")
+$env:AUDIO_PLAYER_BUILD_TOKEN = $buildToken
+
+& $vitis -s (Join-Path $repoRoot "scripts\100_create_audio_vitis_workspace.py")
+if ($LASTEXITCODE -ne 0) {
+    throw "Navigator audio player Vitis build failed for mode $Mode"
+}
+
 if (-not (Test-Path -LiteralPath $elf -PathType Leaf)) {
     throw "Vitis returned success without producing $elf"
 }
 if (-not (Test-Path -LiteralPath $manifest -PathType Leaf)) {
     throw "Vitis returned success without producing $manifest"
+}
+$receipt = Get-Content -Raw -LiteralPath $manifest | ConvertFrom-Json
+if ($receipt.build_token -ne $buildToken) {
+    throw "Vitis build receipt is stale or belongs to another invocation"
 }
 Write-Host "AUDIO_PLAYER_BUILD PASS mode=$Mode elf=$elf"
