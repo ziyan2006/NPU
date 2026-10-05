@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_NEW211_TWO_VERSION_ONLY_LOADED_FILE_DIAGNOSTIC",
+  "question": "Which exact EXE and DLL file handles are reported during two explicit pinned -version children?",
+  "tool": "scripts/211_ema_decoder_loaded_image_observation.py",
+  "tests": "scripts/_test_ema_decoder_loaded_image_observation.py",
+  "authority_scope": "Existing request to authenticate actual loaded-image paths; bounded version metadata diagnostic only, not audio or training approval.",
+  "budget": "One ffmpeg and one ffprobe child, exactly -version,30 seconds and1000 debug events each; no automatic retry.",
+  "unit_scope": "New pure/mock observer checks; no decoder child, audio, model, Adam or heavy library import.",
+  "actual_observation_only_after_new_units_pass": true,
+  "resource_gate": "D free>=12GiB and no repo Python; no CUDA/GPU access.",
+  "stop_conditions": "Binding/ABI/event/path/hash/exit mismatch or deadline: retain journal/failure, detach only the new own diagnostic if needed, never terminate user programs or retry blindly.",
+  "forbidden": "Media arguments, arbitrary executable, attach existing process, memory/register writes, patch files, training/GPU, PATH or system changes, old units/210captures/209emptyhold/208reference decode.",
+  "capture": "OS create/load event handle path, file ID and byte SHA; ordered events and both actual exit codes; held event file handles re-read after exit.",
+  "limits": "Loader already mapped bytes before event observation; held event files are not a pre-execution manifest. Version paths do not certify conditional audio decode, nondebug launch, API-set/forwarder/SxS causality, soundfile/NumPy/SciPy native runtime or historical208.",
+  "full_audio_backend_gate": "PENDING",
+  "training_authorized": false,
+  "release_selection": "NONE"
+}

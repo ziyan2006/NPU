@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_LF_BOUNDARY_UNIT_PRECONDITION_RECOVERY",
+  "old_unit_count": 35,
+  "old_actual_exit_code": 1,
+  "failed_test": "test_low_frequency_descriptor_does_not_modify_wave",
+  "recovery_unit_count": 35,
+  "unchanged_inherited_tests": 34,
+  "fresh_cpu_isolation_cases": 1,
+  "original_code_test_audit_preserved": true,
+  "rerun_real_train_audit": false,
+  "new_training_limit": 4000,
+  "additional_common_steps": 500,
+  "source_arm": "htdemucs_waveform_control",
+  "model_recipe_changed": false,
+  "release_selection": "NONE",
+  "deployment": false
+}

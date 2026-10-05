@@ -1,0 +1,22 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_ZERO_FORWARD_BRIDGE_EVIDENCE_RECOVERY",
+  "source_out": "D:\\WORKBUDDY\\STEM\\npu-stem-repo\\results\\train_adam_canonical_bridge_20261004",
+  "model_forwards": 0,
+  "autograd_calls": 0,
+  "optimizer_constructed": false,
+  "model_updates": 0,
+  "cuda_used": false,
+  "source_primary_slots": 6,
+  "source_reference_slots": 6,
+  "source_unique_batches": 1,
+  "source_unique_slots": 6,
+  "source_counter": 4500,
+  "rtol": 0.0002,
+  "atol": 0.0000002,
+  "totals_comparison": "both_seals_then_full_type_sensitive_symmetric",
+  "old199_verify_actual_exit": 1,
+  "original197_recovered": false,
+  "training_authorized": false,
+  "release_selection": "NONE"
+}

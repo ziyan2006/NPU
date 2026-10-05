@@ -1,0 +1,834 @@
+{
+  "schema": "NONRELEASE_results_archive_snapshot_v1",
+  "captured_utc": "2026-10-05T14:06:36.036034+00:00",
+  "scope": "Read-only JSON seal, SHA and completion metadata checks; no PT deserialization, audio draw, model computation, benchmark rerun or training. Not a full final runtime/Adam audit or new training authority.",
+  "artifact_root": "D:/WORKBUDDY/STEM/npu-stem-repo",
+  "formal_training": {
+    "device": "cuda",
+    "step": 5000,
+    "formal_training_updates": 500,
+    "single_training_Adam": true,
+    "development_steps": [
+      4750,
+      5000
+    ],
+    "exposure": {
+      "forward_started": 3000,
+      "forward_completed": 3000,
+      "backward_completed": 3000,
+      "adam_started": 500,
+      "adam_completed": 500
+    },
+    "actual_DEV_exposure": {
+      "forward_started": 708,
+      "forward_completed": 708,
+      "pair_started": 2,
+      "pair_completed": 2
+    },
+    "final_checkpoint": {
+      "purpose": "NONRELEASE_EMA221_NATIVE_SUPERVISED_SINGLE_TRAJECTORY_FIXED500",
+      "step": 5000,
+      "checkpoint": "NONRELEASE_EMA_step_5000.pt",
+      "sha256": "d2be133da5bdd778fb615ef28167bf263e130a819596c6630e8c3a8726c1ab91",
+      "activation_sha256": "e0c8d20fe23d936712f844198b8faccd5d07d204ffb56907d4bef75223fafe21",
+      "pending_DEV": false,
+      "release_selection": "NONE",
+      "content_sha256": "c070b09fb3875f824c1f68ba0338abf7816eecab6728620bc40b148790d56b58"
+    },
+    "actual_runtime": {
+      "device": "cuda",
+      "torch": "2.14.0+cu126",
+      "numpy": "2.5.3",
+      "threads": 4,
+      "deterministic": true,
+      "warn_only": false,
+      "cudnn_benchmark": false,
+      "cudnn_deterministic": true,
+      "matmul_tf32": false,
+      "cudnn_tf32": false,
+      "cuda": "12.6",
+      "cudnn": 91002,
+      "gpu": "NVIDIA GeForce RTX 4070 Laptop GPU",
+      "capability": [
+        8,
+        9
+      ],
+      "workspace": ":4096:8"
+    },
+    "decoder_request_count": 2456,
+    "accepted_audio_draws": 500,
+    "outputs_sha256": {
+      "audio_draw_receipts.json": "ad3ef7c75d6ca22984d5e27c62118421bdf4a999c7dc8a23e81f40a8676a7288",
+      "checkpoint_pre_DEV_4750.json": "d296ce43f9dc6c52639233a0191c9c9fe571cd280014f762b87b85ebb8c88f45",
+      "checkpoint_pre_DEV_5000.json": "64f3302bbdfdf0119930cb5c31a097b7e7cee683958f76fc38cc4c060bf5ff76",
+      "checkpoint_step_4500.json": "7cc076cf72477bfb031a85ecce98c6ad492f0a845afcdb6892aa3950a4120792",
+      "checkpoint_step_4750.json": "125935cb81795215bb86c3e4018e91eefa573a9b4f6192e61623b123f7c11c0d",
+      "checkpoint_step_5000.json": "f589e35a0a01caf42a77903fa86ddb9986a5412ab56a2cee2f5136c7926bac51",
+      "decoder_native_journal.jsonl": "815b92303905e137b187487fe44865074f144e69488ee897b430ec8816409298",
+      "development_step_4750.json": "fc27a08b3020e68db0f5a8d40c2bbdc7cb3940eed73f21ef3b5b8c6f33ac8ef9",
+      "development_step_5000.json": "e1989f55619e152e5f4259d5adcd1b24311941e39c7b00873d5cd18cd6eda5e2",
+      "NONRELEASE_EMA_pre_DEV_4750.pt": "0e227ec5bcba874790f353cb9bd3d60f0786f58509e303dd6edc8b7423fe6af5",
+      "NONRELEASE_EMA_pre_DEV_5000.pt": "b55dc080c3750396ff32c1d91f038dc926ff17f7b2b1847cc9d3e827d8af57e4",
+      "NONRELEASE_EMA_step_4500.pt": "49ecc9e0cbce4cb91d681673f94add1a565b712e48566afc499042bb0eccc144",
+      "NONRELEASE_EMA_step_4750.pt": "c8c7ede5423dc362cf346608fe2340f4800b553acc6a1d6f1c7642e39e6e58a6",
+      "NONRELEASE_EMA_step_5000.pt": "d2be133da5bdd778fb615ef28167bf263e130a819596c6630e8c3a8726c1ab91",
+      "updates.jsonl": "f8fa935279916e7c2ddb36eee409bb8070a6c7ae702f039a0d08456f56e7af68"
+    },
+    "run_directory": "results/mel_ema_single_trajectory_20261005",
+    "status": "complete",
+    "phase": "complete_fixed500",
+    "error": null,
+    "recorded_update_seconds_mean": 42.84815182539995,
+    "recorded_update_seconds_sum": 21424.075912699976,
+    "verified_completion_output_files": 15,
+    "completed_budget_authority_does_not_authorize_new_training": true,
+    "launch_exit": {
+      "launch_receipt": "results/mel_ema_single_trajectory_launch_20261005/detached_launch_20261005_043206_1397102.json",
+      "exit_receipt": "results/mel_ema_single_trajectory_launch_20261005/detached_exit_20261005_043206_1397102.json",
+      "exit_code": 0,
+      "activation_sha256": "e0c8d20fe23d936712f844198b8faccd5d07d204ffb56907d4bef75223fafe21",
+      "external_launcher_pid": 123036,
+      "supervised_launcher_pid": 126552,
+      "supervised_exit_code": 0,
+      "started_utc": "2026-10-05T04:32:33.883398+00:00",
+      "completed_utc": "2026-10-05T11:41:46.118242+00:00",
+      "embedded_completion_typed_equal": true,
+      "native_file_events": 266,
+      "all_event_handles_post_exit_equal": true
+    }
+  },
+  "development": {
+    "scope": "Existing 31 DEVELOPMENT tracks and 177 correlated views, not independent blind acceptance; per-track-first aggregation; projected gain is not an energy removal percentage.",
+    "source_4500_arm": "htdemucs_waveform_control (compatibility key, single Mel/LR1 source)",
+    "saved_scores_vs_frozen": {
+      "4750": {
+        "raw": {
+          "eligible": false,
+          "rank_gain_db": 0.6806508747829654,
+          "mean_residual_vocal_change_db": -1.6039398504268154,
+          "reasons": [
+            "Vocal reconstruction regressed: musdb/weak_minus12"
+          ],
+          "deltas": {
+            "musdb/native": {
+              "vocal_error_snr_db": 0.3269869709002733,
+              "joint_fit_accompaniment_gain": -0.0008702937129055899,
+              "residual_vocal_abs_gain_db_change": -1.7358051218600343
+            },
+            "musdb/weak_minus12": {
+              "vocal_error_snr_db": -0.2735229874447731,
+              "joint_fit_accompaniment_gain": 0.0026354432221792345,
+              "residual_vocal_abs_gain_db_change": -0.4132627408029148
+            },
+            "mir1k/native": {
+              "vocal_error_snr_db": 2.427609361001328,
+              "joint_fit_accompaniment_gain": 0.001414314388925586,
+              "residual_vocal_abs_gain_db_change": -4.495091296614245
+            },
+            "mir1k/weak_minus12": {
+              "vocal_error_snr_db": 0.24153015467503325,
+              "joint_fit_accompaniment_gain": 0.02401764718812016,
+              "residual_vocal_abs_gain_db_change": 0.22839975756993203
+            },
+            "instrumental/native": {
+              "accompaniment_error_snr_db": 20.000290726761722
+            }
+          }
+        },
+        "ema": {
+          "eligible": false,
+          "rank_gain_db": 0.8390542730785717,
+          "mean_residual_vocal_change_db": -1.0231895931123207,
+          "reasons": [
+            "Projected remaining vocal increased: mir1k/weak_minus12"
+          ],
+          "deltas": {
+            "musdb/native": {
+              "vocal_error_snr_db": 0.1911165761684792,
+              "joint_fit_accompaniment_gain": 0.015621114420708682,
+              "residual_vocal_abs_gain_db_change": -0.7383001818292418
+            },
+            "musdb/weak_minus12": {
+              "vocal_error_snr_db": 0.2459280184602919,
+              "joint_fit_accompaniment_gain": 0.016978540388670416,
+              "residual_vocal_abs_gain_db_change": 0.055612372252381206
+            },
+            "mir1k/native": {
+              "vocal_error_snr_db": 2.4644049000082564,
+              "joint_fit_accompaniment_gain": 0.012254667091481708,
+              "residual_vocal_abs_gain_db_change": -3.8225101348734265
+            },
+            "mir1k/weak_minus12": {
+              "vocal_error_snr_db": 0.4547675976772596,
+              "joint_fit_accompaniment_gain": 0.032148601300632795,
+              "residual_vocal_abs_gain_db_change": 0.41243957200100434
+            },
+            "instrumental/native": {
+              "accompaniment_error_snr_db": 20.8051734871478
+            }
+          }
+        }
+      },
+      "5000": {
+        "raw": {
+          "eligible": true,
+          "rank_gain_db": 0.6869017432871638,
+          "mean_residual_vocal_change_db": -1.5822616776431706,
+          "reasons": [],
+          "deltas": {
+            "musdb/native": {
+              "vocal_error_snr_db": 0.24357197080098958,
+              "joint_fit_accompaniment_gain": 0.005239013763233991,
+              "residual_vocal_abs_gain_db_change": -1.1665853354550797
+            },
+            "musdb/weak_minus12": {
+              "vocal_error_snr_db": 0.1258601343939998,
+              "joint_fit_accompaniment_gain": 0.01381668702535288,
+              "residual_vocal_abs_gain_db_change": 0.12961328484196216
+            },
+            "mir1k/native": {
+              "vocal_error_snr_db": 2.4555755082880335,
+              "joint_fit_accompaniment_gain": -0.007800746731019048,
+              "residual_vocal_abs_gain_db_change": -5.0385516176605725
+            },
+            "mir1k/weak_minus12": {
+              "vocal_error_snr_db": -0.07740064033436767,
+              "joint_fit_accompaniment_gain": 0.008994529048959032,
+              "residual_vocal_abs_gain_db_change": -0.2535230422989926
+            },
+            "instrumental/native": {
+              "accompaniment_error_snr_db": 20.514314584512622
+            }
+          }
+        },
+        "ema": {
+          "eligible": true,
+          "rank_gain_db": 0.7327537347947132,
+          "mean_residual_vocal_change_db": -1.4009280770292147,
+          "reasons": [],
+          "deltas": {
+            "musdb/native": {
+              "vocal_error_snr_db": 0.2865288338566816,
+              "joint_fit_accompaniment_gain": 0.007941655322267316,
+              "residual_vocal_abs_gain_db_change": -1.1897820058000947
+            },
+            "musdb/weak_minus12": {
+              "vocal_error_snr_db": 0.1251435242672745,
+              "joint_fit_accompaniment_gain": 0.014106496829684012,
+              "residual_vocal_abs_gain_db_change": 0.06382238026768468
+            },
+            "mir1k/native": {
+              "vocal_error_snr_db": 2.449423963841162,
+              "joint_fit_accompaniment_gain": -0.007374581522227364,
+              "residual_vocal_abs_gain_db_change": -4.621487057731487
+            },
+            "mir1k/weak_minus12": {
+              "vocal_error_snr_db": 0.06991861721373471,
+              "joint_fit_accompaniment_gain": 0.016787867182487592,
+              "residual_vocal_abs_gain_db_change": 0.14373437514703818
+            },
+            "instrumental/native": {
+              "accompaniment_error_snr_db": 21.172009844704096
+            }
+          }
+        }
+      }
+    },
+    "source_4500_summary": {
+      "musdb/native": {
+        "tracks": 19,
+        "clips": 57,
+        "means": {
+          "vocal_error_snr_db": 3.920221483394062,
+          "joint_fit_accompaniment_gain": 0.9070229139669304,
+          "accompaniment_gain_error_abs": 0.09297708603306964,
+          "residual_vocal_abs_gain": 0.44197698397701923
+        }
+      },
+      "musdb/weak_minus12": {
+        "tracks": 19,
+        "clips": 57,
+        "means": {
+          "vocal_error_snr_db": -1.531223284736707,
+          "joint_fit_accompaniment_gain": 0.9604666540576996,
+          "accompaniment_gain_error_abs": 0.039533345942300444,
+          "residual_vocal_abs_gain": 0.8144138855635841
+        }
+      },
+      "mir1k/native": {
+        "tracks": 9,
+        "clips": 27,
+        "means": {
+          "vocal_error_snr_db": 5.236102775794766,
+          "joint_fit_accompaniment_gain": 0.8494389132116209,
+          "accompaniment_gain_error_abs": 0.15056108678837915,
+          "residual_vocal_abs_gain": 0.39719160817811644
+        }
+      },
+      "mir1k/weak_minus12": {
+        "tracks": 9,
+        "clips": 27,
+        "means": {
+          "vocal_error_snr_db": -1.8601555932851603,
+          "joint_fit_accompaniment_gain": 0.90307215036016,
+          "accompaniment_gain_error_abs": 0.09692784963984014,
+          "residual_vocal_abs_gain": 0.8040130272967114
+        }
+      }
+    },
+    "step5000_summary": {
+      "raw": {
+        "musdb/native": {
+          "tracks": 19,
+          "clips": 57,
+          "means": {
+            "vocal_error_snr_db": 4.005806005500357,
+            "joint_fit_accompaniment_gain": 0.89244033099318,
+            "accompaniment_gain_error_abs": 0.10755966900682001,
+            "residual_vocal_abs_gain": 0.4101349238055154
+          }
+        },
+        "musdb/weak_minus12": {
+          "tracks": 19,
+          "clips": 57,
+          "means": {
+            "vocal_error_snr_db": -1.6610260628594535,
+            "joint_fit_accompaniment_gain": 0.9552155021261146,
+            "accompaniment_gain_error_abs": 0.04478449787388533,
+            "residual_vocal_abs_gain": 0.831709108968262
+          }
+        },
+        "mir1k/native": {
+          "tracks": 9,
+          "clips": 27,
+          "means": {
+            "vocal_error_snr_db": 5.518745456096055,
+            "joint_fit_accompaniment_gain": 0.8063175535570704,
+            "accompaniment_gain_error_abs": 0.19368244644292967,
+            "residual_vocal_abs_gain": 0.29697928297376697
+          }
+        },
+        "mir1k/weak_minus12": {
+          "tracks": 9,
+          "clips": 27,
+          "means": {
+            "vocal_error_snr_db": -2.76305056239773,
+            "joint_fit_accompaniment_gain": 0.8595296729896814,
+            "accompaniment_gain_error_abs": 0.14047032701031859,
+            "residual_vocal_abs_gain": 0.7086958302026166
+          }
+        }
+      },
+      "ema": {
+        "musdb/native": {
+          "tracks": 19,
+          "clips": 57,
+          "means": {
+            "vocal_error_snr_db": 4.048762868556049,
+            "joint_fit_accompaniment_gain": 0.8951429725522133,
+            "accompaniment_gain_error_abs": 0.10485702744778663,
+            "residual_vocal_abs_gain": 0.4090410724536288
+          }
+        },
+        "musdb/weak_minus12": {
+          "tracks": 19,
+          "clips": 57,
+          "means": {
+            "vocal_error_snr_db": -1.6617426729861788,
+            "joint_fit_accompaniment_gain": 0.9555053119304457,
+            "accompaniment_gain_error_abs": 0.044494688069554186,
+            "residual_vocal_abs_gain": 0.8254331618689502
+          }
+        },
+        "mir1k/native": {
+          "tracks": 9,
+          "clips": 27,
+          "means": {
+            "vocal_error_snr_db": 5.5125939116491836,
+            "joint_fit_accompaniment_gain": 0.806743718765862,
+            "accompaniment_gain_error_abs": 0.19325628123413796,
+            "residual_vocal_abs_gain": 0.3115870377100921
+          }
+        },
+        "mir1k/weak_minus12": {
+          "tracks": 9,
+          "clips": 27,
+          "means": {
+            "vocal_error_snr_db": -2.6157313048496276,
+            "joint_fit_accompaniment_gain": 0.86732301112321,
+            "accompaniment_gain_error_abs": 0.13267698887679005,
+            "residual_vocal_abs_gain": 0.7418613548798267
+          }
+        }
+      }
+    },
+    "step5000_comparisons": {
+      "raw": {
+        "musdb/native": {
+          "vocal_error_snr_db_change": 0.08558452210629541,
+          "joint_fit_accompaniment_gain_change": -0.014582582973750369,
+          "accompaniment_gain_error_abs_change": 0.014582582973750369,
+          "residual_vocal_abs_gain_db_change": -0.6494580416083271
+        },
+        "musdb/weak_minus12": {
+          "vocal_error_snr_db_change": -0.12980277812274643,
+          "joint_fit_accompaniment_gain_change": -0.005251151931584985,
+          "accompaniment_gain_error_abs_change": 0.005251151931584888,
+          "residual_vocal_abs_gain_db_change": 0.18252576551860894
+        },
+        "mir1k/native": {
+          "vocal_error_snr_db_change": 0.28264268030128914,
+          "joint_fit_accompaniment_gain_change": -0.04312135965455055,
+          "accompaniment_gain_error_abs_change": 0.04312135965455052,
+          "residual_vocal_abs_gain_db_change": -2.525478196770992
+        },
+        "mir1k/weak_minus12": {
+          "vocal_error_snr_db_change": -0.9028949691125696,
+          "joint_fit_accompaniment_gain_change": -0.04354247737047856,
+          "accompaniment_gain_error_abs_change": 0.04354247737047845,
+          "residual_vocal_abs_gain_db_change": -1.0960641625379237
+        },
+        "four_domain_mean": {
+          "vocal_error_snr_db_change": -0.16611763620693287,
+          "residual_vocal_abs_gain_db_change": -1.0221186588496585
+        }
+      },
+      "ema": {
+        "musdb/native": {
+          "vocal_error_snr_db_change": 0.12854138516198743,
+          "joint_fit_accompaniment_gain_change": -0.011879941414717043,
+          "accompaniment_gain_error_abs_change": 0.011879941414716988,
+          "residual_vocal_abs_gain_db_change": -0.6726547119533417
+        },
+        "musdb/weak_minus12": {
+          "vocal_error_snr_db_change": -0.13051938824947174,
+          "joint_fit_accompaniment_gain_change": -0.004961342127253854,
+          "accompaniment_gain_error_abs_change": 0.004961342127253743,
+          "residual_vocal_abs_gain_db_change": 0.1167348609443325
+        },
+        "mir1k/native": {
+          "vocal_error_snr_db_change": 0.27649113585441754,
+          "joint_fit_accompaniment_gain_change": -0.042695194445758866,
+          "accompaniment_gain_error_abs_change": 0.04269519444575881,
+          "residual_vocal_abs_gain_db_change": -2.108413636841907
+        },
+        "mir1k/weak_minus12": {
+          "vocal_error_snr_db_change": -0.7555757115644672,
+          "joint_fit_accompaniment_gain_change": -0.03574913923695,
+          "accompaniment_gain_error_abs_change": 0.03574913923694992,
+          "residual_vocal_abs_gain_db_change": -0.6988067450918932
+        },
+        "four_domain_mean": {
+          "vocal_error_snr_db_change": -0.1202656446993835,
+          "residual_vocal_abs_gain_db_change": -0.8407850582357024
+        }
+      },
+      "ema_vs_raw5000": {
+        "musdb/native": {
+          "vocal_error_snr_db_change": 0.04295686305569202,
+          "joint_fit_accompaniment_gain_change": 0.0027026415590333253,
+          "accompaniment_gain_error_abs_change": -0.0027026415590333808,
+          "residual_vocal_abs_gain_db_change": -0.023196670345014565
+        },
+        "musdb/weak_minus12": {
+          "vocal_error_snr_db_change": -0.0007166101267253033,
+          "joint_fit_accompaniment_gain_change": 0.00028980980433113146,
+          "accompaniment_gain_error_abs_change": -0.00028980980433114534,
+          "residual_vocal_abs_gain_db_change": -0.06579090457427711
+        },
+        "mir1k/native": {
+          "vocal_error_snr_db_change": -0.006151544446871604,
+          "joint_fit_accompaniment_gain_change": 0.0004261652087916845,
+          "accompaniment_gain_error_abs_change": -0.00042616520879171227,
+          "residual_vocal_abs_gain_db_change": 0.4170645599290867
+        },
+        "mir1k/weak_minus12": {
+          "vocal_error_snr_db_change": 0.14731925754810238,
+          "joint_fit_accompaniment_gain_change": 0.00779333813352856,
+          "accompaniment_gain_error_abs_change": -0.007793338133528532,
+          "residual_vocal_abs_gain_db_change": 0.39725741744603116
+        },
+        "four_domain_mean": {
+          "vocal_error_snr_db_change": 0.04585199150754937,
+          "residual_vocal_abs_gain_db_change": 0.18133360061395654
+        }
+      }
+    },
+    "instrumental_per_track_backing_error_SNR_change_vs_4500_db": {
+      "raw": {
+        "Beneath_v1": 3.4645016937207203,
+        "Maldito_(8-Bit)_v1": -0.6231907573943261,
+        "Wombat_Combat_v1": 0.5218049100094788
+      },
+      "ema": {
+        "Beneath_v1": 4.312566009927238,
+        "Maldito_(8-Bit)_v1": -1.3286921331103656,
+        "Wombat_Combat_v1": 2.3523277500934228
+      }
+    },
+    "release_selection": "NONE",
+    "independent_acceptance_ready": false
+  },
+  "listening_archive": {
+    "status": "complete",
+    "audio_files": 33,
+    "output_sha256": {
+      "source_01_mix.wav": "8f3f28e07a25809b875f3c84604a6bdcdcc60348a9f01533aedd5fc441384c94",
+      "source_01_reference_vocal.wav": "a6cabdd5cf5fed9535adcaae344137d1dd3d80379549a78c1513cb308db7b72b",
+      "source_01_reference_backing.wav": "2e967a5261fbea19b0b76a9e21471e24bdcd76e58545724b522f8aa9ead30c59",
+      "source_01_source4500_vocal.wav": "538c794235231cbbc5a99910661ae8b25706f5d82979ee87c3d8c774003ce452",
+      "source_01_source4500_backing.wav": "bd80cd086f04c92aca40bd02a58e423aedf2b3944dd248a95b630e9e1bf66b23",
+      "source_01_frozen_vocal.wav": "aa42d4eaa3dcbfa9438ad83cd35c778c791c6b5417d4b38d7fbf27f2e866e5ad",
+      "source_01_frozen_backing.wav": "dbe0a8bbf669fc89f737acfd7ca75c2aaf993e7dbca2b4d85ee7cfc21f8b1d49",
+      "source_01_raw5000_vocal.wav": "efe3f84111861df44488b1c2d2de88b9ab4687ee583a62c6e495ddd7aa2a36d1",
+      "source_01_raw5000_backing.wav": "b66ac36560d1f671d120cb8c98a612d19be35e91ae11b36f083462982ef29725",
+      "source_01_ema5000_vocal.wav": "d495246a95f60fb53c7d0d8c2d2b07bcd49cdefadf598de8007aeeeb3df6797e",
+      "source_01_ema5000_backing.wav": "88789f174c08c10b95ccba9f489e4994e5b4cfda6a48b4c3897a29d9a180be22",
+      "source_02_mix.wav": "7614accb6a4aee059cb208b81abe1b103dfbbf0273cf4ae10094ee8643374c7a",
+      "source_02_reference_vocal.wav": "64406fab66726e1d3a0810c1dcc90868cd7b9cbd22bd20a92bfd298d05dcbf9c",
+      "source_02_reference_backing.wav": "08b2428ee54a5f323273109af2bb467c4f900d525f3e4527355d6c4588737130",
+      "source_02_source4500_vocal.wav": "96f19f78a6902cd3d02134e677bd30c9bb2f3cdcc7bf036570aea4e7a489c98e",
+      "source_02_source4500_backing.wav": "f7600895d6dfb7468379b43e6e1c40366ed790e958dda3bd1364bc197dda7f9c",
+      "source_02_frozen_vocal.wav": "5c878951e95c89ea9d5176f7f2230b2d4c8ab37243db9b74cfeb04558afa8d5d",
+      "source_02_frozen_backing.wav": "2ef9060fb48ed89296bca84e6b52d7c784c8be6606f2a52ac9e32fa23b53948e",
+      "source_02_raw5000_vocal.wav": "85e7e7789ed0038b4df418620b94d743e1a12d05ab0815ba6d2dcdf86ea04d3a",
+      "source_02_raw5000_backing.wav": "19322f685dac15eef90c6036b4393a1b0663c391f83753f67e22afdc3a43677b",
+      "source_02_ema5000_vocal.wav": "169724d0e689bea4be660ce8d2b0d6f5a545c9942fcd7e573d1d936ade7df80a",
+      "source_02_ema5000_backing.wav": "da45d9fe9092374b36e0ee89b89ea54d34529940e03b209d9924e244cf8ca530",
+      "source_03_mix.wav": "a5c28a24a6bdcfe63bde58d4c6e5a80b0ec352b61f0c33f8733d3634b15a1574",
+      "source_03_reference_vocal.wav": "4ba1155b9ec1a88aa8437973ba28fe949cc9216fc2edb763d3586338e2d0186e",
+      "source_03_reference_backing.wav": "a5c28a24a6bdcfe63bde58d4c6e5a80b0ec352b61f0c33f8733d3634b15a1574",
+      "source_03_source4500_vocal.wav": "51d1e1cabe7e5dc59a0730691f85955ed0937f5c97972b747bf76432528ec9e4",
+      "source_03_source4500_backing.wav": "82d25ee3be18e6af5668cf04a41ef0ee6431579ab5250376dd5997cedbb07422",
+      "source_03_frozen_vocal.wav": "5cb47048efeeee14399f2550c17a88dcfa75bc63122297e12e9bea4a3bd4871e",
+      "source_03_frozen_backing.wav": "9a41dc25c8ae1a7d587dc490945dcac31a31cc8e7f81c925dfc1657b61d62154",
+      "source_03_raw5000_vocal.wav": "53df9783a9e5adb8e49faa37c33c963d3005ee769355193b8a1a2a8eb65c297c",
+      "source_03_raw5000_backing.wav": "41a4d2ddb25a17815a9999b3036116c2643bb892c5f98b0dc9976f0a91735b7e",
+      "source_03_ema5000_vocal.wav": "95530781b26c894b56bea8ae1de27df3cbcc42b4e1d39748e983e0f805375299",
+      "source_03_ema5000_backing.wav": "be3a6bb0fd3c909817cb011d535c5ee0e9c9c4d4d6fe65044420389bf1e48ef3",
+      "index.html": "aa23ab0258dee05cc2bffc1c73e2566d3f17e3d563d1f163a49492cbdcea36d5"
+    },
+    "forward_calls_completed": {
+      "raw": 33,
+      "ema": 33
+    },
+    "training_updates": 0,
+    "cuda_used": false,
+    "historical_model_forward_calls": 0,
+    "scope": "CPU FP32 listening reference, not full training/Adam/native runtime final verification or board acceptance",
+    "human_listening_completed": false,
+    "directory": "results/mel_ema_listening_20261005/step_5000",
+    "verified_binding_count": 44,
+    "subsequent_user_feedback": "Instruments not noticeably removed; 4500 to 5000 did not noticeably improve vocal removal; partial removal but still audible residual. Partial subjective feedback, not complete listening or independent acceptance."
+  },
+  "performance": {
+    "scope": "Component and synthetic fixture benchmarks only; full GPU student training speedup UNMEASURED; completed formal worker unchanged.",
+    "decoder_pair": {
+      "baseline_seconds": 3.9460759999928996,
+      "optimized_seconds": 2.402527700003702,
+      "pair_speedup": 1.6424684718460556,
+      "baseline_full_reads": 366,
+      "optimized_full_reads": 148,
+      "baseline_full_bytes": 2020359824,
+      "optimized_full_bytes": 972550816,
+      "probe_and_PCM_bit_identical": true,
+      "analytic_PCM_bit_identical": true,
+      "new_synthetic_child_requests": 4
+    },
+    "historical_completed_training_profile": {
+      "scope": "Existing completed500 log only;not independent training acceptance",
+      "existing_updates": 500,
+      "mean_recorded_seconds": 42.84815182539995,
+      "recorded_update_total_seconds": 21424.075912699976,
+      "training_decoder_count": 2418,
+      "training_decoder_seconds": 9320.267896,
+      "decoder_fraction_of_recorded_update": 0.43503710190249273,
+      "groups": {
+        "probe": {
+          "count": 492,
+          "total_seconds": 1603.896684,
+          "mean_seconds": 3.2599526097560974
+        },
+        "decode": {
+          "count": 1926,
+          "total_seconds": 7716.371212,
+          "mean_seconds": 4.006423266874351
+        }
+      }
+    },
+    "PCM_commitment": {
+      "median_seconds": {
+        "baseline": 0.31429989999742247,
+        "optimized": 0.1622155999939423
+      },
+      "median_speedup": 1.9375442313141247,
+      "all_SHA_bit_identical": true,
+      "synthetic_bytes_hashed_per_sample": 134217728
+    },
+    "maintenance_statistics": {
+      "cpu": {
+        "combined_maintenance": {
+          "median_seconds": {
+            "baseline": 2.0625719999952707,
+            "optimized": 1.0741226999962237
+          },
+          "speedup": 1.9202387213327883,
+          "reduction_percent": 47.923141592211735
+        },
+        "state_snapshots_only": {
+          "median_seconds": {
+            "baseline": 0.48079560001497157,
+            "optimized": 0.23543729999801144
+          },
+          "speedup": 2.0421386076846466,
+          "reduction_percent": 51.031727413753345
+        },
+        "scalar_batching": {
+          "median_seconds": {
+            "baseline": 0.00007325999904423952,
+            "optimized": 0.00029307999939192085
+          },
+          "speedup": 0.2499658768808467,
+          "reduction_percent": -300.054604443741
+        },
+        "scalar_adopt": false
+      },
+      "cuda": {
+        "combined_maintenance": {
+          "median_seconds": {
+            "baseline": 2.1321662999980617,
+            "optimized": 0.8729724999866448
+          },
+          "speedup": 2.4424209239474104,
+          "reduction_percent": 59.057016331819966
+        },
+        "state_snapshots_only": {
+          "median_seconds": {
+            "baseline": 0.47539409997989424,
+            "optimized": 0.20725219999440014
+          },
+          "speedup": 2.2937951924888575,
+          "reduction_percent": 56.40412870013207
+        },
+        "scalar_batching": {
+          "median_seconds": {
+            "baseline": 0.0037577400013105943,
+            "optimized": 0.0038366599997971206
+          },
+          "speedup": 0.9794300254672815,
+          "reduction_percent": -2.1001984825720132
+        },
+        "scalar_adopt": false
+      }
+    },
+    "whole_CPU_synthetic_fixture_statistics": {
+      "median_seconds": {
+        "baseline": 1.0934123000188265,
+        "optimized": 0.7446528000000399
+      },
+      "speedup": 1.4683518278837708,
+      "reduction_percent": 31.89643101808729
+    },
+    "synthetic_fixture_exposure": {
+      "six_microbatch_forward_backward": 42,
+      "synthetic_Adam_steps": 7,
+      "formal_updates": 0
+    },
+    "synthetic_fixture_rollback_verified": true,
+    "scalar_batching_adopt": false,
+    "archive_binding_counts": {
+      "231": 25,
+      "237": 38
+    },
+    "new_final_tests": {
+      "231": 35,
+      "237": 28
+    },
+    "full_GPU_student_training_speedup": "UNMEASURED",
+    "formal_worker_modified_or_launched": false
+  },
+  "evidence_files": {
+    "results/mel_ema_single_trajectory_20261005/completion.json": {
+      "file_sha256": "2cc020104fc53198197acb62a6f925368012882888204080cef65764feb2ac85",
+      "seal_schema": "typed214",
+      "own_content_sha256": "0552fdfe1d0cd2ecbff59b1964ab753cc6e708ebca085cc556ece72bb7fc95ef",
+      "own_seal_verified": true
+    },
+    "results/mel_ema_single_trajectory_20261005/run_status.json": {
+      "file_sha256": "c85b6f02b362b8b5ff44e05f18deafa73c0e3fb7a2edc652f799f90e6cbb935e",
+      "seal_schema": "typed214",
+      "own_content_sha256": "d16ac2f2cb1e92fdf754b8a4385a832951904701b06b0624e4f5fe1ebfd221d0",
+      "own_seal_verified": true
+    },
+    "results/mel_ema_single_trajectory_20261005/supervised_training_result.json": {
+      "file_sha256": "c211a36408637a22ba745be9c9a401cfd326b718661a131283d504806b6f5a7b",
+      "seal_schema": "typed214",
+      "own_content_sha256": "f9eddde3e915939e3170c61b330b145dc20ac13b6c73cabb3b4096a69acf908e",
+      "own_seal_verified": true
+    },
+    "results/mel_ema_single_trajectory_launch_20261005/detached_launch_20261005_043206_1397102.json": {
+      "file_sha256": "7499410941d9a2665ef353c4d89e8a440ed3f3eefac3ebddb92457df0e310ede",
+      "seal_schema": "file_bytes_only"
+    },
+    "results/mel_ema_single_trajectory_launch_20261005/detached_exit_20261005_043206_1397102.json": {
+      "file_sha256": "0df28c941629def9e7d455098b36ff57f596e5fcab75d9d49a132c4f20b5fc43",
+      "seal_schema": "file_bytes_only"
+    },
+    "results/mel_lr_scale_20261004/development_step_4500.json": {
+      "file_sha256": "06cec2f938b53c854c3e971e7dcef636c3a47e5103046cfa2cd96442c0b046c6",
+      "seal_schema": "file_bytes_only"
+    },
+    "results/mel_ema_single_trajectory_20261005/development_step_4750.json": {
+      "file_sha256": "fc27a08b3020e68db0f5a8d40c2bbdc7cb3940eed73f21ef3b5b8c6f33ac8ef9",
+      "seal_schema": "typed205",
+      "own_content_sha256": "75e0718ba3d8dcde56855207ac60feb0cd072037266cae23bf9ae265c0abc8a1",
+      "own_seal_verified": true
+    },
+    "results/mel_ema_single_trajectory_20261005/development_step_5000.json": {
+      "file_sha256": "e1989f55619e152e5f4259d5adcd1b24311941e39c7b00873d5cd18cd6eda5e2",
+      "seal_schema": "typed205",
+      "own_content_sha256": "672e8e2d443d91292decb5778bcb654dc0e0454d8cd4d2cbddd2581b171ebf12",
+      "own_seal_verified": true
+    },
+    "results/mel_ema_listening_20261005/step_5000/plan.json": {
+      "file_sha256": "c4eea50e101b6ae98250f71396cc5b0af5970a1495402e831062a8706e045d1b",
+      "seal_schema": "typed205",
+      "own_content_sha256": "3a63d73916814f91cc2d24b7142e9e31c57b8fbf71dcfd4db7d9b1d483eece78",
+      "own_seal_verified": true
+    },
+    "results/mel_ema_listening_20261005/step_5000/review.json": {
+      "file_sha256": "f407873e51b69237dcf70f8d5c66c1a4269cc02b4ba794ec551a27baedad85bf",
+      "seal_schema": "typed205",
+      "own_content_sha256": "2d3f43dbe98aea5d990f37b8e996a7e3fe25782ae8356123f0ba3b7fd9e4ba83",
+      "own_seal_verified": true
+    },
+    "results/ema231_speed_optimization_archive_20261005/review.json": {
+      "file_sha256": "53b229b727036d60986f96374a7d3ed4ec94a9e606257870f09323074ce08041",
+      "seal_schema": "plain_sorted_json",
+      "own_content_sha256": "b19a9ada775c7a208e709316318a0cc2cf854d4f593cbc337d9b9544016d81ae",
+      "own_seal_verified": true
+    },
+    "results/ema237_state_speed_archive_20261005/review.json": {
+      "file_sha256": "5810d67fea25b3cea5b89e2e8927ed5a9f5bc8a97b31d1bf6f4ca01b47207086",
+      "seal_schema": "plain_sorted_json",
+      "own_content_sha256": "fead2d85ea9a46cbd05a167d4e33206869c2bdf8e5f715f7acf89293f85ea641",
+      "own_seal_verified": true
+    },
+    "results/ema227_decoder_benchmark_attempt01/benchmark.json": {
+      "file_sha256": "40b65f85e45b886f85732fe3a2d4116c59672cb2a8d601a9fe770017a75d6f5a",
+      "seal_schema": "plain_sorted_json",
+      "own_content_sha256": "fa5e06a5c12567fdbe27763be64de5e5c68827f1040f11d07321f40e48e9d6d9",
+      "own_seal_verified": true
+    },
+    "results/ema229_pcm_benchmark_attempt01/benchmark.json": {
+      "file_sha256": "c8f172d70dee6c5781ac3021b98340ae8bd6ad61f1b2a0cd4cc1cd57fd544a77",
+      "seal_schema": "plain_sorted_json",
+      "own_content_sha256": "9c7a56cbad1729944a17dda6005cd5795441d52d24d39324f44ca74ef1a4207b",
+      "own_seal_verified": true
+    },
+    "results/ema234_state_and_sync_benchmark_attempt01/benchmark.json": {
+      "file_sha256": "086509e0a9d5deb6f0e07b66c51e9e4131695c92b8aeff3c3952698982318fa2",
+      "seal_schema": "plain_sorted_json",
+      "own_content_sha256": "86763722a77f16a67178e59ae5098702d41a73db823cf309d64203531fb6cf2f",
+      "own_seal_verified": true
+    },
+    "results/ema236_private_core_benchmark_attempt02/benchmark.json": {
+      "file_sha256": "9fa92c5f3e6621598925cdb31c6dfe6a653fbc0cc093ab927a6babd290930b2d",
+      "seal_schema": "plain_sorted_json",
+      "own_content_sha256": "c305101c0e8dbcab2d584a4798f1ba5974bcd9cd207ec9f286856744c67ec2ec",
+      "own_seal_verified": true
+    },
+    "reports/116_mel_ema_training_speed_optimization.md": {
+      "file_sha256": "afa671801468f2711856956d8b838e0f7840377ae5a72f21ffa72c481dbe6c59",
+      "seal_schema": "file_bytes_only"
+    },
+    "reports/117_mel_ema_state_speed_optimization.md": {
+      "file_sha256": "b3038a83c1d66466a97ec0eeb1cc9ddb64f308e13ea1d85c79ca55efffa509c2",
+      "seal_schema": "file_bytes_only"
+    },
+    "scripts/238_export_ema_listening.py": {
+      "file_sha256": "e533161b474118a891e7f7449dcc6f663338a5589ea0754dd8257bc5c411d2a0",
+      "seal_schema": "file_bytes_only"
+    },
+    "scripts/_test_ema_listening_export.py": {
+      "file_sha256": "2f7c3993c386fa0ac839f5c8d79ba4949c2fb3a79d52c16797eef821f642291c",
+      "seal_schema": "file_bytes_only"
+    },
+    "results/ema238_listening_unit_tests_attempt01.log": {
+      "file_sha256": "1ea4afdfcd498fda318da35f02e1a108b60b2bb4aceeb623bf0647f09b851fea",
+      "seal_schema": "file_bytes_only"
+    },
+    "results/ema238_listening_export_attempt01.log": {
+      "file_sha256": "23c2c2a3eefcce26416a7685482dbe5ccd6a248994fc0ab524403bcea626249f",
+      "seal_schema": "file_bytes_only"
+    },
+    "results/ema238_listening_export_attempt02.log": {
+      "file_sha256": "e6c7b967c07f38f58086d3ddc3d2d3f3cb46f78f225554e7375228b82b7778e3",
+      "seal_schema": "file_bytes_only"
+    }
+  },
+  "snapshot_checks": {
+    "own_seals_verified": 13,
+    "unique_files_hashed": 158,
+    "weights_deserialized": 0,
+    "new_forward_backward_Adam_updates": 0,
+    "decoder_children_started": 0,
+    "benchmarks_replayed": 0,
+    "CUDA_initialized": false
+  },
+  "release_selection": "NONE",
+  "deployment": false,
+  "training_authorized": false,
+  "listening_observation": {
+    "scope": "Values preserved from the previous read-only WAV analysis (exec chunk a97c68, native exit 0), not newly recomputed in this archive and not canonical DEV scores. Source/output SHA commitments are checked in this snapshot.",
+    "method": "Original109 joint projection and148 valid-region rules; discard history128*256, tail512 and MIR concatenation join windows; spectral check uses original1024 Hann/hop256 frontend and legacy_log128 matrix. No checkpoint loading, model forward, Adam or CUDA.",
+    "stable_region": {
+      "NightOwl": {
+        "usable_seconds": 6.045351473922903,
+        "source4500_cv": 0.9835726906848689,
+        "raw5000_cv": 0.9886864910137031,
+        "ema5000_cv": 0.9881087772694351,
+        "raw5000_residual_change_vs4500_db": 0.045042766427092755,
+        "ema5000_residual_change_vs4500_db": 0.039965904853742504
+      },
+      "abjones_2": {
+        "usable_seconds": 17.736054421768706,
+        "source4500_cv": 0.3099931937501018,
+        "raw5000_cv": 0.23694316240225818,
+        "ema5000_cv": 0.23816902279752794,
+        "raw5000_residual_change_vs4500_db": -2.334159559401681,
+        "ema5000_residual_change_vs4500_db": -2.289337674951671
+      },
+      "Beneath_v1": {
+        "usable_seconds": 19.245351473922902,
+        "source4500_backing_error_SNR_db": 41.22751588761677,
+        "raw5000_backing_error_SNR_db": 44.483020745726435,
+        "ema5000_backing_error_SNR_db": 43.35896875640607
+      }
+    },
+    "low_frequency_reference_energy": {
+      "NightOwl_hard_blocked_percent": 0.014664026577746894,
+      "abjones_2_hard_blocked_percent": 5.521882424475263,
+      "scope": "Reference-vocal STFT energy share of hard-blocked FFT bins0..3, not removed energy or full representation ceiling."
+    },
+    "last100_training_weak_minus12_active_slots": {
+      "musdb": {
+        "count": 26,
+        "mean_cv": 0.7077596365259244,
+        "mean_ca": 0.9569183748501998
+      },
+      "mir1k": {
+        "count": 26,
+        "mean_cv": 0.7366282790899277,
+        "mean_ca": 0.9080326419610244
+      },
+      "scope": "Different TRAIN samples, not a paired longitudinal comparison or plateau/causality proof."
+    }
+  },
+  "commit_scope": {
+    "included": "Training, input/teacher tooling, protocols, tests, historical analysis and new results snapshot; local Git only.",
+    "excluded": "Existing20 tracked board/player changes,9 unrelated untracked hardware/provenance files, source music, teacher caches, WAV and PT binaries; ignored results remain local.",
+    "historical_dependencies": "Many frozen protocols pin local ignored results, runtime files and input data. This is not a hermetic runnable-from-clone package.",
+    "checks": "Selected Python AST and JSON syntax checked without importing or executing frozen tools. Historical test suites, decoding and training not rerun."
+  }
+}

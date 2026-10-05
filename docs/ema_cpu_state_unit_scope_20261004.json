@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_EMA_CPU_STATE_STORAGE_INTEGRATION_ONLY",
+  "tool": "scripts/205_ema_cpu_state_transaction.py",
+  "tests": "scripts/_test_ema_cpu_state_transaction.py",
+  "design": "reports/102_mel_ema_shadow_trial_plan.md",
+  "source_sha256": "b3a0450ecd9bba259981bd47f8a49c0fee1a997d7a087a72570f589cc14ed5b3",
+  "source_step": 4500,
+  "state_hard_limit": 5000,
+  "actual_source_scope": "One fresh CPU raw model and one matching Adam; E0 and full parent retained. Source CPU/Python/NumPy RNG explicitly restored; source CUDA RNG bytes retained in immutable parent, never initialized",
+  "synthetic_scope": "Manual tensor/moment/cursor/shadow mutations and failure injection, never optimizer.step; these are not training updates",
+  "new_unit_output": "results/mel_ema_cpu_state_monitor_20261004",
+  "saved_actual_source_artifact": "source_cpu_container_4500_complete_defaults.pt is a zero-update storage artifact, not a newly trained student checkpoint; earlier successful storage draft remains separately preserved",
+  "real_forward_budget": 0,
+  "autograd_engine_budget": 0,
+  "adam_step_budget": 0,
+  "student_training_update_budget": 0,
+  "real_audio_budget": 0,
+  "cuda_initialization_allowed": false,
+  "not_proven": [
+    "Real bounded input stream or scheduler execution; context here is state storage",
+    "Raw first update bit-exactness against194 and real zero-update audio audit",
+    "CUDA runtime/source RNG restoration and whole CUDA transaction",
+    "Actual next-input CPU-CUDA mechanisms, nonzero real EMA difference and cross-device PCM metadata",
+    "Complete importer/trainer/protocol/approval/implemented sealed training plan",
+    "New audio quality, eligibility or independent acceptance"
+  ],
+  "new_training_authorized": false,
+  "release_selection": "NONE"
+}

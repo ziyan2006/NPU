@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>教师分轨 · 配对试听</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header><div class="eyebrow">STEM NPU / 标签听审准备</div><h1>先听标签，再训练学生</h1>
+    <p>24 首固定歌曲 · 同输入、同位置、同播放增益 · 仅本机试听</p></header>
+  <main>
+    <aside>
+      <h2>歌曲 <span id="progress"></span></h2>
+      <label for="search">按歌名查找</label><input id="search" type="search" placeholder="输入歌名或 song 编号">
+      <nav id="songs" aria-label="歌曲列表"></nav>
+      <button id="export">导出听审草稿 JSON</button>
+      <p class="subtle">草稿保存在当前浏览器，不回写标签。换端口或浏览器前请导出备份。</p>
+    </aside>
+    <section>
+      <div class="banner">标签审核和使用资格仍待确认。页面记录只是草稿，不代表正式训练批准。</div>
+      <div id="empty" hidden>没有匹配的歌曲。</div>
+      <article id="detail">
+        <div class="title-row"><h2 id="title"></h2><span id="song-id" class="tag"></span></div>
+        <p id="gain" class="subtle"></p>
+        <div id="windows" class="windows" aria-label="试听位置"></div>
+        <p id="position" class="subtle"></p>
+        <p>先听原曲，再比较两路伴奏中的残留人声、误删乐器和断续；人声轨用来检查漏分与串音。</p>
+        <div id="players" class="players"></div>
+        <p class="subtle">点击播放会暂停其他播放器。逐路独立归一化已禁用；这不是严格感知响度匹配或盲测。</p>
+        <details><summary>技术检查的试听提示（不是音质分数）</summary><div id="hints"></div></details>
+        <h3>本首听审草稿</h3>
+        <div class="form-grid">
+          <label>输入/输出对齐<select id="alignment"><option value="pending">未检查</option><option value="aligned">听起来对齐</option><option value="misaligned">存在错位</option><option value="uncertain">不确定</option></select></label>
+          <label>HTDemucs 标签<select id="htdemucs"><option value="pending">未检查</option><option value="acceptable">可接受（草稿）</option><option value="reject">不可接受</option><option value="uncertain">不确定</option></select></label>
+          <label>Mel-Band 标签<select id="kim_melband"><option value="pending">未检查</option><option value="acceptable">可接受（草稿）</option><option value="reject">不可接受</option><option value="uncertain">不确定</option></select></label>
+          <label>歌曲使用资格<select id="rights"><option value="pending">尚未确认</option><option value="confirmed">已确认（请在备注提供依据）</option><option value="restricted">受限/不能用于训练</option><option value="uncertain">不确定</option></select></label>
+        </div>
+        <label for="notes">备注：试听位置、残留人声、误删乐器、断续/瞬态、使用资格依据</label>
+        <textarea id="notes" rows="4" placeholder="例如：中间段主唱漏分；尾段鼓瞬态正常。没有人声的歌曲也请注明。"></textarea>
+        <p id="saved" role="status" class="subtle"></p>
+      </article>
+    </section>
+  </main>
+  <script id="catalog" type="application/json">__CATALOG_DATA__</script>
+</body>
+</html>

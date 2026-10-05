@@ -1,0 +1,49 @@
+# EMA 解码器启动请求核验进展（新210；NONRELEASE）
+
+## 结论与范围
+
+新210的25项请求级单位通过，前台exec chunk ed8bd2真实 native exit 0；已完整消费 NATIVE_EXIT_CODE=0。单位耗时0.786秒，exec实际等待1.3241450000000001秒。新独立只读归档reader chunk6fc5c5真实exit0；后续22文件绑定/own seal/文件与嵌入完整typed对称检查c2b5c6真实exit0。以上均非WMI，无持续session，无detached_exit。
+
+重要发现：封存原110.decode_musdb和134的probe/decode/media_versions传入裸名称ffmpeg或ffprobe，没有shell/executable覆盖。新210从这些已完整阅读、SHA绑定的原文件中，仅解析原AST参数表达式，未导入或执行原音频函数；重建六类命令形状，并使用不存在的元数据路径。将本机CPython的_winapi.CreateProcess替换为先记录、再抛出BaseException的函数后，十二个请求（六原形式+六显式EXE形式）全部在原生创建子进程前被拦截。
+
+本机实际观测的六原请求application_name均为NULL，command_line为原argv的list2cmdline结果。209的shutil.which选择.cmd以及wrapper字节，不足以证明该NULL-application调用实际经过那个wrapper/cmd。Windows对NULL application、无扩展名的首token采用EXE规则和搜索路径，不能直接当成shutil.which/PATHEXT的同一解析；这是结合本机请求及官方API规则的推断，**不是208历史真实子进程路径观测**。[Microsoft CreateProcessW](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-createprocessw)
+
+Python Windows默认shell=False使用CreateProcess；安装版subprocess.py的Windows_execute_child实际实现已阅读并绑定。官方也提示应使用完整可执行文件路径，并说明显式batch文件可能由系统shell处理；不能因shell=False就泛称任何批处理都绝不会涉及shell。[Python subprocess](https://docs.python.org/3.13/library/subprocess.html) 当前网页为3.13.16文档，**实际安装运行时报告3.13.14**；本地源码/EXE哈希而非网页版本是本次本机证据。base目录名字3.13.12不能替代实际版本。
+
+## 真实发生与没有发生的事
+
+六命令形状按原順序是：MUSDB probe、MUSDB完整amix/join PCM decode、pseudo probe、pseudo PCM decode、ffmpeg version、ffprobe version。原参数/完整filter graph/44100/pcm_f32le/pipe:1及原timeout逐项保留：MUSDB两调用仍没有timeout；pseudo probe30/decode600/两version30。元数据路径带空格/Unicode/&/%/!，不对应实际音频文件，未被读取。不存在路径的检测只读元数据，不算音频draw。
+
+显式策略仅将argv0与application_name共同设为209既有目标的绝对EXE，并提出shell=False、close_fds=True、CREATE_NO_WINDOW、STARTF_USESHOWWINDOW/SW_HIDE；其余token/timeout完全typed相同。env/cwd仍为None（继承），没有修改PATH、COMSPEC、注册表或系统安装。此策略**只是前置序列化提案**，尚无真实spawn、加载文件路径、PCM等价性或可用性认证，也没有可执行训练入口。
+
+实际Windows父进程的pipe/handle准备与关闭确实发生，证据保留当时父句柄数值和restricted handle_list。这不是子进程句柄/PID或DLL加载轨迹，不能说全部Windows原生API调用为0。被替换的原生CreateProcess调用0、实际child0、decoder执行0、实际audio draw0、学生PT反序列化0、Module/forward/autograd/Adam构造或step/训练更新/DEV/音频输出/教师推理0。无torch/numpy/scipy/soundfile导入，CUDA未初始化；Python RNG和进程环境未变，不称完整CPU-CUDA RNG训练事务。
+
+目标EXE哈希在本新请求检查前后各验证，未持有209文件锁，未重跑209空hold。前后SHA相同不是期间持续防写保证，不是加载器路径证明，更不能倒推208执行时认证。原208的两draw/一个固定4500六唯一+六重复输入身份证据保持；本轮没有固定参考decode/replay，没有重跑任何旧单位。
+
+## 新文件及证据
+
+- scripts/210_ema_decoder_launch_request.py：47bc072538ca057e73c80c0b83d86cbebcabd42227eda4b4095e47de158acd65
+- scripts/_test_ema_decoder_launch_request.py：62480358d843ddeb37c10136a5d52d28accecc76ffe65bae739b2f80063732c3
+- docs/ema_decoder_launch_request_unit_scope_20261004.json：8b00796c7b0c2b0d6d2bf67636f9b73a467d2db1bacc74f4774a447a1a1867d4
+- results/ema210_launch_request_unit_tests_attempt01.log：e53238e60a1c0391b2f1ba2ef1a9f9dcb09cac466ff810ae485f0511aa68b96c
+- request_interception_evidence.json：fd1937ada6f393c824133be7668dc72a0502701cfcc46fe6b8b0b1aab52dc89a；typed209 own seal9f5204fd1735ea49263f134f9e4939f1d7c611def42292a2f18e0a7993e2dbe8，各六row也有独立own seal。
+- scripts/_review_ema_decoder_launch_request_archive_20261004.py：be21319872be3c9844a2411534fc293b519483488afe51d3e0356343aee82761
+- results/ema210_launch_request_archive_review_attempt01.log：b9cb541904a69a72bed5cf9b03e0c8141e0b934a80f7281b4947a4d549ba22f1
+- independent_archive_review.json：2152a4a25d02a968a606a6ecd77075f7e9dc98ad2931cf363e90cf1f0d04bc71；typed209 own seal589f43dbf68c48bbd749c611b559c0006ff7931e7f61442c52b149502006e2cb，包含完整保存的proof。
+- unit_execution_receipt.json：e60a53e9302c8e7dd7682a347f8c503a73845b2bd549499b66937b67466e534e
+- archive_execution_receipt.json：7264d26dba749afff63927223d4843e27473f8cc1340b15e1d43aa86392d81bd
+- unit_gate.json：48a70782676a11a2e7cf241aca2f806eab64ba4795bc895c1f5c36c07f660f45；plain monitor seal8fb8effe12ebd82958417d339fd208036549a6f1e105af7a2763cfab2fb636ef，22绑定。
+
+以上monitor文件在results/mel_ema_decoder_launch_request_monitor_20261004。新210源/测试/scope/log/evidence/reader/review/receipts/gate/progress完成后封存，不改、不重复25单位或12个捕获请求。缺陷仅新隔离恢复。只读reader不导入210，不调用Popen/捕获函数或原音频模块；19文件绑定、完整policy和原序列化检查成功。c2b5c6另外核对22 gate文件、plain gate seal以及原始reader日志/保存review/原始proof/嵌入proof各自typed209 own seal后完整对称typed比较，六row各own seal；没有新增计算/请求/音频。不同算法不混用、不剥单侧seal。
+
+## 资源及下一步边界
+
+2026-10-04T12:47:42.2522381Z动态CIM无仓库Python，另核对相对203..210单位/工具命令。D盘空余24.5603675842285GiB；211工具及新EMA正式训练目录未见。原20 tracked dirty仍469insertions/44deletions，未修改。共享GPU未启动任何新任务。
+
+本轮已完整重读109..99/36及既定必读/新方法报告、209实际文件及208/207关键源测试scope/gate/progress/evidence；剩余完整训练-only imports、全部损失/frontend/matrix、**整个大输入锁与cache清单仍未全读**，之前截断不补称完成。
+
+下一轮先读本110与所有必读报告/实际封存组件，查进程/已有产物。新隔离认证必须面对实际加载的目标路径与传递原生模块（API-set host、forwarder、SxS/KnownDLL/重定向/动态LoadLibrary，以及Python soundfile/NumPy/SciPy依赖），不能机械basename映射System32，也不能把请求级成功当完整运行时通过。未来新backend需要在实际draw区间进行适用的前置/区间认证；当前不再重解码4500参考批、不重复208/209/210单位或空hold。不把208/209/210成功回写207的synthetic后端标志。
+
+正式单raw/单原Adam/独立EMA容器与trainer/CLI/协议/审批/完整封存trainingplan/worker仍未创建。报告102固定500共同4501..5000、4750/5000、硬5000、EMA唯一评估变量；原raw/Adam/梯度RNG采样LR1/kill32/完整aux.2/器乐4/分母6/FP32图、全部累计best-stale-anchor及旧stop/legacy不变，EMA不反馈训练。实际全模型零更新音频审计、最多3唯一4501..4503 CPU-CUDA原严格runtime/CUDARNG、原194首raw真实Adam位一致、真实非零EMA/noalias、完整轨迹磁盘重放/含shadowcount与CPU-CUDARNG整组回滚及跨设备PCMmetadata均PENDING。
+
+全部实际gate与disk>=12GiB/freeVRAM>=2300MiB/no duplicate通过后才允许PS5.1/WMI一次新启动并保存真实receipt；本轮不封存缺工具的训练计划、不启动GPU。203..210/202及全部历史诊断训练保持关闭，197failed/199verify1/201prepare1永久留证。只有启动请求工程进展，无新训练/音质/容量/平台期结论。NONRELEASE，人听及独立真实验收PENDING。20分钟同聊ACTIVE保持；重要新结果只通知一次，健康未变安静。

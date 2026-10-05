@@ -1,0 +1,37 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "metadata_commit": "0781bc32bcd246898b5fa1646e8b1828ae8be631",
+  "catalogue_path": "page_source.txt",
+  "scope": "Educational offline research only; no public audio redistribution or commercial rights assumed",
+  "maximum_download_bytes": 500000000,
+  "maximum_unpacked_bytes_per_archive": 1500000000,
+  "assignment_basis": "Before model scoring/training; all newly acquired songs by the same artist share one provisional role. Existing artist exposure is recorded separately.",
+  "records": [
+    {"track_id": "Triviul_Alright", "artist": "Triviul", "title": "Alright?", "style": "Leftfield Pop/Electronica", "role": "train_candidate", "url": "http://www.mtkdata.cambridgemusictechnology.co.uk/MTK004/Triviul_Alright.zip", "expected_bytes": 44432996},
+    {"track_id": "Triviul_Better", "artist": "Triviul", "title": "Better?", "style": "Leftfield Pop/Electronica", "role": "train_candidate", "url": "http://www.mtkdata.cambridgemusictechnology.co.uk/MTK004/Triviul_Better.zip", "expected_bytes": 73172593},
+    {"track_id": "Triviul_Gimme", "artist": "Triviul", "title": "Gimme", "style": "Leftfield Pop/Electronica", "role": "train_candidate", "url": "http://www.mtkdata.cambridgemusictechnology.co.uk/MTK004/Triviul_Gimme.zip", "expected_bytes": 39740932},
+    {"track_id": "Triviul_ToSamRawfers", "artist": "Triviul", "title": "To Sam Rawfers", "style": "Leftfield Pop/Electronica", "role": "train_candidate", "url": "http://www.mtkdata.cambridgemusictechnology.co.uk/MTK004/Triviul_ToSamRawfers.zip", "expected_bytes": 66768200},
+    {"track_id": "Giselle_You", "artist": "Giselle", "title": "You", "style": "Electronica/Classical Crossover", "role": "development_candidate", "url": "http://www.mtkdata.cambridgemusictechnology.co.uk/MTK004/Giselle_You.zip", "expected_bytes": 148656014},
+    {"track_id": "SpeakSoftly_NorthIsFalse", "artist": "Speak Softly", "title": "North Is False", "style": "Atmospheric Electronic Pop", "role": "acceptance_candidate", "url": "http://www.mtkdata.cambridgemusictechnology.co.uk/MTK006/SpeakSoftly_NorthIsFalse.zip", "expected_bytes": 33568328}
+  ],
+  "rejected_or_deferred": [
+    {"track_id": "AMContra_HeartPeripheral", "canonical_alias": "AM Contra - Heart Peripheral", "reason": "Existing MUSDB test composition, not a new blind song"},
+    {"track_id": "MR0905_ChrisDurban", "canonical_alias": "Chris Durban - Celebrate", "reason": "Existing MUSDB train composition; archive code is not its real song identity"},
+    {"track_id": "MR1011_GirlsUnderGlass", "canonical_alias": "Girls Under Glass - We Feel Alright", "reason": "Existing MUSDB test composition; misleading MR-code metadata"},
+    {"track_id": "MR0907_Punkdisco", "canonical_alias": "Punkdisco - Oral Hygiene", "reason": "Existing MUSDB test composition; misleading MR-code metadata"},
+    {"track_id": "Giselle_Moss", "canonical_alias": "Giselle - Moss", "reason": "Existing MUSDB train composition"},
+    {"track_id": "SpeakSoftly_BrokenMan", "canonical_alias": "Speak Softly - Broken Man", "reason": "Existing MUSDB test composition"},
+    {"track_id": "SpeakSoftly_LikeHorses", "canonical_alias": "Speak Softly - Like Horses", "reason": "Existing MUSDB test composition"},
+    {"track_id": "Triviul_Angelsaint", "reason": "Existing MUSDB train and repeatedly inspected Cambridge regression composition"},
+    {"track_id": "Triviul_Dorothy", "reason": "Existing MUSDB train composition"},
+    {"track_id": "Skelpolu_HumanMistakes", "reason": "Existing MUSDB train and repeatedly inspected Cambridge regression composition"},
+    {"track_id": "Skelpolu_Resurrection", "reason": "Existing MUSDB test composition"},
+    {"track_id": "Skelpolu_TogetherAlone", "reason": "Existing MUSDB train composition"},
+    {"track_id": "Skelpolu_AnomalousWeeping", "reason": "No explicitly named vocal raw track in author metadata; not confirmed as a vocal positive"},
+    {"track_id": "Skelpolu_ColdStrive", "reason": "No explicitly named vocal raw track in author metadata; not confirmed as a vocal positive"},
+    {"track_id": "Skelpolu_Entwine", "reason": "No explicitly named vocal raw track in author metadata; not confirmed as a vocal positive"},
+    {"track_id": "Skelpolu_LongRoad", "reason": "No explicitly named vocal raw track in author metadata; not confirmed as a vocal positive"},
+    {"track_id": "Galias_Horizon", "reason": "instrumental=no metadata is insufficient: no explicitly identified vocal raw track; archive currently unavailable"}
+  ]
+}

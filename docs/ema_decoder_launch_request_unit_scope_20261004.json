@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_NEW210_LAUNCH_REQUEST_METADATA_ONLY",
+  "tool": "scripts/210_ema_decoder_launch_request.py",
+  "tests": "scripts/_test_ema_decoder_launch_request.py",
+  "original_audio_modules_imported": false,
+  "reviewed_ast_command_shapes": 6,
+  "actual_installed_cpython_request_interceptions": 12,
+  "native_CreateProcess_calls": 0,
+  "actual_child_processes": 0,
+  "actual_audio_draws": 0,
+  "source_pt_model_adam_training_cuda": "NOT_EXECUTED",
+  "explicit_absolute_exe_policy": "Prospective serialization only, not a real launch or PCM identity result",
+  "full_runtime_audio_and_training_gates": "PENDING",
+  "closed208_209_tests_guard_or_decode_reruns": 0,
+  "defect_policy": "New isolated recovery only; no closed file edits",
+  "release_selection": "NONE"
+}

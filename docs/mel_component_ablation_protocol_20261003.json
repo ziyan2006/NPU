@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_MEL_COMPONENT_ABLATION_FORK",
+  "exploratory_training_authorized": true,
+  "formal_training_authorized": false,
+  "deployment_authorized": false,
+  "teacher": "kim_melband",
+  "approved_pseudo_songs": 24,
+  "origin_step": 3000,
+  "additional_common_steps": 500,
+  "absolute_limit": 3500,
+  "checkpoint_every": 250,
+  "source_arm": "kim_melband_waveform_candidate",
+  "source_stopped_at": 3000,
+  "source_legacy_stop_events": [
+    2750,
+    3000
+  ],
+  "tranche_stopping": "new_common_fixed500_budget_preserve_legacy_stop_evidence",
+  "internal_arm_keys": {
+    "htdemucs_waveform_control": "aux_full_control",
+    "kim_melband_waveform_candidate": "aux_residual_only"
+  },
+  "arm_lambdas": {
+    "htdemucs_waveform_control": 0.2,
+    "kim_melband_waveform_candidate": 0.2
+  },
+  "arm_instrumental_weights": {
+    "htdemucs_waveform_control": 4,
+    "kim_melband_waveform_candidate": 4
+  },
+  "arm_slot_weights": {
+    "htdemucs_waveform_control": [
+      1,
+      1,
+      4,
+      1,
+      1,
+      1
+    ],
+    "kim_melband_waveform_candidate": [
+      1,
+      1,
+      4,
+      1,
+      1,
+      1
+    ]
+  },
+  "base_normalizer": 6,
+  "gpu_concurrency_authorized": true,
+  "minimum_free_mib": 2300,
+  "minimum_disk_gib": 12,
+  "mechanism_step_limit": 3,
+  "release_selection": "NONE",
+  "independent_acceptance_ready": false,
+  "auxiliary_formula": "cv^2+accompaniment_weight*(ca-1)^2",
+  "rms_floor": 0.0001,
+  "minimum_gram_determinant": 0.001,
+  "auxiliary_domains": [
+    "musdb",
+    "mir1k"
+  ],
+  "auxiliary_role": "train",
+  "origin_checkpoint_sha256": "c2dbda81188164ffbd1f8ca1ae5ed69b94e83e2ab29e83df9913822f989bb171",
+  "diagnostic_sha256": "80facf68529247a449d1f68d857a5a77f8957c4f91b6c11482522d17c5a6f418",
+  "arm_accompaniment_weights": {
+    "htdemucs_waveform_control": 1,
+    "kim_melband_waveform_candidate": 0
+  }
+}

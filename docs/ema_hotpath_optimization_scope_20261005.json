@@ -1,0 +1,19 @@
+{
+  "purpose": "NONRELEASE_EMA226_228_230_PERFORMANCE_COMPONENTS",
+  "changes": ["call_local_redundant_decoder_SHA_reads", "CPU_PCM_hash_temporary_allocations"],
+  "unchanged": ["raw_model", "original_Adam", "loss", "LR", "FP32_complex64", "sampler", "crop_gain", "LRU_limits", "EMA_rule", "RNG", "full_pre_post_runtime_SHA", "all_loaded_file_event_identity_checks", "finite_check_every_PCM_element"],
+  "final_new_tests": 35,
+  "new_synthetic_decoder_requests": 4,
+  "actual_music_draws": 0,
+  "student_forward_backward_Adam_updates": 0,
+  "PT_deserialization": 0,
+  "CUDA_initialized": false,
+  "original_sealed_files_modified": false,
+  "integration_scope": "SHA_bound_two_expression_worker_AST_recipe_only_not_executed",
+  "formal_training_CLI_replaced": false,
+  "completed_fixed500_replay_authorized": false,
+  "optimized_actual_CPU_CUDA_mechanism": "PENDING",
+  "end_to_end_training_speedup": "UNMEASURED",
+  "training_authorized": false,
+  "release_selection": "NONE"
+}

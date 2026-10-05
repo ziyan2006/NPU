@@ -1,0 +1,56 @@
+{
+  "schema": 1,
+  "name": "same_graph_reconstruction_v1",
+  "date": "2026-10-01",
+  "frozen_sha256": "cb16d333c372d9558ef563b9b4baa9b9f7f46f0ec72d5b71f9e26557a1abfb55",
+  "seed": 20261001,
+  "graph": {"bands": 128, "layout": "legacy_log", "bottleneck_blocks": 2, "frontend": ["linear", 1.0], "lf_kill_bands": 44},
+  "small_fit": {
+    "scope": "Training mechanics only; neither validation nor deployable quality evidence",
+    "source_songs": 2,
+    "variants_db": [0, -12],
+    "crop_frames": 128,
+    "warmup_frames": 96,
+    "steps": 400,
+    "learning_rate": 0.0001,
+    "warmup_steps": 10,
+    "optimizer": "Adam",
+    "gradient_clip": 3.0,
+    "microbatch": 1,
+    "check_every": 50,
+    "arms": ["band_wave_control", "reconstruction_l1"],
+    "gate": {"minimum_loss_reduction_fraction": 0.1, "minimum_native_error_snr_gain_db": 0.5, "minimum_weak_error_snr_gain_db": 0.5, "maximum_any_clip_regression_db": 0.25},
+    "gate_scope": "Predeclared final-step TRAIN-cohort fit check, not a convergence or model-selection test"
+  },
+  "losses": {
+    "band_wave_control": "Unchanged complement log-band/weighted-mask loss + mixture-normalized product waveform MSE, as in script 120",
+    "reconstruction_l1": "Mean per-example [waveform L1/(mixture RMS+0.001) + (real L1+imag L1)/(mixture mean real/imag absolute sum+0.001)]; both follow actual Gs interpolation, bounded real mask and LF250, equal coefficients; no band-mask target, no teacher loss",
+    "context": "Score waveform [(warmup+2)*256 : length-512] and complex frames [warmup+2 : T-2]; do not reset history within the crop",
+    "caveat": "Product-path supervision, not an optimal-mask oracle or an explicit guarantee of residual vocal suppression; these two normalized error views overlap"
+  },
+  "formal_training_planned_not_started": {
+    "start_conditions": ["small-fit reconstruction arm passes", "data source quality/provenance reviewed", "new independent electronic-vocal development and acceptance songs assigned before experimentation"],
+    "maximum_steps": 10000,
+    "minimum_steps_before_early_stop": 2000,
+    "effective_batch": 6,
+    "microbatch": 1,
+    "crop_frames": 256,
+    "warmup_frames": 96,
+    "learning_rate": 0.0001,
+    "warmup_steps": 100,
+    "cosine_min_learning_rate": 0.00001,
+    "validation_every": 250,
+    "patience_validation_checks": 8,
+    "minimum_rank_gain_for_patience_reset_db": 0.02,
+    "selection": "Existing script 119 gates remain unchanged; rank only eligible checkpoints. Save best eligible, final and full resume state. No eligible checkpoint means NONE.",
+    "comparison": "Paired control/reconstruction arms from frozen weights; identical waveform batches, LR and stopping budget; no simultaneous layout, capacity or weak-vocal-weight change",
+    "status": "Design budget, not an implemented/completed formal training run"
+  },
+  "acceptance": {
+    "old_holdouts": "Regression only; repeatedly observed and never called blind",
+    "new_blind_target": "At least 10 distinct electronic-vocal compositions, aiming for >=5 artists, reserved before future training; source rights and alignment reviewed; fingerprint/manual alias checks; no pseudo-label-only final reference",
+    "metrics": ["paired song-level error-SNR/SI-SDR", "projected vocal residue and accompaniment gain (diagnostic only)", "pure-instrumental false removal", "continuous/chunk parity and boundary modulation", "level-matched subjective AB"],
+    "deployment_order": ["FP32 development gate", "sealed new-song acceptance", "full hardware-matched INT8/INT12 inference", "board timing and continuous speaker/button acceptance"],
+    "no_automatic_promotion": true
+  }
+}

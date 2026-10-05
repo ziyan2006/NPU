@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_EMA219_222_COMPONENT_SCOPE_NOT_TRAINING_ACTIVATION",
+  "formal_training_step": 4500,
+  "formal_training_updates": 0,
+  "components": {
+    "219": {"units": 20, "native_exit_code": 0, "scope": "Tiny CPU raw/Adam/EMA continuous storage, disk replay and joint CPU RNG rollback; not original student updates"},
+    "220": {"units": 12, "native_exit_code": 0, "scope": "Unchanged original DEV AST and metadata checks; no new model predictions"},
+    "221": {"units": 12, "native_exit_code": 0, "scope": "Activation and native-supervisor AST checks; no formal worker spawn", "retained_attempt01_native_exit_code": 1},
+    "222": {"units": 6, "native_exit_code": 0, "scope": "AST scope checks plus one separate real CPU DEV input preparation; no student model/PT/Adam/CUDA"}
+  },
+  "actual_222": {
+    "started_utc": "2026-10-05T03:53:05.844071Z",
+    "completed_utc": "2026-10-05T03:55:48.236598Z",
+    "native_exit_code": 0,
+    "tracks": 31,
+    "views": 177,
+    "source_windows": 93,
+    "held_development_source_files": 122,
+    "accepted_decoder_calls": 38,
+    "preheld_worker_native_files": 246,
+    "actual_native_file_events": 245,
+    "owned_processes_actual_exit_codes": {"125360": 0, "88244": 0, "125384": 0},
+    "actual_windows_write_delete_access_refusal": "ERROR_SHARING_VIOLATION=32 while READ-only lease held; no actual write/delete performed",
+    "whole_original_input_target_PCM_manifest_equal": true,
+    "CPU_threads": 4,
+    "actual_model_predictions": 0,
+    "actual_Adam_steps": 0,
+    "CUDA_initialized": false,
+    "CPU_Python_NumPy_RNG_unchanged_after_imports": true
+  },
+  "independent_review": {"bindings": 2874, "native_exit_code": 0, "new_audio_model_PT_Adam_CUDA_calls": 0},
+  "remaining": ["Complete training-only semantic dependency review", "Complete formal protocol, continued authorization record, bound activation and fresh launch checks"],
+  "training_authorized_by_this_component_record": false,
+  "future_unknown_native_image": "Fail closed; observed accepted paths are not proof all future dynamic paths are exhausted",
+  "release_selection": "NONE",
+  "human_listening_and_independent_real_acceptance": "PENDING"
+}

@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_MEL_SOURCE_AUX_STRENGTH_FORK",
+  "exploratory_training_authorized": true,
+  "formal_training_authorized": false,
+  "deployment_authorized": false,
+  "teacher": "kim_melband",
+  "approved_pseudo_songs": 24,
+  "origin_step": 2000,
+  "additional_common_steps": 500,
+  "absolute_limit": 2500,
+  "checkpoint_every": 250,
+  "source_arm": "kim_melband_waveform_candidate",
+  "source_stopped_at": 2000,
+  "tranche_stopping": "new_common_fixed500_budget_preserve_legacy_stop_evidence",
+  "internal_arm_keys": {
+    "htdemucs_waveform_control": "source_aux002_control",
+    "kim_melband_waveform_candidate": "source_aux020"
+  },
+  "arm_lambdas": {
+    "htdemucs_waveform_control": 0.02,
+    "kim_melband_waveform_candidate": 0.2
+  },
+  "gpu_concurrency_authorized": true,
+  "minimum_free_mib": 2300,
+  "minimum_disk_gib": 12,
+  "mechanism_step_limit": 3,
+  "release_selection": "NONE",
+  "independent_acceptance_ready": false,
+  "slot_weights": [1, 1, 1, 1, 1, 1],
+  "auxiliary_formula": "cv^2+(ca-1)^2",
+  "rms_floor": 0.0001,
+  "minimum_gram_determinant": 0.001,
+  "auxiliary_domains": ["musdb", "mir1k"],
+  "auxiliary_role": "train",
+  "origin_checkpoint_sha256": "9bb5bfd7436da1579803b4e0430042688c4cb377207f2f2ef2778959f2965c00",
+  "diagnostic_sha256": "5b9c363669fb277f07b9a4cbdfa4f530b10a38c12bacd3c254f2348393de4ba1"
+}

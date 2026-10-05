@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "date": "2026-10-02",
+  "scope": "User-authorized full-song local pseudo-label generation only; no student training, blind scoring, deployment, SD writes or uploads",
+  "authorization": {
+    "pilot_feedback": "User: 效果很好 (provided listening comparison; not a per-song review of the entire library)",
+    "batch_request": "Assistant offered full training-song separation while keeping the deployed model; user: 开始",
+    "full_song_label_generation": true,
+    "student_training": false,
+    "deployment": false
+  },
+  "teacher_protocol": "docs/teacher_pilot_protocol_20261001.json",
+  "teacher_protocol_sha256": "598db9d79a11f3b52a87b3ef9b1ed6124b7792906b15e50c596465f3e4aa46f7",
+  "teacher": "kim_melband_roformer",
+  "chunk_samples": 352800,
+  "overlap": 2,
+  "precision": "Same CUDA float16 autocast recipe as pilot; STFT/iSTFT float32; no silent precision/chunk fallback",
+  "input": "Complete first audio stream, ffmpeg to stereo 44100 Hz little-endian float32, no normalization; decode failures quarantined, not truncated",
+  "maximum_song_seconds": 1800,
+  "labels": "Unnormalized FLOAT32 stereo vocals and accompaniment = exact decoded mix minus vocals; no separate gain, clipping, mask compression or cropped training windows",
+  "storage": {"saved_stems": 2, "save_decoded_mix": false, "minimum_free_after_bytes": 12884901888, "estimate_safety_factor": 1.1},
+  "isolation": "Exclude all known regression/holdout, existing DEVELOPMENT and blind IDs, new Cambridge non-train candidates, historical MP3 holdout reports, and legacy chills exclusion before any audio decode; also exclude matching byte aliases",
+  "duplicate_policy": "Conservative filename/version composition grouping and full decoded PCM SHA-256 for eligible files; identical PCM counted once; differing recordings/edits of one named composition quarantined, not silently multiplied",
+  "split_caveat": "Exact PCM identity and conservative title aliases do not prove exhaustive acoustic near-duplicate detection, artist isolation, teacher pretraining independence or new blind data",
+  "source_rights": "Local research only; possession of MP3s is not certification of commercial training or redistribution rights",
+  "output_role": "pseudo_label_train_candidate",
+  "training_eligible_before_per_song_review": false,
+  "preserve": ["existing teacher caches", "pilot receipts", "dataset_lock", "formal training protocol", "frozen student", "SD", "vitis_journal.py"]
+}

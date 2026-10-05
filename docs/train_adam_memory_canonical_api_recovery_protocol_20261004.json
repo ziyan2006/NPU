@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_TRAIN_ADAM_MEMORY_CANONICAL_API_RECOVERY",
+  "models": [
+    "common_lf32_4000",
+    "lr1_4500",
+    "lr_half_4500"
+  ],
+  "counters": [
+    4500,
+    4501,
+    4502
+  ],
+  "unique_input_batches": 3,
+  "unique_input_slots": 18,
+  "model_batches": 9,
+  "primary_slot_forwards": 54,
+  "reference_slot_forwards": 18,
+  "total_slot_forwards": 72,
+  "samples": 89856,
+  "frames": 352,
+  "warmup": 96,
+  "native_support": [
+    25088,
+    89344
+  ],
+  "kill_bands": 32,
+  "normalizer": 6,
+  "instrumental_weight": 4,
+  "auxiliary_lambda": 0.2,
+  "groups": [
+    "true_vocal_base",
+    "instrumental_base",
+    "pseudo_base",
+    "residual_cv2",
+    "accompaniment_ca1_squared"
+  ],
+  "coefficients": [
+    1.0,
+    4.0,
+    1.0,
+    0.2,
+    0.2
+  ],
+  "rtol": 0.0002,
+  "atol": 2e-7,
+  "threads": 2,
+  "forward_backward_dtype": "float32",
+  "spectrum_dtype": "complex64",
+  "statistics_dtype": "float64",
+  "authority": "direct_original194_combine_slot_loss_six_slot_FP32_order",
+  "reference_requirement": "each_model_first_batch_bit_exact_each_slot_and_total",
+  "old_split_failures_retained": true,
+  "original197_rewritten_or_merged": false,
+  "optimizer_constructed": false,
+  "parameter_grad_written": false,
+  "cuda_used": false,
+  "model_updates": 0,
+  "training_authorized": false,
+  "deployment": false,
+  "release_selection": "NONE"
+}

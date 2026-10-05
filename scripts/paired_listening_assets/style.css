@@ -1,0 +1,15 @@
+:root{font-family:"Segoe UI","Microsoft YaHei",sans-serif;color:#24312e;background:#f4f6f3;line-height:1.6}
+*{box-sizing:border-box}body{margin:0}header{padding:30px 36px 24px;border-bottom:1px solid #d9e2da;background:#fff}
+h1{font-size:30px;line-height:1.3;margin:7px 0}h2{font-size:19px;margin:0 0 12px}h3{font-size:15px;margin:0 0 8px}header p{margin:8px 0 0;color:#58685f}
+.eyebrow{font-size:12px;letter-spacing:.12em;color:#32745b}main{display:grid;grid-template-columns:310px minmax(0,1fr);max-width:1500px;margin:auto}
+aside{padding:24px;border-right:1px solid #d9e2da}section{padding:24px 32px;min-width:0}.subtle{font-size:13px;color:#627269}
+label{display:block;font-size:13px}input,select,textarea{width:100%;border:1px solid #b9c9bd;background:#fff;border-radius:6px;padding:9px;font:inherit;margin:5px 0 10px}
+textarea{resize:vertical}button{font:inherit;border:1px solid #b9c9bd;background:#fff;color:#2c493b;border-radius:6px;cursor:pointer;padding:9px 12px}
+button:hover{background:#eef4ec}button:focus-visible,audio:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible{outline:3px solid #719683;outline-offset:2px}
+button.active{background:#245b44;color:#fff;border-color:#245b44}.song{width:100%;text-align:left;font-size:12px;margin-bottom:6px;word-break:break-word}
+nav{max-height:510px;overflow:auto;margin:8px 0 16px;padding-right:5px}#progress{font-size:12px;font-weight:400}.banner{background:#fff4dc;border-left:3px solid #b58b37;padding:10px 14px;font-size:13px;margin-bottom:22px}
+.title-row{display:flex;gap:14px;align-items:flex-start;justify-content:space-between}.title-row h2{word-break:break-word}.tag{white-space:nowrap;font-size:12px;border:1px solid #c6d7cb;padding:3px 8px;border-radius:20px}
+.windows{display:flex;gap:8px;flex-wrap:wrap;margin:18px 0 6px}.players{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin:16px 0}
+.players>div{border:1px solid #d6e2d8;background:#fff;padding:14px;border-radius:8px}.players>div:first-child{grid-column:1/-1}audio{width:100%;height:40px}
+details{border-top:1px solid #d6e2d8;margin:16px 0;padding:14px 0;font-size:13px}summary{cursor:pointer}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}
+@media(max-width:850px){header{padding:20px}main{grid-template-columns:1fr}aside{border-right:0;border-bottom:1px solid #d9e2da;padding:20px}nav{max-height:180px}section{padding:20px}.players,.form-grid{grid-template-columns:1fr}.title-row{display:block}h1{font-size:25px}}

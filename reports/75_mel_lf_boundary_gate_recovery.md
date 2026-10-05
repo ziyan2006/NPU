@@ -1,0 +1,14 @@
+# 75 — LF边界单元前置条件失败的隔离复核
+
+原_test_mel_lf_boundary.py补充35项实际exec session29493 exit1，只有test_low_frequency_descriptor_does_not_modify_wave断言CUDA未初始化失败。保留unit_tests.log及原代码/测试/协议/报告74；不谎称原35项通过。最早草稿29项session91964 exit0仅是较少覆盖，不替代新门槛。
+
+只读栈探针actualexit0显示：import后CUDAfalse；setUp的fake_stream调用150 ExplorationEngine的CPU Adam.step（所有模型与参数在CPU），PyTorch2.14 optimizer._accelerator_graph_capture_health_check调用torch.accelerator.current_stream().is_capturing()，导致CUDA lazy_init；统计函数前后CUDAtrue/true、CPU RNG及输入不变。不是该CPU统计函数偷偷转GPU或生产模型/GPU训练失败。不修改PyTorch/驱动/优化器健康检查。
+
+执行顺序错误也明确保留：未先确认35项成功，固定TRAIN audit已启动session39590。它实际exit0，零更新/无优化器/CUDAfalse，LF44标量/梯度/评分wave位一致，LF32有限非零变化，布局/参考NPU计划身份通过，但不能在当时失败单元门槛下视为训练审批。原audit/plan绑定已封存，故不回写原工具/测试/日志、不重做真实TRAIN审计；新审批前必须新隔离门槛全部通过。
+
+新_test_mel_lf_boundary_gate_recovery.py继承34项不变；第35项在新子进程无Adam夹具执行同真实统计函数，明确检查CPU FP32输入不变、完整CPU RNG不变、CUDA仍false。不skip，不全局override原模块。实际exec退出及35项结果另存recovery_unit_tests.log/gate_recovery_execution.json。只有真实35项exit0后，189_prepare_mel_lf_boundary_verified.py以独立gate协议/新results/mel_lf_boundary_gate_recovery_import_20261003审批绑定全部新旧证据，190新WMI启动器显式传此审批。
+
+185..188/旧_test/报告73/74与audit保持不变。186仍是唯一训练实现、188复核实现，recipe/预算/源ARMS[0]/原状态迁移/kill44与32/完全辅助/停止规则均不变；最多3真实CPU/CUDA机制门槛继续必要。真实审核无模型更新，不冒充CPU Adam机制完全无CUDA context——CPU机制只执行CPU张量更新，当前框架健康检查可能初始化CUDA，仍不得称跨设备数值resume或音质。
+
+没有approval、机制和WMI回执前不称正式训练已启动。NONRELEASE、人工听审/独立真实验收PENDING，原20分钟巡检保持ACTIVE，失败和负证据不删除。
+

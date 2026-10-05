@@ -1,0 +1,54 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_MEL_SOURCE_PROJECTION_AUX",
+  "authorization_record": "reports/41_source_aux_authorization.md",
+  "exploratory_training_authorized": true,
+  "formal_training_authorized": false,
+  "deployment_authorized": false,
+  "teacher": "kim_melband",
+  "approved_pseudo_songs": 24,
+  "source_approval": "results/mel_weak_weight_import_20261003/approval.json",
+  "source_approval_sha256": "9c395d2466405a17db30d33b349d138efbf6b7f097d4b20b6eca1d46452668e8",
+  "source_arm": "htdemucs_waveform_control",
+  "origin_run": "results/mel_weak_weight_20261003",
+  "origin_checkpoint_sha256": "3537c7f020e78667053eee4f3fed4579dfcf9eb0ad570da22f4eaf1723eccc11",
+  "origin_completion_sha256": "57963e052a179ab7bb578f443ccb84b3701f3cc11d3a6e5fd8f972a3ac79f661",
+  "origin_exit": "results/mel_weak_weight_launch_20261003/detached_exit_20261002_222032_3823062.json",
+  "origin_exit_sha256": "eb61f8dffca43b675d6e1a3c5e78664b5f730c48ea1800e499dd443643d7b1b9",
+  "origin_step": 1500,
+  "additional_common_steps": 500,
+  "absolute_limit": 2000,
+  "checkpoint_every": 250,
+  "auxiliary": {
+    "lambda": 0.02,
+    "rms_floor": 0.0001,
+    "minimum_gram_determinant": 0.001,
+    "domains": [
+      "musdb",
+      "mir1k"
+    ],
+    "role": "train",
+    "scored_waveform_only": true,
+    "formula": "cv^2+(ca-1)^2",
+    "slot_weights": [
+      1,
+      1,
+      1,
+      1,
+      1,
+      1
+    ]
+  },
+  "gpu_concurrency_authorized": true,
+  "minimum_free_mib": 2300,
+  "minimum_disk_gib": 12,
+  "mechanism_step_limit": 3,
+  "release_selection": "NONE",
+  "independent_acceptance_ready": false,
+  "internal_arm_keys": {
+    "htdemucs_waveform_control": "uniform_control",
+    "kim_melband_waveform_candidate": "source_aux002"
+  },
+  "internal_key_note": "Compatibility only. BOTH Mel/true targets. htdemucs key identifies uniform control, not HT labels.",
+  "scope": "New loss-only bounded exploration under ongoing user authorization; no alteration of prior authority. Same graph/LF44/input/gains/cursor/original schedule and clipping. Candidate only adds fixed .02 source-projection term on eligible scored true TRAIN. No deployment, uploads, SD or Git delivery."
+}

@@ -1,0 +1,35 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_EMA_COMPONENT_SYNTHETIC_CPU_UNITS_ONLY",
+  "design": "reports/102_mel_ema_shadow_trial_plan.md",
+  "fixed_source_checkpoint_sha256": "b3a0450ecd9bba259981bd47f8a49c0fee1a997d7a087a72570f589cc14ed5b3",
+  "tool": "scripts/203_ema_shadow_state.py",
+  "tests": "scripts/_test_ema_shadow_state.py",
+  "source_step": 4500,
+  "hard_limit": 5000,
+  "decay": 0.99,
+  "raw_weight": 0.01,
+  "arithmetic": "FP32 separate previous*.99, raw*.01, then add; original parameter order",
+  "buffers_and_frozen_parameters": "type-sensitive corresponding raw copies; nonpersistent buffers saved separately",
+  "budget": {
+    "real_audio_inputs": 0,
+    "real_model_forwards": 0,
+    "autograd": 0,
+    "optimizer_construction": 0,
+    "adam_steps": 0,
+    "cuda_initialization": 0,
+    "student_updates": 0,
+    "development_scoring": 0,
+    "audio_export": 0
+  },
+  "scope_limits": [
+    "Synthetic scalar/tensor recurrence is not evidence of a real Adam update",
+    "Shadow-only component is not a matching-Adam resume container",
+    "BytesIO serialization and synthetic component rollback are not full disk/device transaction gates",
+    "Full trainer/importer/protocol/approval/zero-update audit/CPU-CUDA mechanisms remain PENDING",
+    "No training plan is sealed and GPU launch is not authorized by these units"
+  ],
+  "release_selection": "NONE",
+  "human_listening": "PENDING",
+  "independent_real_acceptance": "PENDING"
+}

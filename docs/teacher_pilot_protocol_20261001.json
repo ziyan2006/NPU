@@ -1,0 +1,57 @@
+{
+  "schema": 1,
+  "date": "2026-10-01",
+  "scope": "Teacher-label feasibility and DEVELOPMENT comparison only; no student training, blind scoring, deployment, upload or commercial rights certification",
+  "candidate": {
+    "name": "kim_melband_roformer",
+    "source_repository": "KimberleyJensen/Mel-Band-Roformer-Vocal-Model",
+    "source_commit": "25f44ffb55ee3c301281bba21b2d6d311cb69ae2",
+    "weight_repository": "KimberleyJSN/melbandroformer",
+    "weight_revision": "ac9b0614ab3cd7f77219e18ba494dfd93956c348",
+    "weight_filename": "MelBandRoformer.ckpt",
+    "weight_bytes": 913106900,
+    "weight_sha256": "87201f4d31afb5bc79993230fc49446918425574db48c01c405e44f365c7559e",
+    "license_metadata": "Hugging Face model card declares MIT; card lacks dataset details. This does not license input music or guarantee full teacher training-set independence.",
+    "chunk_samples": 352800,
+    "overlap": 2,
+    "precision": "CUDA float16 autocast, STFT/iSTFT remain float32; no automatic OOM parameter change",
+    "runtime_packages": {"beartype": "0.14.1", "rotary-embedding-torch": "0.3.5"}
+  },
+  "baseline": {"name": "htdemucs", "weight_path": "models/htdemucs.th", "shifts": 1, "overlap": 0.25, "seed": 20261001},
+  "mp3": {
+    "role": "pseudo_label_pilot_only",
+    "segment_seconds": 45,
+    "crop": "Centered fixed 45-second excerpt (or full file if shorter); never selected by candidate teacher output",
+    "files": [
+      "Culture Shock, Grafix - Make It Pump.mp3",
+      "James Woods - Everywhere Music (Original Mix).mp3",
+      "Lane 8, Arctic Lake - Say The Word.mp3",
+      "Duce, terro - Too Close.mp3",
+      "Fred V, Hybrid Minds, Lottie Jones - Faded Blue.mp3",
+      "Dimension - Bass Thump.mp3",
+      "Culture Shock - Breathe.mp3",
+      "Sub Focus - Off The Ground.mp3",
+      "Tinlicker, Julia Church - Slipstream (feat. Julia Church).mp3",
+      "Lane 8 - No Captain.mp3"
+    ],
+    "no_true_reference": "MP3 labels are pseudo labels; removal energy and teacher disagreement are not separation quality scores"
+  },
+  "development": {
+    "source_roles": "Only existing data-lock DEVELOPMENT musdb and instrumental IDs",
+    "musdb": "All 19 reserved songs, native and vocal -12 dB synthetic remix; decoded D+B+O+V, not independently coded AAC mixture",
+    "instrumental": "All 3 reserved synthetic stereo instrumental songs, centered 30-second maximum; true vocal=0",
+    "score_edge_seconds": 0.25,
+    "aggregation": "Song-equal paired metrics separately for native, weak and instrumental; source windows/remixes are not independent songs",
+    "caveat": "Old development may be seen by pretrained teachers or frozen student. No newly sealed Cambridge acceptance candidate is decoded/scored. No blind/generalization claim."
+  },
+  "screening_gate": {
+    "minimum_mean_vocal_error_snr_gain_db": 0.25,
+    "maximum_any_vocal_domain_regression_db": 0.25,
+    "maximum_mean_accompaniment_gain_drop": 0.03,
+    "maximum_residual_vocal_increase_db_per_domain": 0.25,
+    "maximum_instrumental_removed_energy_increase_db": 0.5,
+    "interpretation": "Preliminary teacher screening only. Mechanical/DEV pass does not authorize whole-library relabeling until label listening and alignment review; does not promote the student or replace formal protocol gates."
+  },
+  "label_recipe": "Retain finite aligned unnormalized float32 teacher vocal waveforms; accompaniment = exact decoded input minus teacher vocal; never independently peak-normalize or clip stems",
+  "preserve": ["old teacher caches", "existing dataset_lock", "model_training_protocol_v1.json", "frozen student", "SD card", "vitis_journal.py"]
+}

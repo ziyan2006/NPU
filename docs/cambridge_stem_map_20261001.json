@@ -1,0 +1,12 @@
+{
+  "schema": 1,
+  "scope": "Explicit mapping of downloaded excerpt filenames, not full-track metadata. Named vocal effects and doubles belong to vocal. All remaining raw WAVs are accompaniment candidates, pending source listening/bleed review.",
+  "records": [
+    {"track_id": "Triviul_Alright", "archive_sha256": "336536b7ef78c1f65c0ca41b9c60f9b3f4264a98b2ad39aef01de86526ba287e", "vocal_basenames": ["08_ChorusVox1.wav", "09_ChorusVox2.wav"]},
+    {"track_id": "Triviul_Better", "archive_sha256": "9cc18ec69f2c0db8d5ddbbbb03aa7b82cf9dc556066536e21cc6ee3692410399", "vocal_basenames": ["10_LeadVox1.wav", "11_LeadVox2.wav", "12_BackingVox01.wav", "13_BackingVox02.wav", "14_BackingVox03.wav", "15_BackingVox04.wav", "16_BackingVox05.wav", "17_BackingVox06.wav", "18_BackingVox07.wav", "19_BackingVox08.wav", "20_BackingVox09.wav", "21_BackingVox10.wav"]},
+    {"track_id": "Triviul_Gimme", "archive_sha256": "4efc6c9d3a31269497f80a3595fc8cb2c2c21b7f64ecdbfb9486397adcd3b220", "vocal_basenames": ["04_LeadVox.wav", "05_BackingVoxFemale1.wav", "06_BackingVoxFemale1DT1.wav", "07_BackingVoxFemale1DT2.wav", "08_BackingVoxFemale2.wav", "09_BackingVoxFemale2DT.wav", "10_BackingVoxFemale2DT2.wav", "11_BackingVoxMaleSubmix.wav"]},
+    {"track_id": "Triviul_ToSamRawfers", "archive_sha256": "50d3eaaa33527e54a77663f67b85773744bdc60ab408dccc84de366211f2b7cf", "vocal_basenames": ["05_LeadVox.wav", "06_BackingVox1.wav", "07_BackingVox1DT.wav", "08_BackingVox2.wav", "09_BackingVox2DT.wav", "10_BackingVox3.wav", "11_BackingVox3DT.wav", "12_BackingVox4.wav", "13_BackingVox4DT.wav", "14_BackingVox5.wav", "15_BackingVox5DT.wav"]},
+    {"track_id": "Giselle_You", "archive_sha256": "406b58af4bcd3b4d090cfde4ee694621bd4532fe1db2cd41dd4b7eb2e18a3ebf", "vocal_basenames": ["39_LeadVox.wav", "40_BackingVox.wav"]},
+    {"track_id": "SpeakSoftly_NorthIsFalse", "archive_sha256": "ef3390fd52975b83301fb20166b18280b6db786ce81c0bb3bd478e592f5e9bb3", "vocal_basenames": ["10_LeadVox.wav", "11_LeadVoxDT1.wav", "12_LeadVoxDT2.wav", "13_BackingVox.wav", "14_BackingVoxDT1.wav", "15_BackingVoxDT2.wav"]}
+  ]
+}

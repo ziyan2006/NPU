@@ -1,0 +1,30 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_EMA_SOURCE_INTERFACE_UNITS_ONLY",
+  "source_step": 4500,
+  "selected_source_arm": "htdemucs_waveform_control",
+  "source_sha256": "b3a0450ecd9bba259981bd47f8a49c0fee1a997d7a087a72570f589cc14ed5b3",
+  "source_loading": "One guarded CPU weights_only deserialization; no live student Module",
+  "scope": "Pinned source file identity, full actual receipt-completion own seals and typed symmetric comparison, all source fields and matching Adam mappings, RNG, actual cumulative schedule, isolated source-only copy",
+  "historical_review": "Pinned file evidence only; normalized historical embedded receipt is not substituted for actual typed receipt/completion/PT",
+  "new_training_authorized": false,
+  "complete_resume_container": false,
+  "model_forward_budget": 0,
+  "autograd_engine_execution_budget": 0,
+  "optimizer_construction_budget": 0,
+  "optimizer_step_budget": 0,
+  "student_update_budget": 0,
+  "real_audio_input_budget": 0,
+  "cuda_initialization_allowed": false,
+  "pending": [
+    "Full raw-plus-shadow disk restore container and whole transaction",
+    "New bounded sampler and single-raw-model single-original-Adam trainer",
+    "Full integration units and real zero-update audit",
+    "At most three unique next CPU-CUDA mechanism inputs4501..4503",
+    "Original194 raw first-step bit-exactness and shadow nonzero/noalias",
+    "Full disk replay, raw-shadow-counts-CUDA RNG rollback and cross-device PCM metadata",
+    "New training protocol, approval, fully implemented sealed plan and resource/no-duplicate gates"
+  ],
+  "deployment_authorized": false,
+  "release_selection": "NONE"
+}

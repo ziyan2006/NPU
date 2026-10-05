@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_MEL_LF_BOUNDARY_FORK",
+  "exploratory_training_authorized": true,
+  "formal_training_authorized": false,
+  "deployment_authorized": false,
+  "teacher": "kim_melband",
+  "approved_pseudo_songs": 24,
+  "origin_step": 3500,
+  "additional_common_steps": 500,
+  "absolute_limit": 4000,
+  "checkpoint_every": 250,
+  "source_arm": "htdemucs_waveform_control",
+  "source_stopped_at": 3500,
+  "source_legacy_stop_events": [
+    3250,
+    3500
+  ],
+  "source_stale": 14,
+  "source_best": null,
+  "source_patience_anchor": null,
+  "tranche_stopping": "new_common_fixed500_budget_preserve_legacy_stop_evidence",
+  "internal_arm_keys": {
+    "htdemucs_waveform_control": "lf44_control",
+    "kim_melband_waveform_candidate": "lf32_candidate"
+  },
+  "arm_lambdas": {
+    "htdemucs_waveform_control": 0.2,
+    "kim_melband_waveform_candidate": 0.2
+  },
+  "arm_instrumental_weights": {
+    "htdemucs_waveform_control": 4,
+    "kim_melband_waveform_candidate": 4
+  },
+  "arm_slot_weights": {
+    "htdemucs_waveform_control": [
+      1,
+      1,
+      4,
+      1,
+      1,
+      1
+    ],
+    "kim_melband_waveform_candidate": [
+      1,
+      1,
+      4,
+      1,
+      1,
+      1
+    ]
+  },
+  "arm_accompaniment_weights": {
+    "htdemucs_waveform_control": 1,
+    "kim_melband_waveform_candidate": 1
+  },
+  "arm_kill_bands": {
+    "htdemucs_waveform_control": 44,
+    "kim_melband_waveform_candidate": 32
+  },
+  "base_normalizer": 6,
+  "gpu_concurrency_authorized": true,
+  "minimum_free_mib": 2300,
+  "minimum_disk_gib": 12,
+  "mechanism_step_limit": 3,
+  "release_selection": "NONE",
+  "independent_acceptance_ready": false,
+  "auxiliary_formula": "cv^2+(ca-1)^2",
+  "rms_floor": 0.0001,
+  "minimum_gram_determinant": 0.001,
+  "auxiliary_domains": [
+    "musdb",
+    "mir1k"
+  ],
+  "auxiliary_role": "train",
+  "origin_checkpoint_sha256": "62d3e91beeb75ecd06ff5ff204b3c1704819772a7b82458ae2c3b424277bdcfc",
+  "reference_diagnostic_sha256": "2e1d7cb947708f5495b67f51206101f33d8dbc1afd72062fda9cd5bc4d13def7",
+  "lf_application": [
+    "training_reconstruction",
+    "development",
+    "listening"
+  ],
+  "baseline_interpretation": "Same model Adam; LF32 zero-update direct effect, not training gain",
+  "board_changes_authorized": false
+}

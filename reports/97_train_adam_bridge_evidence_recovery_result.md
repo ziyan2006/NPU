@@ -1,0 +1,21 @@
+# 新200对称证据复核成功，旧199失败保留（NONRELEASE）
+
+新200只读验证已有199完整证据，0模型前向/0autograd/0Adam/CUDA/更新/PT/音频/DEV。28新端到端序列化回归chunk32722a真实native exit0，prepare session6046/chunkd2f2f0真实exit0，独立verify session37732/chunk3bf7b5真实exit0。01:29:40.4730787Z无仓库Python任务，磁盘24.630577GiB；新worker75860已退出，PID仅历史关联，非WMI无detached_exit。
+
+旧199真实run23524/chunk50874d仍exit0且6主+6参考完整；旧199.verify22842/chunk44bc01真实exit1、无旧verification.json，原因与全部失败证据留在报告95/原monitor。只在新results/train_adam_bridge_evidence_recovery_20261004写新verification/status，原199全部绑定不修改、也不重跑。197仍failed3/9；新200成功不将原197/199.verify改成成功。
+
+新复核379绑定、完整输入身份、12行文件/嵌入分别验seal且完整类型敏感对称比较、文件/嵌入totals分别验seal且完整对称比较、原199.validate_result全部结构/有限/完整方向映射/原strict与bit-exact门槛均通过；CPU RNG不变。进程内禁止模型调用/autograd/Adam/CUDA初始化，单位在fresh CPU进程验证未初始化CUDA。原单边去seal失败由新端到端回归复现，未删字段或放宽阈值。
+
+## 被独立复核的局部结构结果
+
+仅LR4500 control ARMS0，同197/198已见counter4500，1唯一批/6唯一槽，199共12槽前向；200没有增加前向。这不是12独立样本或9批成功。
+
+原完整辅助参数梯度vs完整波形余切VJP，两活动槽逐位一致。完整余切vs分项和原strict通过（max1.091394e-11/7.275958e-12）；完整参数vs合并分项余切VJP原strict通过（max6.519258e-9/1.117587e-8）。独立分项参数和在MIR仍8个失败元素[458,467,508,517,817319,817370,823653,823706]，整向量max5.7462602854e-7，所有旧strict失败保存，不把分项和当同一权威梯度。
+
+权威为直接原194完整combine_slot_loss标量的autograd.grad，原六microbatch FP32顺序累计。规范base+原完整辅助与权威逐槽及总量原strict通过，但并非逐位相同；总max8.7171792984e-7。独立原194参考逐槽输入/PCM/wave/mask/base/full/组合标量身份一致，逐槽及总权威梯度与参考逐位相同，总SHA8074074a0dc80a548d2a0f82ec294f0a139256c2971d72f6fd5dff2235c61a96。完整组加和及独立分项/组加和差分别作为测量，不补误差到某组或完整减某项伪造梯度。
+
+本一个TRAIN批的权威g·u=-38.920239713、g·d=+.002444742614、cos(g,u)=-.1264116933，只是一阶局部存量moments方向代理。未应用下一梯度或实际参数delta，不证明Adam有害、LR/beta根因、音质、全库/长源/板端或容量。不能凭本样本清空Adam/调beta/LR/损失、选eligible/rank或模型赢家。
+
+新200工具SHAe2ecf801945bd7ffa47bf24ca612bf79ffdf4dadada0c78b108c40d4b0b312a1；测试SHA8a6a061eeb1fa9e1f5ba892d801a14b272c7582047c00d73bee8443dc071834a；协议SHA23c2cb9af80e5c02705b571a9a21ae4baaf8a2decf275f5220df9af2599ade6b；planSHAc053486a6c0011bddf3caebe02f24b235fe26d22c37f618194d6ca292eaa9dcc；verificationSHA1565f22e1eab4813ba2e4edc4019cf3189b08cbcb79c1b4c5993a5d9cfb689ed。新独立monitor的completion_review/aggregation保存完整退出/哈希/数值/边界。
+
+桥接证据恢复后才可以另立原90的9模型批新恢复协议；下一步报告98，不重复199或200的成功单位/prepare/verify/前向，不调用197旧run/verify，不合并部分行。无新GPU任务。20分钟同聊巡检继续；全程NONRELEASE，人工4500/4250/4000及历史听审、独立真实验收PENDING。

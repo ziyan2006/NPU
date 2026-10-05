@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_EMA_INPUT_SCHEDULE_METADATA_UNITS_ONLY",
+  "tool": "scripts/206_ema_live_input_schedule.py",
+  "tests": "scripts/_test_ema_live_input_schedule.py",
+  "source_step": 4500,
+  "new_budget_limit": 5000,
+  "new_observation_stages": [4750, 5000],
+  "actual_metadata_source": "One read of sealed205 zero-update CPU storage artifact, not another read of old training source PT",
+  "routing_test_data": "Synthetic tensors and two synthetic song descriptors; original136 crop_recipe, original143 schedule formulas",
+  "compatibility_recovery": "Do not reuse205 live context validator: its stale>=18 and best=float-only checks cannot represent original143 legitimate eligible patience reset and best dictionary",
+  "schedule": "Raw-only original eligible/rank/best/anchor/.02 patience semantics; fixed500 budget separate; full journal replay; original source stop4500 and all legacy evidence preserved",
+  "budget": {"real_audio_crops": 0, "live_student_modules": 0, "model_forwards": 0, "autograd_engine": 0, "adam_constructions": 0, "adam_steps": 0, "student_training_updates": 0, "cuda_initialization": 0},
+  "not_proven": [
+    "Actual input backend construction/authentication and all transitive cache dependency reads",
+    "Real PCM sampling or next-input audit",
+    "Whole raw/Adam/shadow/live-context CPU-CUDA container and transaction",
+    "194 raw first real update identity, actual EMA difference and full trajectory replay",
+    "Complete trainer/protocol/approval/implemented sealed training plan",
+    "Audio quality, eligibility or independent acceptance"
+  ],
+  "new_training_authorized": false,
+  "release_selection": "NONE"
+}

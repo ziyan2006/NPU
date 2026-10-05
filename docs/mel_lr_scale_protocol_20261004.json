@@ -1,0 +1,90 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_MEL_LR_SCALE_FORK",
+  "exploratory_training_authorized": true,
+  "formal_training_authorized": false,
+  "deployment_authorized": false,
+  "teacher": "kim_melband",
+  "approved_pseudo_songs": 24,
+  "origin_step": 4000,
+  "additional_common_steps": 500,
+  "absolute_limit": 4500,
+  "checkpoint_every": 250,
+  "source_arm": "kim_melband_waveform_candidate",
+  "source_stopped_at": 4000,
+  "source_legacy_stop_events": [
+    3750,
+    4000
+  ],
+  "source_stale": 16,
+  "source_best": null,
+  "source_patience_anchor": null,
+  "tranche_stopping": "new_common_fixed500_budget_preserve_legacy_stop_evidence",
+  "internal_arm_keys": {
+    "htdemucs_waveform_control": "lr1_control",
+    "kim_melband_waveform_candidate": "lr_half_candidate"
+  },
+  "arm_lambdas": {
+    "htdemucs_waveform_control": 0.2,
+    "kim_melband_waveform_candidate": 0.2
+  },
+  "arm_instrumental_weights": {
+    "htdemucs_waveform_control": 4,
+    "kim_melband_waveform_candidate": 4
+  },
+  "arm_slot_weights": {
+    "htdemucs_waveform_control": [
+      1,
+      1,
+      4,
+      1,
+      1,
+      1
+    ],
+    "kim_melband_waveform_candidate": [
+      1,
+      1,
+      4,
+      1,
+      1,
+      1
+    ]
+  },
+  "arm_accompaniment_weights": {
+    "htdemucs_waveform_control": 1,
+    "kim_melband_waveform_candidate": 1
+  },
+  "arm_kill_bands": {
+    "htdemucs_waveform_control": 32,
+    "kim_melband_waveform_candidate": 32
+  },
+  "base_normalizer": 6,
+  "gpu_concurrency_authorized": true,
+  "minimum_free_mib": 2300,
+  "minimum_disk_gib": 12,
+  "mechanism_step_limit": 3,
+  "release_selection": "NONE",
+  "independent_acceptance_ready": false,
+  "auxiliary_formula": "cv^2+(ca-1)^2",
+  "rms_floor": 0.0001,
+  "minimum_gram_determinant": 0.001,
+  "auxiliary_domains": [
+    "musdb",
+    "mir1k"
+  ],
+  "auxiliary_role": "train",
+  "origin_checkpoint_sha256": "94323f8a30fb5e5decb65d4c110fd5252d0916de68507f42af555b3f539a8f6d",
+  "reference_diagnostic_sha256": "d4c63ecb5ce5c07689410e4193228935259edc1c455b8d57b0f5fb615c26f147",
+  "arm_lr_scales": {
+    "htdemucs_waveform_control": 1.0,
+    "kim_melband_waveform_candidate": 0.5
+  },
+  "lr_application": "preserve_source_group_lr_at4000_apply_multiplier_from4001",
+  "lf_application": [
+    "training_reconstruction",
+    "development",
+    "listening"
+  ],
+  "baseline_interpretation": "Same model/Adam and LF32; common4000 baseline, not training gain",
+  "board_changes_authorized": false
+}

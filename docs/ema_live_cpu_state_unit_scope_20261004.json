@@ -1,0 +1,17 @@
+{
+  "schema": 1,
+  "purpose": "NONRELEASE_EMA_JOINT_LIVE_CPU_STATE_UNITS_ONLY",
+  "tool": "scripts/207_ema_live_cpu_state.py",
+  "tests": "scripts/_test_ema_live_cpu_state.py",
+  "source": "One read of pinned205 final zero-update CPU storage, not original training PT",
+  "integration": "Single raw model/original Adam/independent203 shadow plus206 stream semantic cursor, last metadata, source-replayed raw schedule and journal, CPU/Python/NumPy RNG",
+  "205_context_validator_reused": false,
+  "scope": "Whole CPU storage and failure transaction; no actual audio backend, no training",
+  "actual_source_raw_models": 1,
+  "actual_source_matching_cpu_adam_constructions": 1,
+  "synthetic": "Small model/Adam manual tensor/moment/counter changes, synthetic206 input routing and synthetic score metadata; not real optimizer updates or quality measurements",
+  "budget": {"real_audio_inputs": 0, "model_forwards": 0, "autograd_engine": 0, "adam_steps": 0, "student_training_updates": 0, "cuda_initialization": 0},
+  "pending": ["Actual audio backend and all transitive frontend/loss/lock/cache reads", "Real zero-update audit", "At most3 unique4501..4503 CPU-CUDA actual update mechanisms", "Original194 raw first Adam update bit identity", "Strict source CUDA FP32 runtime and RNG", "Real nonzero EMA and whole CPU-CUDA disk trajectory replay/rollback", "Complete trainer/protocol/approval/implemented sealed training plan"],
+  "new_training_authorized": false,
+  "release_selection": "NONE"
+}
