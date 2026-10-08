@@ -61,6 +61,14 @@
   });
   let chosen = cases[7], position = chosen.start, timer = null, selectedModule = "controller";
   const lessons = window.createNPULessons({frames,cases,num,one,fire,state,signedLow});
+  const stepLessons = window.createNPUSteps({frames,cases,lessons,num,one,fire});
+  const stepMode = () => $("mode").value === "steps";
+  const currentStep = () => stepLessons[chosen.index].find(p=>position-chosen.start>=p.start&&position-chosen.start<=p.end);
+  const currentStory = () => stepMode()?currentStep().story:lessons[chosen.index].stories[position-chosen.start];
+  // The shared block reader also fetches future instructions. Track its real
+  // client so a background fetch cannot masquerade as this step's descriptor.
+  const blockOwners=[];let blockOwner=null;
+  frames.forEach(f=>{for(const client of ["fetch","df","ef"])if(fire(f,client+"_req"))blockOwner=client;blockOwners.push(blockOwner);if(blockOwner&&fire(f,blockOwner+"_res"))blockOwner=null;});
   const cpPlain = {CP_IDLE:"已空闲",CP_RUN:"可以接收下一条命令",CP_DISPATCH:"检查并交接命令",CP_WAIT_EVENT:"等指定工作完成",CP_WAIT_VECTOR:"等同步运算做完",CP_WAIT_END:"等全部单元空闲",CP_ERROR:"遇到执行错误"};
 
   // These modules and routes preserve the RTL's hierarchy and interface widths.
@@ -349,21 +357,46 @@
     $("lesson-example-note").textContent=note;
   }
   function renderLesson(f){
-    const lesson=lessons[chosen.index],relative=position-chosen.start,s=lesson.stories[relative];
+    const lesson=lessons[chosen.index],relative=position-chosen.start,s=currentStory(),p=currentStep();
     $("lesson-goal").textContent=chosen.name+" · 目标："+lesson.goal;
     $("lesson-title").textContent=s.title;$("lesson-action").textContent=s.action;
     $("lesson-why").textContent=s.why;$("lesson-result").textContent=s.result;
-    const current=relative-s.run.start+1,total=s.run.end-s.run.start+1;
-    $("lesson-progress-label").textContent=`第 ${s.chapterIndex+1} / ${lesson.chapters.length} 阶段 · ${s.chapterTitle}`;
-    $("lesson-progress-detail").textContent=`当前这项工作：第 ${current} / ${total} 个时钟（本次录制）${s.multiplication?" · 乘法本身需 16 轮，另有启动与结果交接":""}`;
+    const current=stepMode()?p.index+1:relative-s.run.start+1,total=stepMode()?stepLessons[chosen.index].length:s.run.end-s.run.start+1;
+    $("lesson-progress-label").textContent=stepMode()?`第 ${current} / ${total} 步`:`第 ${s.chapterIndex+1} / ${lesson.chapters.length} 阶段 · ${s.chapterTitle}`;
+    $("lesson-progress-detail").textContent=stepMode()?`覆盖 K+${p.start}…K+${p.end} · ${p.end-p.start+1} 个真实时钟 · 当前框图 K+${relative}`:`当前这项工作：第 ${current} / ${total} 个时钟（本次录制）${s.multiplication?" · 乘法本身需 16 轮，另有启动与结果交接":""}`;
     $("lesson-progress").max=total;$("lesson-progress").value=current;
     $("lesson-focus").replaceChildren(...s.focus.filter(id=>nodeMap[id]).map(id=>{const b=textBox("button",nodeMap[id].title);b.addEventListener("click",()=>inspect(id));return b;}));
-    $("lesson-chapters").replaceChildren(...lesson.chapters.map((p,j)=>{const b=textBox("button",`${j+1}. ${p.title} · ${p.cycles} 拍`,p.id===s.chapter?"current":"");b.setAttribute("aria-current",p.id===s.chapter?"step":"false");b.addEventListener("click",()=>{pause();position=chosen.start+p.start;render();});return b;}));
+    const navigation=stepMode()?stepLessons[chosen.index]:lesson.chapters;
+    $("lesson-chapters").replaceChildren(...navigation.map((n,j)=>{const active=stepMode()?n===p:n.id===s.chapter;const b=textBox("button",stepMode()?`${j+1}. ${n.story.title}`:`${j+1}. ${n.title} · ${n.cycles} 拍`,active?"current":"");b.setAttribute("aria-current",active?"step":"false");b.addEventListener("click",()=>{pause();position=chosen.start+(stepMode()?n.representative:n.start);render();});return b;}));
+    $("step-evidence").hidden=!stepMode();
+    const activeEdges=edges.filter(e=>stepActivities(describe(f)).active.has(e.id));
+    $("step-flow").textContent=activeEdges.length?"此刻真实交接："+activeEdges.map(e=>nodeMap[e.from].title+" → "+nodeMap[e.to].title).join("；"):"此刻没有数据交接；关注模块内部的准备、计算或等待。";
+    $("step-moments").replaceChildren(...p.moments.map(j=>{const b=textBox("button",`K+${j} · ${lessons[chosen.index].stories[j].title}`,j===relative?"current":"");b.addEventListener("click",()=>{pause();position=chosen.start+j;render();});return b;}));
+    $("lesson-context").textContent=stepMode()?"框图展示上方标明的一个真实时刻，只高亮所选指令在本步骤的活动。讲解概括整步；点击关键时刻可对照具体交接。":"框图保留全部真实活动，取指或其他异步指令可能同时工作。";
     nodes.forEach(n=>$("node-"+n.id).classList.toggle("lesson-focus",s.focus.includes(n.id)));
     renderLessonVisual(s,f);
   }
 
+  function stepActivities(d){
+      const p=currentStep(),allowed=new Set(p.allowed);
+      if(p.id==="descriptors"){
+        const client=chosen.name.startsWith("DMA_")?"df":"ef";
+        if(blockOwners[position]!==client)["mem_block","block_read","read_ddr","ddr_r","read_block"].forEach(id=>allowed.delete(id));
+        if(!d.active.has("block_read"))allowed.delete("read_ddr");
+        if(!d.active.has("read_block"))allowed.delete("ddr_r");
+      }
+      if(p.id==="request"&&chosen.name==="DMA_LOAD"&&!d.active.has("dma_read"))allowed.delete("read_ddr");
+      if(p.id==="move"&&chosen.name==="DMA_LOAD"&&!d.active.has("read_dma"))allowed.delete("ddr_r");
+      if(p.id==="read"&&chosen.name==="UPSAMPLE2X"){
+        if(!d.active.has("up_read"))allowed.delete("read_ddr");
+        if(!d.active.has("read_up"))allowed.delete("ddr_r");
+      }
+      const active=new Set([...d.active].filter(id=>allowed.has(id))),wait=new Set([...d.wait].filter(id=>allowed.has(id)));
+      [...active].forEach(id=>{if(edgeMap[id]){active.add(edgeMap[id].from);active.add(edgeMap[id].to);}});
+      return {...d,active,wait,busy:new Set([...d.busy].filter(id=>p.story.focus.includes(id)))};
+  }
   function updateHardware(f, d) {
+    if(stepMode())d=stepActivities(d);
     edges.forEach(e => {
       const g = $("edge-"+e.id), active = d.active.has(e.id), wait = d.wait.has(e.id);
       g.classList.toggle("active", active); g.classList.toggle("wait", wait);
@@ -374,7 +407,7 @@
       ["active","busy","wait"].forEach(kind => g.classList.toggle(kind, d[kind].has(n.id)));
       const status = g.querySelector(".node-status");
       const states = {cp:state(f,"cp_state","cp_state_e"), df:state(f,"df_state","dma_frontend_state_e"), dma:state(f,"de_state","dma_engine_state_e"), ef:state(f,"ef_state","execution_frontend_state_e"), post:state(f,"post_state","post_state_e")+" · lane "+num(f,"post_lane"), vec:state(f,"v_state","vec_state_e"), up:state(f,"u_state","upsample_state_e"), events:"event_state = "+hex(num(f,"events")), fifo:"count = "+num(f,"fifo_count")+" / 2", irq:"irq_o = "+num(f,"irq")};
-      const lesson=lessons[chosen.index].stories[position-chosen.start];
+      const lesson=currentStory();
       const defaults={host:"发送任务与启动命令",csr:"控制任务并汇报状态",loader:"启动阶段已完成",fetch:"读取下一条命令",mem:"安排谁先读说明",df:"准备搬运说明与地址",ef:"准备运算说明",block:"从外部内存读取说明",dma:"执行实际数据搬运",ddr:"存放输入、参数与输出",read:"安排谁先读取 DDR",write:"安排谁先写入 DDR",a:"输入工作台 · 两组",w:"权重与参数配方 · 两组",o:"计算结果区 · 两组",controller:"安排卷积读取与计算",mac:"对应相乘，再相加",buffer:"暂存算好的结果",post:"逐通道调整数值",fifo:"计算结果排队写回",vec:"把两份特征相加",up:"复制像素和行",events:"记录工作是否完成",irq:one(f,"irq")?"已通知处理器完成":"等待任务完成"};
       status.textContent = $("show-tech").checked ? (states[n.id] || (d.active.has(n.id)?"本上升沿完成传输":d.busy.has(n.id)?"正在处理":n.status)) : n.id==="cp"?cpPlain[state(f,"cp_state","cp_state_e")]:lesson.focus.includes(n.id)?lesson.chapterTitle+" · 当前关注":d.active.has(n.id)?"本沿交接数据":d.busy.has(n.id)?"仍在处理工作":defaults[n.id];
     });
@@ -395,6 +428,21 @@
   }
 
   function waveRows() {
+    if(stepMode()){
+      const p=currentStep(),chapter=p.story.chapter;
+      const base=[["时钟 · 10 ns","clock"]];
+      if(p.id==="capture")return [...base,["命令有效","fetch_v"],["控制器可接收","fetch_r"]];
+      if(["wait-dispatch","dispatch"].includes(p.id)){const prefix=chosen.name.startsWith("DMA_")?"dma":chosen.name==="CONV2D"?"conv":"vec";return [...base,["派工单有效",prefix+"_v"],["前端可接单",prefix+"_r"]];}
+      if(chapter==="descriptors"){const prefix=chosen.name.startsWith("DMA_")?"df":"ef";return [...base,["申请读取说明",prefix+"_req_v"],["说明返回有效",prefix+"_res_v"],["前端接收说明",prefix+"_res_r"]];}
+      if(chapter==="address"){const prefix=chosen.name.startsWith("DMA_")?"agu":chosen.name==="CONV2D"?"ctrl":chosen.name==="VEC_ADD"?"v":"u";return [...base,["地址乘法进行中",prefix+"_mul_busy"],["乘法结果可用",prefix+"_mul_done"]];}
+      if(p.id==="calculate")return [...base,["乘法级有效","mac_product"],["累加级有效","mac_dot"],["结果有效","mac_out_v"],["接收结果","mac_out_r"]];
+      if(p.id==="post"||p.id==="scale")return [...base,["调整状态",p.id==="post"?"post_state":"v_post","post_state_e"],["通道编号",p.id==="post"?"post_lane":"v_post_lane","hex"]];
+      if(p.id==="writeback")return [...base,["写回队列项数","fifo_count","hex"],["O0 写入有效","o_v"],["O0 可接收","o_r"]];
+      if(p.id==="source0"||p.id==="source1"||p.id==="add")return [...base,["读响应有效","v_res_v"],["写入结果有效","v_write_v"],["写入可接收","v_write_r"]];
+      if(p.id==="done"||chapter==="waiting")return [...base,["完成事件","event_set","hex"],["已完成标记","events","hex"],["残差完成","vec_done"],["上采样完成","up_done"],["中断","irq"]];
+      if(chosen.name==="DMA_LOAD")return [...base,["DMA 读取申请","dma_ar"],["DMA 返回数据有效","dma_rdata_v"],["片上写入有效","sp_wv"],["片上可接收","sp_wr"]];
+      if(chosen.name==="DMA_STORE"||chosen.name==="UPSAMPLE2X")return [...base,["读数据有效","r_v"],["写数据有效","w_v"],["内存可接收","w_r"],["写入确认有效","b_v"]];
+    }
     const base = [["clk · 100 MHz","clock"], ["CP state","cp_state","cp_state_e"], ["event_state","events","hex"]];
     if(chosen.name.startsWith("DMA_")) return [...base,["DMA cmd VALID","dma_v"],["DMA cmd READY","dma_r"],["ARVALID","ar_v"],["ARREADY","ar_r"],["RVALID","r_v"],["RREADY","r_r"],["sp_write VALID","sp_wv"],["sp_write READY","sp_wr"],["WVALID","w_v"],["WREADY","w_r"],["BVALID","b_v"],["dma_busy","dma_busy"]];
     if(chosen.name==="CONV2D") return [...base,["A response VALID","a_res_v"],["W response VALID","w_res_v"],["MAC input VALID","mac_v"],["MAC input READY","mac_r"],["product valid","mac_product"],["dot valid","mac_dot"],["MAC result VALID","mac_out_v"],["POST state","post_state","post_state_e"],["O write VALID","o_v"],["C0 event_set","conv_event","hex"]];
@@ -405,21 +453,23 @@
   function renderWave() {
     const svg=$("wave"), count=Number($("wave-width").value), left=155, cell=30, top=40, height=29;
     const windowStart=Math.max(chosen.start,Math.min(position-Math.floor(count/3),chosen.end-count+1));
-    const windowEnd=Math.min(chosen.end,windowStart+count-1), length=windowEnd-windowStart+1, rows=waveRows();
+    const windowEnd=Math.min(chosen.end,windowStart+count-1),p=currentStep();
+    const samples=stepMode()?[...new Set([...p.moments,position-chosen.start].flatMap(j=>[j-1,j,j+1]).filter(j=>j>=p.start&&j<=p.end))].sort((a,b)=>a-b).map(j=>chosen.start+j):Array.from({length:windowEnd-windowStart+1},(_,j)=>windowStart+j);
+    const length=samples.length,rows=waveRows(),cut=j=>j>0&&samples[j]!==samples[j-1]+1;
     const width=left+length*cell+15,totalHeight=top+rows.length*height+12;
     svg.setAttribute("viewBox",`0 0 ${width} ${totalHeight}`);svg.setAttribute("height",totalHeight);svg.replaceChildren();
     for(let j=0;j<=length;j++){
       const x=left+j*cell;svg.append(element("line",{x1:x,y1:25,x2:x,y2:totalHeight,class:"wave-grid"}));
-      if(j<length&&(length<12||j%4===0))svg.append(element("text",{x:x+2,y:15,class:"wave-text"},"+"+(windowStart+j-chosen.start)));
+      if(j<length&&(stepMode()||length<12||j%4===0))svg.append(element("text",{x:x+2,y:15,class:"wave-text"},"+"+(samples[j]-chosen.start)));
     }
-    svg.append(element("rect",{x:left+(position-windowStart)*cell,y:24,width:cell,height:totalHeight-25,class:"wave-cursor"}));
+    svg.append(element("rect",{x:left+samples.indexOf(position)*cell,y:24,width:cell,height:totalHeight-25,class:"wave-cursor"}));
     rows.forEach(([label,key,type],r)=>{
       const y=top+r*height;svg.append(element("text",{x:10,y:y+14,class:"wave-text major"},label));
       if(type){
         let j=0;
         while(j<length){
-          const f=frames[windowStart+j],v=num(f,key);let end=j+1;
-          while(end<length&&num(frames[windowStart+end],key)===v)end++;
+          const f=frames[samples[j]],v=num(f,key);let end=j+1;
+          while(end<length&&!cut(end)&&num(frames[samples[end]],key)===v)end++;
           const x=left+j*cell,w=(end-j)*cell;svg.append(element("rect",{x:x+1,y:y+1,width:w-2,height:22,rx:3,class:"wave-bus"}));
           const text=type==="hex"?hex(v):state(f,key,type).replace(/^(CP_|POST_|VEC_|UPSAMPLE_)/,"");
           if(w>text.length*6+6)svg.append(element("text",{x:x+5,y:y+16,class:"wave-text"},text));
@@ -428,7 +478,8 @@
       }else{
         let d="",previousY=null;
         for(let j=0;j<length;j++){
-          const x=left+j*cell,v=key==="clock"?1:num(frames[windowStart+j],key);
+          const x=left+j*cell,v=key==="clock"?1:num(frames[samples[j]],key);
+          if(cut(j))previousY=null;
           if(key==="clock"){d+=`M${x} ${y+21} V${y+4} H${x+cell/2} V${y+21} H${x+cell}`;continue;}
           const level=v===1?y+4:y+21;
           if(v===null){svg.append(element("text",{x:x+9,y:y+16,class:"wave-text"},"X"));previousY=null;continue;}
@@ -436,31 +487,41 @@
         }svg.append(element("path",{d,class:"wave-signal"}));
         const readyKey=key.endsWith("_v")?key.slice(0,-1)+"r":key.endsWith("v")?key.slice(0,-1)+"r":null;
         if(readyKey&&signals[readyKey]!==undefined)for(let j=0;j<length;j++){
-          const f=frames[windowStart+j];if(one(f,key)&&num(f,readyKey)===0)svg.append(element("rect",{x:left+j*cell+1,y:y+1,width:cell-2,height:23,fill:"none",stroke:"#fb8da6","stroke-dasharray":"3 2"}));
+          const f=frames[samples[j]];if(one(f,key)&&num(f,readyKey)===0)svg.append(element("rect",{x:left+j*cell+1,y:y+1,width:cell-2,height:23,fill:"none",stroke:"#fb8da6","stroke-dasharray":"3 2"}));
         }
       }
     });
     for(let j=0;j<length;j++){
-      const hit=element("rect",{x:left+j*cell,y:24,width:cell,height:totalHeight-24,class:"wave-hit",role:"button","aria-label":"跳到相对周期 "+(windowStart+j-chosen.start)});
-      hit.addEventListener("click",()=>{pause();position=windowStart+j;render();});svg.append(hit);
+      if(cut(j)){const x=left+j*cell;svg.append(element("rect",{x:x-5,y:22,width:10,height:totalHeight-22,fill:"#0d1723",class:"wave-break"}));svg.append(element("text",{x:x-6,y:33,class:"wave-text"},"//"));const title=element("title",{},`省略 ${samples[j]-samples[j-1]-1} 个时钟`);svg.lastChild.append(title);}
+      const hit=element("rect",{x:left+j*cell,y:24,width:cell,height:totalHeight-24,class:"wave-hit",role:"button","aria-label":"跳到相对周期 "+(samples[j]-chosen.start)});
+      hit.addEventListener("click",()=>{pause();position=samples[j];render();});svg.append(hit);
     }
+    $("wave-title").textContent=stepMode()?"本步骤的关键时刻波形":"握手与状态波形";
+    $("wave-width").hidden=stepMode();$("wave-width").previousElementSibling.hidden=stepMode();
+    $("wave-note").textContent=stepMode()?`本步覆盖 K+${p.start}…K+${p.end}；只显示关键时刻及相邻采样。// 表示中间时钟已省略，每列仍是一个真实周期，不能按图上宽度比较耗时。光标与框图是同一拍。`:"信号采样于上升沿前；光标对应的 VALID ∧ READY 在本上升沿被接收。虚线标记握手等待，X 表示尚未定义的信号。";
   }
 
   function render() {
     const f=frames[position],d=describe(f),after=frames[position+1]||f,relative=position-chosen.start;
-    $("clock").textContent="K + "+relative;
-    $("absolute-clock").textContent="复位后 #"+f[0]+" · "+f[0]*T.clockNs+" ns";
-    $("progress-label").textContent=relative+" / "+(chosen.end-chosen.start);
+    const p=currentStep(),steps=stepLessons[chosen.index];
+    $("clock-caption").textContent=stepMode()?"当前教学步骤":"当前上升沿";
+    $("clock").textContent=stepMode()?`步骤 ${p.index+1} / ${steps.length}`:"K + "+relative;
+    $("absolute-clock").textContent=stepMode()?`框图真实时刻 K+${relative} · #${f[0]}`:"复位后 #"+f[0]+" · "+f[0]*T.clockNs+" ns";
+    $("progress-label").textContent=stepMode()?`第 ${p.index+1} / ${steps.length} 步`:relative+" / "+(chosen.end-chosen.start);
     $("time-range").textContent="K = #"+frames[chosen.start][0]+" · "+chosen.label;
     $("duration").textContent=(chosen.end-chosen.start+1)+" 个真实上升沿 · "+((chosen.end-chosen.start)*10)+" ns 观察跨度";
-    $("seek").value=relative;$("cp-state").textContent=$("show-tech").checked?state(f,"cp_state","cp_state_e"):cpPlain[state(f,"cp_state","cp_state_e")];
+    $("seek").max=stepMode()?steps.length-1:chosen.end-chosen.start;$("seek").value=stepMode()?p.index:relative;
+    $("cp-state").textContent=$("show-tech").checked?state(f,"cp_state","cp_state_e"):cpPlain[state(f,"cp_state","cp_state_e")];
     $("after-state").textContent=state(after,"cp_state","cp_state_e");
     const [title,detail]=phaseText(f);$("edge-title").textContent=d.notes.length ? (d.active.has("fetch_cp") ? "接收指令与并行活动" : d.active.has("conv_event") ? "卷积完成事件到达" : d.active.has("fifo_o") ? "卷积结果写回" : "本沿发生数据传输") : title;
     const paragraph=document.createElement("p");paragraph.textContent=detail;
     $("edge-detail").replaceChildren(paragraph);
     if(d.notes.length){const ul=document.createElement("ul");ul.className="transfer-list";d.notes.forEach(note=>{const li=document.createElement("li");li.textContent=note;ul.append(li);});$("edge-detail").append(ul);}
     $("handshakes").replaceChildren(...d.handshakes.slice(0,5).map(h=>{const div=document.createElement("div");div.className="handshake"+(h.r?"":" wait");div.textContent=h.name+" = "+h.v+" / "+h.r+(h.r?" ✓":" · 等待");return div;}));
-    $("prev").disabled=position===chosen.start;$("next").disabled=position===chosen.end;$("key-next").disabled=position===chosen.end;
+    $("prev").disabled=stepMode()?p.index===0:position===chosen.start;$("next").disabled=stepMode()?p.index===steps.length-1:position===chosen.end;$("key-next").disabled=position===chosen.end;
+    $("next").textContent=stepMode()?"下一步骤 →":"下一时钟 →";$("prev").setAttribute("aria-label",stepMode()?"上一步骤":"上一时钟");
+    $("key-next").hidden=stepMode();$("wave-panel").hidden=!(stepMode()||$("show-tech").checked);
+    $("speed").options[0].textContent=stepMode()?"每步 4 秒":"2 周期 / 秒";$("speed").options[1].textContent=stepMode()?"每步 2 秒":"8 周期 / 秒";$("speed").options[2].textContent=stepMode()?"每步 1 秒":"30 周期 / 秒";
     renderLesson(f);updateHardware(f,d);updatePipeline(f);renderWave();
     const currentPc=one(f,"capture")?num(f,"fetch_pc"):num(f,"cp_state")===0||num(f,"cp_state")===1?null:num(f,"dispatch_pc");
     document.querySelectorAll(".program-command").forEach((b,i)=>{b.classList.toggle("chosen",i===chosen.index);b.classList.toggle("current",currentPc===i*16);});
@@ -482,12 +543,17 @@
   }
   function pause(){if(timer)clearInterval(timer);timer=null;$("play").textContent="▶ 播放";$("play").setAttribute("aria-pressed","false");}
   function startPlayback(){
-    if(position===chosen.end)position=chosen.start;
+    if(stepMode()?currentStep().index===stepLessons[chosen.index].length-1:position===chosen.end)position=chosen.start;
     $("play").textContent="Ⅱ 暂停";$("play").setAttribute("aria-pressed","true");
-    timer=setInterval(()=>{if(position>=chosen.end){pause();return;}position++;render();if(position===chosen.end)pause();},1000/Number($("speed").value));
+    const delay=stepMode()?({2:4000,8:2000,30:1000}[$("speed").value]):1000/Number($("speed").value);
+    timer=setInterval(()=>{
+      if(stepMode()){const steps=stepLessons[chosen.index],index=currentStep().index;if(index===steps.length-1){pause();return;}position=chosen.start+steps[index+1].representative;render();if(index+1===steps.length-1)pause();}
+      else{if(position>=chosen.end){pause();return;}position++;render();if(position===chosen.end)pause();}
+    },delay);
   }
-  function step(delta){pause();position=Math.max(chosen.start,Math.min(chosen.end,position+delta));render();}
+  function step(delta){pause();if(stepMode()){const steps=stepLessons[chosen.index],index=Math.max(0,Math.min(steps.length-1,currentStep().index+delta));position=chosen.start+steps[index].representative;}else position=Math.max(chosen.start,Math.min(chosen.end,position+delta));render();}
   function nextKey(){
+    if(stepMode()){step(1);return;}
     pause();const lesson=lessons[chosen.index],old=position,current=lesson.stories[position-chosen.start];let next=position+1;
     while(next<chosen.end){const s=lesson.stories[next-chosen.start];if(s.id!==current.id||s.significant)break;next++;}
     position=Math.min(next,chosen.end);render();if(position-old>1)toast(`跳过 ${position-old-1} 个中间时钟；时间轴保留真实周期。`);
@@ -502,9 +568,11 @@
   $("prev").addEventListener("click",()=>step(-1));$("next").addEventListener("click",()=>step(1));$("key-next").addEventListener("click",nextKey);
   $("play").addEventListener("click",()=>timer?pause():startPlayback());
   $("speed").addEventListener("change",()=>{if(timer){pause();startPlayback();}});
-  $("seek").addEventListener("input",()=>{pause();position=chosen.start+Number($("seek").value);render();});
+  $("seek").addEventListener("input",()=>{pause();const value=Number($("seek").value);position=chosen.start+(stepMode()?stepLessons[chosen.index][value].representative:value);render();});
   $("wave-width").addEventListener("change",renderWave);
-  $("show-tech").addEventListener("change",()=>{$("technical-detail").open=$("show-tech").checked;$("wave-panel").hidden=!$("show-tech").checked;render();});
+  $("show-tech").addEventListener("change",()=>{$("technical-detail").open=$("show-tech").checked;render();});
+  $("mode").addEventListener("change",()=>{pause();if(stepMode())position=chosen.start+currentStep().representative;render();});
+  $("expand-step").addEventListener("click",()=>{pause();$("mode").value="cycles";$("show-tech").checked=true;$("technical-detail").open=true;render();});
   $("diagram-zoom").addEventListener("change",()=>{
     const zoom=$("diagram-zoom").value;
     $("diagram").style.width=zoom==="fit"?"100%":1400*Number(zoom)/100+"px";
@@ -533,5 +601,5 @@
   buildDiagram();inspect(selectedModule);
   const hashIndex=Number(location.hash.match(/-(\d+)$/)?.[1]);choose(Number.isInteger(hashIndex)&&cases[hashIndex]?hashIndex:7);
   // Read-only access supports reproducible browser validation and inspection.
-  window.NPULab={cases,frames,signals,describe,lessons,get selection(){return chosen;},get position(){return position;}};
+  window.NPULab={cases,frames,signals,describe,lessons,stepLessons,get mode(){return $("mode").value;},get teachingStep(){return currentStep();},get selection(){return chosen;},get position(){return position;}};
 })();

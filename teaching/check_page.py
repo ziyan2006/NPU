@@ -81,6 +81,47 @@ def check_browser(screenshot=False):
             assert page.locator("#instruction option").count() == 8
             assert page.locator("#program button").count() == 14
             assert page.locator(".module").count() == 25
+            assert page.evaluate("NPULab.mode === 'steps'")
+            assert page.locator("#wave-panel").is_visible()
+            assert page.locator("#key-next").is_hidden()
+            page.select_option("#speed","30")
+            page.click("#play")
+            page.wait_for_function("NPULab.teachingStep.index === 1")
+            page.click("#play")
+            assert page.evaluate("NPULab.position === NPULab.selection.start+NPULab.teachingStep.representative")
+            page.click("#reset")
+            # Every folded step covers consecutive original clocks exactly once.
+            assert page.evaluate("NPULab.stepLessons.every((steps,j)=>steps[0].start===0 && steps.at(-1).end===NPULab.cases[j].end-NPULab.cases[j].start && steps.every((s,i)=>s.start<=s.representative && s.representative<=s.end && (!i||s.start===steps[i-1].end+1)))")
+            for index in range(14):
+                instruction=page.evaluate(f"NPULab.cases[{index}].name")
+                page.select_option("#instruction",instruction)
+                page.select_option("#case",str(index))
+                count=page.evaluate("NPULab.stepLessons[NPULab.selection.index].length")
+                for step_index in range(count):
+                    assert page.evaluate("NPULab.teachingStep.index")==step_index
+                    assert page.locator("#lesson-action").inner_text()
+                    assert page.evaluate("[...document.querySelectorAll('.edge.active')].every(e=>NPULab.teachingStep.allowed.includes(e.id.slice(5)))")
+                    assert page.locator("#wave .wave-cursor").count()==1
+                    if step_index<count-1:
+                        page.click("#next")
+                assert page.locator("#next").is_disabled()
+                page.click("#prev")
+                assert page.evaluate("NPULab.teachingStep.index")==count-2
+            page.select_option("#instruction","DMA_LOAD")
+            page.select_option("#case","1")
+            address_step=page.locator("#lesson-chapters button").filter(has_text="算好地址")
+            assert address_step.count()==1
+            address_step.click()
+            assert "368 个真实时钟" in page.locator("#lesson-progress-detail").inner_text()
+            assert page.locator("#wave .wave-break").count()>0
+            assert page.evaluate("NPULab.stepLessons[1].length < 15")
+            page.locator("#wave .wave-hit").first.click()
+            assert page.evaluate("NPULab.position === NPULab.selection.start+NPULab.teachingStep.start")
+            page.click("#expand-step")
+            assert page.evaluate("NPULab.mode === 'cycles'")
+            assert "乘法" in page.locator("#lesson-action").inner_text()
+            page.uncheck("#show-tech")
+            # Existing detailed clock mode remains available without losing data.
             assert page.locator("#wave-panel").is_hidden()
             assert not page.locator("#show-tech").is_checked()
             for name in ["NOP","WAIT","END","DMA_LOAD","DMA_STORE","CONV2D","VEC_ADD","UPSAMPLE2X"]:
@@ -138,9 +179,11 @@ def check_browser(screenshot=False):
             page.locator("#seek").evaluate("(e,value)=>{e.value=value;e.dispatchEvent(new Event('input',{bubbles:true}))}",offset)
             if screenshot:
                 page.uncheck("#show-tech")
+                page.select_option("#mode","steps")
                 page.select_option("#speed","8")
                 page.wait_for_function("getComputedStyle(document.querySelector('#toast')).opacity === '0'")
                 page.screenshot(path=str(HERE/"preview.png"),full_page=True)
+                page.select_option("#mode","cycles")
             assert "6" in page.locator("#lesson-action").inner_text()
             # Verify a held VALID is represented by waiting, never transfer.
             page.select_option("#instruction","DMA_LOAD")
@@ -175,6 +218,8 @@ def check_browser(screenshot=False):
             standalone.goto(base+"npu-lab.html")
             standalone.wait_for_function("window.NPULab")
             assert requests==[base+"npu-lab.html"]
+            assert standalone.evaluate("NPULab.mode === 'steps'")
+            standalone.select_option("#mode","cycles")
             standalone.select_option("#instruction","END")
             standalone.locator("#seek").evaluate("e=>{e.value=e.max;e.dispatchEvent(new Event('input',{bubbles:true}))}")
             standalone.check("#show-tech")
@@ -183,6 +228,11 @@ def check_browser(screenshot=False):
             for instruction in ["END","DMA_LOAD","CONV2D","VEC_ADD","UPSAMPLE2X"]:
                 standalone.select_option("#instruction",instruction)
                 assert standalone.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), f"Mobile page overflows: {instruction}"
+            standalone.select_option("#mode","steps")
+            for instruction in ["END","DMA_LOAD","CONV2D","VEC_ADD","UPSAMPLE2X"]:
+                standalone.select_option("#instruction",instruction)
+                standalone.click("#next")
+                assert standalone.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), f"Mobile step page overflows: {instruction}"
             assert not errors, errors
             browser.close()
             print("Browser: all 14 cases, stepping, playback, seek, wave, module, exports, offline bundle and mobile layout PASS")

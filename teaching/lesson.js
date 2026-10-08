@@ -217,3 +217,70 @@ window.createNPULessons = ({frames, cases, num, one, fire, state, signedLow}) =>
     return {goal:goals[c.index],stories,runs,chapters,dispatch,startUnit};
   });
 };
+
+// Consecutive recorded cycles are grouped by purpose. A step never fabricates
+// a handshake: its diagram is pinned to one actual, labelled clock edge.
+window.createNPUSteps = ({frames,cases,lessons,num,one,fire}) => cases.map(c=>{
+  const lesson=lessons[c.index],load=c.name==="DMA_LOAD",dma=c.name.startsWith("DMA_");
+  function group(s,f){
+    if(s.chapter==="accept")return s.id;
+    if(s.chapter==="done")return "done";
+    if(s.chapter==="transfer"){
+      if(s.id==="clear")return "clear";
+      if(s.id==="DE_WRITE_RESPONSE")return "confirm";
+      if(s.id==="read-data"||/^DE_WRITE_(SP|DATA)/.test(s.id))return "move";
+      return "request";
+    }
+    if(s.chapter==="copy")return "copy-"+num(f,"u_row_copy");
+    if(s.chapter==="waiting")return "waiting-"+((num(f,"events")||0)|(num(f,"event_set")||0));
+    if(c.name==="VEC_ADD"&&s.chapter==="inputs")return s.id.includes("SRC0")?"source0":s.id.includes("SRC1")?"source1":"parameters";
+    return s.chapter;
+  }
+  const steps=[];
+  lesson.stories.forEach((s,j)=>{
+    const id=group(s,frames[c.start+j]);
+    if(!steps.length||steps.at(-1).id!==id)steps.push({id,start:j,end:j});else steps.at(-1).end=j;
+  });
+  const target=load?(c.index===1?"A0":"W0"):"DDR";
+  steps.forEach((p,index)=>{
+    const first=lesson.stories[p.start],last=lesson.stories[p.end];
+    const route=(a)=>a.split(" ");
+    let title=first.title,action=first.action,why=first.why,result=last.result,focus=[...new Set(lesson.stories.slice(p.start,p.end+1).flatMap(s=>s.focus))],allowed=[],preferred=[];
+    switch(p.id){
+      case "capture":allowed=route("fetch_cp");preferred=["fetch"];break;
+      case "wait-dispatch":title="等前端完成上一份准备工作";action="当前命令先留在控制器中。前端正在服务前一条指令，把整段等待合并为这一步。";allowed=route(dma?"cp_df":"cp_ef");break;
+      case "dispatch":allowed=route(dma?"cp_df":"cp_ef");preferred=[dma?"dma":c.name==="CONV2D"?"conv":"vec"];break;
+      case "descriptors":
+        title="读齐这次工作所需的说明";action="根据命令中的编号，查询数据的位置、尺寸和计算参数；把多次查询、返回和缓存检查合成一步。";why="命令是派工单，描述符是详细资料，真正的输入和权重还需要随后读取。";result="取得说明后，继续准备地址或把工作交给运算单元。";
+        focus=route(dma?"df mem block read ddr":"ef mem block read ddr");allowed=route(dma?"df_req df_res mem_block block_read read_ddr ddr_r read_block":"ef_req ef_res mem_block block_read read_ddr ddr_r read_block ef_conv ef_vec ef_up");preferred=dma?["df_res"]:["ef_res","conv_start","vec_start","up_start"];break;
+      case "address":
+        title="算好地址、长度与访问范围";action="把行、列、通道和分块位置换算成实际字节地址，并检查访问范围。所有地址乘法和等待结果的时钟合成一步。";why="硬件读写需要明确的起点、间隔和长度，不能直接按“一个像素”访问内存。";result="本段地址准备结束，随后继续读取数据或交接搬运请求。";break;
+      case "clear":title="清零输入工作区";action="把本次输入工作区写成 0，随后用有效输入覆盖对应位置。";allowed=route("dma_a");preferred=["sp_w"];break;
+      case "request":title=load?"发出实际数据的读取申请":"发出结果写回申请";action=load?"搬运路线已准备好，把起始地址和读取长度交给 DDR 接口。":"把 DDR 目标地址和写入长度交给内存接口。";allowed=route(load?"dma_read read_ddr":"dma_write write_ddr");preferred=[load?"ar":"aw"];break;
+      case "move":title=load?`把数据搬进 ${target}`:"把 O0 的结果送回 DDR";action=load?`接收 DDR 返回的数据块，依次写入 ${target}。重复的数据块合成一步，框图展示其中一次实际交接。`:"从 O0 读出结果，分块送到 DDR；本例通道 0 为 9。";result=load?"这段数据接收结束，随后确认本次搬运完成。":"数据发送后还要等待内存的写入确认。";focus=route(load?`ddr read dma ${target==="A0"?"a":"w"}`:"o dma write ddr");allowed=route(load?`ddr_r read_dma ${target==="A0"?"dma_a":"dma_w"}`:"dma_o_req dma_o dma_write write_ddr");preferred=[load?"sp_w":"w"];break;
+      case "confirm":title="收到 DDR 写入确认";action="数据已发完，内存接口返回确认，说明这次写事务已结束。";allowed=route("ddr_b write_dma");preferred=["b"];break;
+      case "parameters":title=c.name==="VEC_ADD"?"准备残差的缩放配方":"准备偏置与缩放配方";action=c.name==="VEC_ADD"?"从 W0 取出残差的缩放参数，本例缩放比例为 1。":"从 W0 取出计算需要的参数。本例偏置为 0、缩放比例为 1，把多次读参数合成一步。";allowed=route("w_req w_mac vec_wreq w_vec");preferred=[c.name==="VEC_ADD"?"v_res":"w_res"];break;
+      case "inputs":title="读齐输入 3 与权重 2";action="从 A0 和 W0 读取对应数据，等待两边到齐，再送入乘法器。";allowed=route("a_req a_mac w_req w_mac ctrl_mac");preferred=["a_res","w_res","mac"];break;
+      case "source0":case "source1":allowed=route(p.id==="source0"?"vec_oreq o_vec":"vec_req a_vec");preferred=["v_res"];break;
+      case "calculate":title="完成相乘与累加：3 × 2 = 6";action="乘法、加法树和累加流水级依次处理，得到通道 0 的结果 6。把内部流水推进合成一步。";result="把算好的 8 个通道结果交给缓冲，随后进行数值调整。";focus=route("mac buffer");allowed=route("ctrl_mac mac_buf");preferred=["mac_out","mac"];break;
+      case "post":case "scale":title=p.id==="post"?"完成 8 个通道的数值调整":"把残差调整到相同尺度";action=p.id==="post"?"逐通道加偏置、缩放、舍入并限制数值范围。本例 6 调整后仍是 6，合并全部通道的重复处理。":"逐通道缩放保留的残差。本例比例为 1，因此 3 调整后还是 3。";result=p.id==="post"?"数值调整完成后，把结果送入写回队列。":"尺度对齐后，把残差 3 与卷积结果 6 相加。";allowed=route("buf_post post_fifo");preferred=["post","out"];break;
+      case "writeback":title="把卷积结果 6 保存到 O0";action="处理好的结果经写回队列存入 O0，等待队列排空后才能宣布完成。";allowed=route("post_fifo fifo_o");preferred=["o","out"];break;
+      case "add":allowed=route("vec_o");preferred=["v_write"];break;
+      case "read":title="把原始像素读进行缓冲";action="从 DDR 读入原来的一行，保存到上采样的行缓冲。一个像素的 8 个通道占 16 字节，分成两个数据块读齐。";allowed=route("up_read read_ddr ddr_r read_up");preferred=["up_rdata"];break;
+      case "done":title=last.title;action=last.action;result=last.result;focus=[...new Set([...focus,...last.focus])];allowed=route(dma?"dma_event cp_events":c.name==="CONV2D"?"conv_event cp_events":c.name==="VEC_ADD"?"vec_ef":c.name==="UPSAMPLE2X"?"up_ef":c.name==="END"?"done_csr csr_irq":"cp_events");preferred=dma?["dma_event"]:c.name==="CONV2D"?["conv_event"]:c.name==="VEC_ADD"?["vec_done"]:c.name==="UPSAMPLE2X"?["up_done"]:c.name==="END"?["core_done","irq"]:[];break;
+      default:
+        if(p.id.startsWith("copy-")){const row=Number(p.id.slice(5))+1;title=`复制并写出第 ${row} 行的两个像素`;action="把行缓冲里的同一个像素横向写两次；两行合起来得到 2 × 2 的四个像素。每行的分块发送和等待确认合成一步。";allowed=route("up_write write_ddr ddr_b write_up");preferred=["w"];}
+        break;
+    }
+    if(p.id.startsWith("waiting-"))allowed=route("cp_events");
+    function score(j){const f=frames[c.start+j];return preferred.reduce((n,key,k)=>{const accepted=key.endsWith("event")||key.endsWith("done")||key==="irq"?!!num(f,key):fire(f,key)&&(key!=="ar"||!dma||one(f,"dma_ar"));return n+accepted*(preferred.length-k)*10;},0);}
+    let representative=p.end,best=0;
+    for(let j=p.start;j<=p.end;j++){const n=score(j);if(n>0&&n>=best){best=n;representative=j;}}
+    if(p.id==="post"||c.name==="END"&&p.id==="done")representative=p.end;
+    const moments=[...new Set([p.start,representative,p.end])].sort((a,b)=>a-b);
+    // Include the exact step endpoint for long computations with no transfers.
+    if(!best&&moments.length===1&&p.start!==p.end)moments.unshift(p.start);
+    Object.assign(p,{index,representative,moments,allowed,story:{...lesson.stories[representative],title,action,why,result,focus,chapterTitle:title,multiplication:false}});
+  });
+  return steps;
+});
