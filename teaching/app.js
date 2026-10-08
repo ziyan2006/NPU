@@ -161,6 +161,78 @@
     ["conv_event", "fifo", "events", "M1335 670 H1360 V128 H1005 V105", "conv_event_set (after drain)", 1100, 128],
   ].map(([id, from, to, path, label, x, y]) => ({id, from, to, path, label, x, y}));
   const edgeMap = Object.fromEntries(edges.map(e => [e.id, e]));
+  const routeHints = {
+    host_csr:["任务配置与启动","处理器在这里写入任务位置和启动开关，也可以读取运行状态。就像把工作交给 NPU，并查询它是否做完。"],
+    loader_fetch:["指令区起点","任务装载模块告诉取指单元：这次程序的指令放在 DDR 的哪里。取指单元据此找到第一张派工单。"],
+    fetch_cp:["命令交接","把从 DDR 取回的一条命令交给指令处理器。命令说明要执行 LOAD、卷积或其他操作，处理器检查后再派工。"],
+    cp_events:["完成标记检查","把各项工作的完成标记交给指令处理器。WAIT 检查指定标记是否全亮，满足条件后才继续。"],
+    done_csr:["整个任务完成通知","指令处理器确认所有单元收工后，把整个任务已完成的消息送到状态寄存器。"],
+    csr_irq:["处理器中断通知","状态寄存器根据中断配置通知处理器：NPU 的任务完成了，可以来读取状态和结果。"],
+    cp_df:["DMA 命令派发","控制器把搬运派工单交给 DMA 前端。前端先读说明、算地址，准备好后才交给搬运引擎。"],
+    cp_ef:["计算命令派发","控制器把卷积、残差相加或上采样命令交给执行前端，由前端查齐说明，再启动相应运算单元。"],
+    fetch_req:["下一条命令的读取申请","取指单元申请从 DDR 读取一条命令。这里送的是读取申请，还没有送回命令内容。"],
+    fetch_res:["取回的命令","仲裁模块把已经读完整的命令交回取指单元。它可能是提前取回的下一条指令，暂存后等待执行。"],
+    df_req:["搬运说明的读取申请","DMA 前端需要查数据的位置、形状或参数信息，向共用的收发模块申请读取描述符。这里读的是说明，实际数据稍后再搬。"],
+    df_res:["搬运说明返回","把读齐的描述符交回 DMA 前端，让它知道数据在哪里、尺寸是多少，再据此计算搬运路线。"],
+    ef_req:["计算说明的读取申请","执行前端申请读取卷积或其他运算需要的详细说明，例如数据尺寸、步长和存放位置。"],
+    ef_res:["计算说明返回","把读齐的说明交回执行前端，用来准备并启动卷积、残差相加或上采样。"],
+    mem_block:["获准执行的块读取申请","共用仲裁模块选出一个读取申请，把地址和长度交给块读取器。多个单元想读说明或命令时，需要在这里排队。"],
+    block_read:["命令与说明的 DDR 读地址","块读取器把命令或描述符的读取地址送到读仲裁器，等待它安排访问 DDR。"],
+    read_block:["命令与说明的返回数据","读仲裁器把 DDR 返回的小数据块送回块读取器。块读取器把它们拼成完整命令或描述符，再交给申请者。"],
+    df_dma:["算好的搬运路线","DMA 前端把起始地址、长度、行间隔和必要的清零信息交给搬运引擎。前端负责规划，引擎按路线真正搬数据。"],
+    dma_a:["输入写入 A 工作区","搬运引擎把从 DDR 读回的输入存入 A 工作区，供卷积读取；准备输入时也通过这条线写入填充用的 0。"],
+    dma_w:["权重与参数写入 W 工作区","把从 DDR 读回的权重、偏置或缩放参数存入 W 工作区，供卷积和残差相加使用。"],
+    dma_o:["输出数据交给搬运引擎","O 工作区把计算结果读给 DMA 引擎，引擎暂存后再送回 DDR。本例通道 0 的结果是 9。"],
+    dma_o_req:["申请读取 O 中的结果","DMA 引擎告诉 O 工作区要读取哪个位置。同步存储器收到申请后，后续周期才返回数据。"],
+    a_req:["卷积输入的读取申请","卷积控制器向 A 工作区申请读取当前卷积位置的输入。申请携带位置，数据从另一条返回通路送回。"],
+    a_mac:["卷积输入返回","A 工作区把一组 8 个输入通道交给卷积控制器。本例通道 0 的输入为 3，等对应权重到齐后再一起计算。"],
+    w_req:["卷积权重与参数的读取申请","卷积控制器向 W 工作区申请读取权重，或提前读取后处理要用的偏置与缩放参数。"],
+    w_mac:["卷积权重与参数返回","W 工作区把权重或预取参数交给卷积控制器。本例参与计算的权重为 2；权重和输入需要对应到同一组通道。"],
+    ef_conv:["启动卷积并交接说明","执行前端把卷积尺寸、分块说明、工作区选择和完成事件交给卷积控制器，让它开始安排读取和计算。"],
+    ctrl_mac:["输入与权重进入 MAC","控制器把读齐并对齐的输入、权重和本组数据的控制信息送入 MAC。本例开始计算 3 × 2。"],
+    mac_buf:["累加结果进入缓冲","MAC 把 8 个输出通道的整数累加结果交给寄存缓冲。本例通道 0 得到 6，缓冲先接住它，等待后处理取走。"],
+    buf_post:["累加结果交给后处理","缓冲把算好的结果交给后处理单元，逐通道加偏置、缩放、舍入并限制范围。本例 6 调整后仍是 6。"],
+    post_fifo:["处理结果进入写回队列","后处理把可保存的 8 通道结果送入写回 FIFO。先进入队列，再由队列写入 O，两个交接可以发生在不同周期。"],
+    fifo_o:["卷积结果写入 O","写回队列把结果存入 O 工作区。本例保存通道 0 的值 6；队列排空后才能宣布卷积完成。"],
+    ef_vec:["启动残差相加","执行前端把命令和计算说明交给残差相加单元，开始读取两份特征并准备相加。"],
+    vec_ef:["残差相加完成通知","残差相加单元通知执行前端结果已经存好，执行前端随后解除控制器对这条同步指令的等待。"],
+    vec_req:["保留输入的读取申请","残差相加单元申请从 A 工作区读取旁路保留的输入。本例需要拿回原来的 3。"],
+    vec_wreq:["残差缩放参数的读取申请","残差相加单元申请从 W 工作区读取缩放参数，让保留输入与卷积结果的数值尺度一致。"],
+    vec_oreq:["卷积结果的读取申请","残差相加单元申请读取 O 工作区里的卷积结果。本例需要拿到刚算好的 6。"],
+    a_vec:["保留的输入返回","A 工作区把原输入交给残差相加单元，本例通道 0 为 3。它会先按残差缩放参数调整，再参与相加。"],
+    w_vec:["残差缩放参数返回","W 工作区把残差专用的缩放配方交给相加单元。本例比例为 1，因此 3 调整后仍然是 3。"],
+    o_vec:["卷积结果返回","O 工作区把卷积结果交给残差相加单元。本例通道 0 为 6，等另一份特征也到齐后再相加。"],
+    vec_o:["残差相加结果写入 O","把对应通道的两份特征相加并存回 O。本例 6 + 3 = 9；若超出可保存范围，会限制在边界值。"],
+    ef_up:["启动上采样并交接位置","执行前端把命令、输入说明和输出说明交给上采样单元，让它知道从 DDR 哪里读、复制后写到哪里。"],
+    up_ef:["上采样完成通知","上采样单元确认复制后的输出已写完并收到内存确认，通知执行前端结束这条同步指令。"],
+    ddr_r:["DDR 返回的读数据","DDR 把读取的数据送给读仲裁器。仲裁器按这次读事务的归属，把数据交给块读取器、DMA 或上采样。"],
+    read_ddr:["发往 DDR 的读地址","读仲裁器把选中的起始地址和读取长度交给 DDR。地址申请被接收后，DDR 才从返回通路送出数据。"],
+    read_dma:["DDR 数据交给 DMA","把属于 DMA 搬运的返回数据送给搬运引擎，引擎随后把它写入 A 或 W 工作区。"],
+    dma_read:["实际搬运的 DDR 读取申请","DMA 引擎申请读取输入、权重或参数本身。说明和地址已经准备好，这次申请才是为搬实际数据。"],
+    dma_write:["DMA 写地址与结果数据","DMA 引擎把写地址和从 O 读出的结果数据交给写仲裁器，安排写回 DDR。地址和数据各有自己的交接。"],
+    write_dma:["DDR 写入确认交给 DMA","写仲裁器把内存的写入确认交给 DMA。数据发完后仍需这份确认，搬运才算完成。"],
+    write_ddr:["发往 DDR 的写地址与数据","写仲裁器把获准的写地址和数据送到 DDR，来源可能是 DMA 或上采样。发完数据后还要等待返回的写入确认。"],
+    ddr_b:["DDR 写入确认","DDR 返回这次写事务的状态，由写仲裁器交给发起写入的单元。它是一条确认消息，不携带像素数据。"],
+    up_read:["上采样的 DDR 读取申请","上采样单元申请从 DDR 读取原来的一行。先读入本地行缓冲，复制时就能反复使用。"],
+    read_up:["原始像素进入行缓冲","把 DDR 返回的数据交给上采样单元，存进它的行缓冲。本例原像素通道 0 为 9，之后要复制成四个像素。"],
+    up_write:["复制后的像素写回 DDR","上采样单元把复制后的行和像素交给写仲裁器，安排写回 DDR。本例一个像素扩展为 2 × 2 的四个像素。"],
+    write_up:["DDR 写入确认交给上采样","内存确认一段输出已经写完后，写仲裁器把确认交给上采样单元。全部输出确认后才报告完成。"],
+    dma_event:["搬运完成标记","DMA 完成指定搬运后点亮相应完成标记，让 WAIT 知道输入、参数或写回结果已经准备好。"],
+    conv_event:["卷积完成标记","卷积结果已经写入 O，流水线和写回队列也已排空，这时才点亮完成标记，让后续工作安全使用结果。"],
+  };
+  let selectedRoute=null,routeTrigger=null;
+  function showRoute(id,trigger){
+    pause();selectedRoute=id;routeTrigger=trigger;
+    const e=edgeMap[id],[title,hint]=routeHints[id];
+    $("route-title").textContent=title;
+    $("route-direction").textContent=nodeMap[e.from].title+" → "+nodeMap[e.to].title;
+    $("route-hint").textContent=hint;
+    $("route-interface").textContent="图中接口标注："+e.label;
+    const d=describe(frames[position]),visible=stepMode()?stepActivities(d):d;
+    $("route-status").textContent=`当前 K+${position-chosen.start}：`+(d.active.has(id)?"本上升沿发生交接。"+(visible.active.has(id)?"":"这属于并行活动，逐步骤框图暂未高亮。") :d.wait.has(id)?"申请已经有效，正在等待接收方允许交接。":"当前采样未标记这条通路发生交接；可以在其他步骤查看它。")+" 图中的箭头表示申请、数据或通知的方向，接收许可 READY 通常沿相反方向返回。";
+    edges.forEach(edge=>$("edge-"+edge.id).classList.toggle("inspected",edge.id===id));
+    $("route-dialog").showModal();
+  }
   function buildDiagram() {
     const svg = $("diagram");
     const defs = element("defs");
@@ -173,9 +245,14 @@
       svg.append(element("text", {x:x+8, y:y-9, class:"group-label"}, label));
     });
     edges.forEach(e => {
-      const g = element("g", {id:"edge-"+e.id, class:"edge"});
+      const g = element("g", {id:"edge-"+e.id, class:"edge",tabindex:0,role:"button","aria-label":routeHints[e.id][0]+"，"+nodeMap[e.from].title+"到"+nodeMap[e.to].title,"aria-haspopup":"dialog"});
       g.append(element("path", {d:e.path, "marker-end":"url(#arrow)"}));
-      g.append(element("text", {x:e.x, y:e.y}, e.label)); svg.append(g);
+      g.append(element("text", {x:e.x, y:e.y}, e.label));
+      g.append(element("path",{d:e.path,class:"edge-hit","aria-hidden":"true"}));
+      g.append(element("title",{},routeHints[e.id][0]+" · 点击查看通俗说明"));
+      g.addEventListener("click",()=>showRoute(e.id,g));
+      g.addEventListener("keydown",event=>{if(event.key==="Enter"||event.key===" "){event.preventDefault();event.stopPropagation();showRoute(e.id,g);}});
+      svg.append(g);
     });
     nodes.forEach(n => {
       const g = element("g", {id:"node-"+n.id, class:"module", tabindex:0, role:"button", "aria-label":n.title});
@@ -585,6 +662,9 @@
     $("diagram").style.width=zoom==="fit"?"100%":1400*Number(zoom)/100+"px";
   });
   $("help-button").addEventListener("click",()=>{$("guide").hidden=!$("guide").hidden;$("help-button").setAttribute("aria-expanded",String(!$("guide").hidden));});
+  $("route-close").addEventListener("click",()=>$("route-dialog").close());
+  $("route-dialog").addEventListener("click",event=>{if(event.target===$("route-dialog")){const box=$("route-dialog").getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)$("route-dialog").close();}});
+  $("route-dialog").addEventListener("close",()=>{if(selectedRoute)$("edge-"+selectedRoute).classList.remove("inspected");selectedRoute=null;routeTrigger?.focus({preventScroll:true});routeTrigger=null;});
   $("export-trace").addEventListener("click",()=>{
     const csv=["relative_cycle,task_cycle,"+T.signals.join(","),...frames.slice(chosen.start,chosen.end+1).map((f,i)=>i+","+f[0]+","+f.slice(1).map(v=>v===null?"X":"0x"+v).join(","))].join("\r\n");
     download(new Blob([csv],{type:"text/csv;charset=utf-8"}),chosen.name+"-pc"+chosen.index*16+".csv");
@@ -595,11 +675,13 @@
     const original=[$("diagram"),...$("diagram").querySelectorAll("*")],copies=[svg,...svg.querySelectorAll("*")];
     const properties=["fill","stroke","stroke-width","stroke-dasharray","opacity","font-family","font-size","font-weight","letter-spacing","rx","ry"];
     original.forEach((node,i)=>{const style=getComputedStyle(node);properties.forEach(property=>copies[i].style.setProperty(property,style.getPropertyValue(property)));});
+    svg.querySelectorAll(".edge-hit").forEach(hit=>hit.remove());
     svg.style.width="1400px";svg.style.height="810px";svg.style.minWidth="0";
     const bg=element("rect",{width:1400,height:810,fill:"#0f1725"});svg.prepend(bg);
     download(new Blob([new XMLSerializer().serializeToString(svg)],{type:"image/svg+xml;charset=utf-8"}),"NPU-"+chosen.name+"-K"+(position-chosen.start)+".svg");
   });
   document.addEventListener("keydown",event=>{
+    if(event.defaultPrevented||$("route-dialog").open)return;
     if(/INPUT|SELECT|TEXTAREA|BUTTON/.test(event.target.tagName)||event.ctrlKey||event.altKey||event.metaKey)return;
     if(event.key==="ArrowRight"){event.preventDefault();step(1);}else if(event.key==="ArrowLeft"){event.preventDefault();step(-1);}else if(event.key===" "){event.preventDefault();timer?pause():startPlayback();}else if(event.key.toLowerCase()==="n"){event.preventDefault();nextKey();}
   });
