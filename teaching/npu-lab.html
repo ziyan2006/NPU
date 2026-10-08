@@ -28,6 +28,8 @@ svg{font-family:var(--font)}.group-box{fill:#142030;stroke:#35465c;stroke-dashar
 
 [hidden]{display:none!important}.step-evidence{margin:0 24px 14px;padding:12px 14px;border:1px solid #38586b;border-radius:8px;background:#102432}.step-evidence>strong{font-size:12px;color:var(--cyan);font-weight:500;display:block}.step-evidence>div{display:flex;gap:9px;align-items:center;flex-wrap:wrap;margin:10px 0;font-size:11px;color:var(--muted)}#step-moments{display:flex;gap:6px;flex-wrap:wrap}#step-moments button{white-space:normal;text-align:left;font-size:11px;min-height:30px;padding:4px 8px}#step-moments button.current{color:var(--cyan);border-color:var(--cyan)}.clock-readout strong{font-family:var(--font);font-size:22px}.wave-break{pointer-events:none}@media(max-width:760px){.step-evidence{margin-left:16px;margin-right:16px}.clock-readout strong{font-size:19px}}
 
+.connection{background:#c5a4ff}.edge.connected path{stroke:#c5a4ff;stroke-width:3;opacity:1}.edge.connected text{fill:#d1b6ff}.edge.connected.active path{stroke:var(--cyan);stroke-width:3}.edge.connected.active text{fill:var(--cyan)}.edge.connected.wait path{stroke:var(--pink);stroke-width:2.5}.edge.connected.wait text{fill:var(--pink)}.module.selected>rect:first-child{stroke:#c5a4ff;stroke-width:3}.module-panel p.connection-note{margin-top:14px;padding-top:12px;border-top:1px solid var(--border);color:#c9b0ef;font-size:11px}
+
 </style>
 </head>
 <body>
@@ -62,8 +64,8 @@ svg{font-family:var(--font)}.group-box{fill:#142030;stroke:#35465c;stroke-dashar
     </section>
     <div class="glossary" aria-label="常用词解释"><span><b>DDR</b> 外部仓库</span><span><b>A</b> 输入工作台</span><span><b>W</b> 权重与参数配方</span><span><b>O</b> 计算结果区</span><span><b>一拍</b> 一个时钟周期，本例 10 纳秒</span></div>
     <div class="workspace">
-      <section class="diagram-panel panel"><div class="panel-heading"><div><span class="eyebrow">01 / HARDWARE</span><h3>硬件与关键时刻的数据流</h3></div><div class="legend"><span><i class="transfer"></i>本沿传输</span><span><i class="busy"></i>处理中</span><span><i class="stall"></i>握手等待</span></div></div><div class="diagram-scroll"><svg id="diagram" viewBox="0 0 1400 810" role="img" aria-label="NPU 内部硬件框图，点击模块查看说明"></svg></div><div class="diagram-footer"><span>框图以 npu_core 实例连接为依据；MAC 内部流水级在下方展开。</span><div class="diagram-actions"><label for="diagram-zoom">缩放</label><select id="diagram-zoom"><option value="fit">适配窗口</option><option value="100">100%</option><option value="125">125%</option></select><button id="download-svg" class="quiet">保存 SVG ↓</button></div></div></section>
-      <aside class="inspector"><details id="technical-detail" class="panel step-panel"><summary>进阶：这一拍的信号与并行活动</summary><h3 id="edge-title"></h3><div id="edge-detail"></div><div id="handshakes"></div><div class="next-state"><span>本沿后 CP 状态</span><code id="after-state"></code></div></details><section class="panel module-panel"><span class="eyebrow">点击模块，了解它的工作</span><h3 id="module-title"></h3><p id="module-detail"></p><div id="module-io"></div><a id="module-source" target="_blank" rel="noopener">查看 RTL 源码 ↗</a></section></aside>
+      <section class="diagram-panel panel"><div class="panel-heading"><div><span class="eyebrow">01 / HARDWARE</span><h3>硬件与关键时刻的数据流</h3></div><div class="legend"><span><i class="transfer"></i>本沿传输</span><span><i class="busy"></i>处理中</span><span><i class="stall"></i>握手等待</span><span><i class="connection"></i>选中模块的连接</span></div></div><div class="diagram-scroll"><svg id="diagram" viewBox="0 0 1400 810" role="img" aria-label="NPU 内部硬件框图，点击模块查看说明"></svg></div><div class="diagram-footer"><span>框图以 npu_core 实例连接为依据；MAC 内部流水级在下方展开。</span><div class="diagram-actions"><label for="diagram-zoom">缩放</label><select id="diagram-zoom"><option value="fit">适配窗口</option><option value="100">100%</option><option value="125">125%</option></select><button id="download-svg" class="quiet">保存 SVG ↓</button></div></div></section>
+      <aside class="inspector"><details id="technical-detail" class="panel step-panel"><summary>进阶：这一拍的信号与并行活动</summary><h3 id="edge-title"></h3><div id="edge-detail"></div><div id="handshakes"></div><div class="next-state"><span>本沿后 CP 状态</span><code id="after-state"></code></div></details><section class="panel module-panel"><span class="eyebrow">点击模块，了解它的工作</span><h3 id="module-title"></h3><p id="module-detail"></p><div id="module-io"></div><p id="module-connections" class="connection-note"></p><a id="module-source" target="_blank" rel="noopener">查看 RTL 源码 ↗</a></section></aside>
     </div>
     <section class="panel pipeline-panel"><div class="panel-heading"><div><span class="eyebrow">03 / DATAPATH</span><h3>MAC 流水线与存储结果</h3></div><span class="subtle">无停顿时，接收输入后第 4 个周期产生结果</span></div><div class="datapath-grid"><div><div id="mac-pipeline" class="mac-pipeline"></div><p class="subtle pipeline-note">64 路 INT16 × INT8 乘法 → 8 路 INT32 累加。单个输入 token 走完流水线，不代表整条 CONV2D 已完成。</p></div><div id="memory-values" class="memory-values"></div></div></section>
     <section id="wave-panel" class="panel wave-panel"><div class="panel-heading"><div><span class="eyebrow">04 / TIMING</span><h3 id="wave-title">本步骤的关键时刻波形</h3></div><div class="wave-options"><label for="wave-width">观察窗口</label><select id="wave-width"><option value="16">16 周期</option><option value="32" selected>32 周期</option><option value="64">64 周期</option></select><button id="export-trace" class="quiet">导出本实例 CSV ↓</button></div></div><div class="wave-scroll"><svg id="wave" role="img" aria-label="时钟、握手与状态波形，点击跳转到对应周期"></svg></div><p id="wave-note" class="wave-note">信号采样于上升沿前；光标对应的 VALID ∧ READY 在本上升沿被接收。虚线标记握手等待，X 表示尚未定义的信号。</p></section>
@@ -532,7 +534,7 @@ window.createNPUSteps = ({frames,cases,lessons,num,one,fire}) => cases.map(c=>{
   function buildDiagram() {
     const svg = $("diagram");
     const defs = element("defs");
-    [["arrow", "#68819d"], ["arrow-active", "#59dddc"], ["arrow-wait", "#fb8da6"]].forEach(([id, color]) => {
+    [["arrow", "#68819d"], ["arrow-active", "#59dddc"], ["arrow-wait", "#fb8da6"], ["arrow-connected", "#c5a4ff"]].forEach(([id, color]) => {
       const marker = element("marker", {id, viewBox:"0 0 10 10", refX:9, refY:5, markerWidth:5, markerHeight:5, orient:"auto-start-reverse"});
       marker.append(element("path", {d:"M0 0 L10 5 L0 10 Z", fill:color})); defs.append(marker);
     }); svg.append(defs);
@@ -570,7 +572,14 @@ window.createNPUSteps = ({frames,cases,lessons,num,one,fire}) => cases.map(c=>{
       row.append(b, span); return row;
     }));
     $("module-source").href = "https://github.com/ziyan2006/NPU/blob/work/hardware/rtl/" + n.source;
-    document.querySelectorAll(".module").forEach(g => g.classList.toggle("selected", g.id === "node-" + id));
+    document.querySelectorAll(".module").forEach(g => {const selected=g.id === "node-" + id;g.classList.toggle("selected",selected);g.setAttribute("aria-pressed",String(selected));});
+    const connected=edges.filter(e=>e.from===id||e.to===id);
+    edges.forEach(e=>{const g=$("edge-"+e.id);g.classList.toggle("connected",e.from===id||e.to===id);updateEdgeArrow(g);});
+    $("module-connections").textContent=`已高亮 ${connected.length} 条直接相连的输入、输出通路。紫色表示连接关系；青色传输和粉色等待仍按当前时刻显示。`;
+  }
+  function updateEdgeArrow(g){
+    const kind=g.classList.contains("active")?"active":g.classList.contains("wait")?"wait":g.classList.contains("connected")?"connected":null;
+    g.firstChild.setAttribute("marker-end",`url(#${kind?"arrow-"+kind:"arrow"})`);
   }
 
   function describe(f) {
@@ -768,7 +777,7 @@ window.createNPUSteps = ({frames,cases,lessons,num,one,fire}) => cases.map(c=>{
     edges.forEach(e => {
       const g = $("edge-"+e.id), active = d.active.has(e.id), wait = d.wait.has(e.id);
       g.classList.toggle("active", active); g.classList.toggle("wait", wait);
-      g.firstChild.setAttribute("marker-end", `url(#${active ? "arrow-active" : wait ? "arrow-wait" : "arrow"})`);
+      updateEdgeArrow(g);
     });
     nodes.forEach(n => {
       const g = $("node-"+n.id);

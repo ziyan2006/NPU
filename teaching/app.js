@@ -164,7 +164,7 @@
   function buildDiagram() {
     const svg = $("diagram");
     const defs = element("defs");
-    [["arrow", "#68819d"], ["arrow-active", "#59dddc"], ["arrow-wait", "#fb8da6"]].forEach(([id, color]) => {
+    [["arrow", "#68819d"], ["arrow-active", "#59dddc"], ["arrow-wait", "#fb8da6"], ["arrow-connected", "#c5a4ff"]].forEach(([id, color]) => {
       const marker = element("marker", {id, viewBox:"0 0 10 10", refX:9, refY:5, markerWidth:5, markerHeight:5, orient:"auto-start-reverse"});
       marker.append(element("path", {d:"M0 0 L10 5 L0 10 Z", fill:color})); defs.append(marker);
     }); svg.append(defs);
@@ -202,7 +202,14 @@
       row.append(b, span); return row;
     }));
     $("module-source").href = "https://github.com/ziyan2006/NPU/blob/work/hardware/rtl/" + n.source;
-    document.querySelectorAll(".module").forEach(g => g.classList.toggle("selected", g.id === "node-" + id));
+    document.querySelectorAll(".module").forEach(g => {const selected=g.id === "node-" + id;g.classList.toggle("selected",selected);g.setAttribute("aria-pressed",String(selected));});
+    const connected=edges.filter(e=>e.from===id||e.to===id);
+    edges.forEach(e=>{const g=$("edge-"+e.id);g.classList.toggle("connected",e.from===id||e.to===id);updateEdgeArrow(g);});
+    $("module-connections").textContent=`已高亮 ${connected.length} 条直接相连的输入、输出通路。紫色表示连接关系；青色传输和粉色等待仍按当前时刻显示。`;
+  }
+  function updateEdgeArrow(g){
+    const kind=g.classList.contains("active")?"active":g.classList.contains("wait")?"wait":g.classList.contains("connected")?"connected":null;
+    g.firstChild.setAttribute("marker-end",`url(#${kind?"arrow-"+kind:"arrow"})`);
   }
 
   function describe(f) {
@@ -400,7 +407,7 @@
     edges.forEach(e => {
       const g = $("edge-"+e.id), active = d.active.has(e.id), wait = d.wait.has(e.id);
       g.classList.toggle("active", active); g.classList.toggle("wait", wait);
-      g.firstChild.setAttribute("marker-end", `url(#${active ? "arrow-active" : wait ? "arrow-wait" : "arrow"})`);
+      updateEdgeArrow(g);
     });
     nodes.forEach(n => {
       const g = $("node-"+n.id);
