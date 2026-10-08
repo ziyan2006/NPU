@@ -63,7 +63,10 @@ PNG 适合直接插入报告；SVG/PDF 适合放大和打印；`.drawio` 可在
 
 ## 重新生成
 
-当前环境使用 matplotlib 和 Noto Sans CJK 字体。修改生成脚本中的方框和连接坐标后运行：
+当前环境使用 matplotlib、fontTools 和 **Noto Sans CJK SC（简体中文）** 字体。
+生成器按字体名称从 TTC 集合提取 SC 字体，避免 Matplotlib 默认加载 JP 字形。
+PNG 直接渲染 SC 字形，PDF 嵌入字体，SVG 将文字转换为矢量轮廓以保证跨电脑显示一致；
+文字编辑请使用 `.drawio` 文件。修改生成脚本中的方框和连接坐标后运行：
 
 ```sh
 python 框图/render_hardware_diagrams.py

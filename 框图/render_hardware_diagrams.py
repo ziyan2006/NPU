@@ -4,7 +4,10 @@ Coordinates are shared by the PNG/SVG/PDF and drawio exports. This is a
 functional architecture view, not a replacement for the RTL netlist.
 """
 from pathlib import Path
+from tempfile import TemporaryDirectory
 import xml.etree.ElementTree as ET
+
+from fontTools.ttLib import TTCollection
 
 import matplotlib
 matplotlib.use("Agg")
@@ -14,8 +17,23 @@ from matplotlib.path import Path as MPath
 from matplotlib.font_manager import FontProperties
 
 ROOT = Path(__file__).resolve().parent
-FONT = FontProperties(fname="/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc")
-matplotlib.rcParams.update({"svg.fonttype": "none", "pdf.fonttype": 42})
+# Matplotlib opens face 0 of a TTC by default: this collection starts with JP.
+# Extract the SC face by family name so all renderers use simplified Chinese.
+_FONT_DIRECTORY = TemporaryDirectory(prefix="npu-diagram-font-")
+_SC_FONT_PATH = Path(_FONT_DIRECTORY.name) / "NotoSansCJKsc-Regular.otf"
+_collection = TTCollection("/usr/share/fonts/opentype/noto/NotoSansCJK-Regular.ttc", lazy=True)
+try:
+    _sc_font = next(font for font in _collection.fonts
+                    if font["name"].getDebugName(1) == "Noto Sans CJK SC")
+    _sc_font.save(_SC_FONT_PATH)
+finally:
+    _collection.close()
+FONT = FontProperties(fname=str(_SC_FONT_PATH))
+if FONT.get_name() != "Noto Sans CJK SC":
+    raise RuntimeError("The diagram font must be Noto Sans CJK SC")
+# Outline SVG text to preserve the selected glyphs on computers without Noto.
+# Text remains editable in the diagrams.net exports; PDF embeds the font.
+matplotlib.rcParams.update({"svg.fonttype": "path", "pdf.fonttype": 42})
 BLUE, RED, GRAY = "#147db3", "#c94d4d", "#77818b"
 
 
