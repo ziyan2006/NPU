@@ -81,12 +81,15 @@ def check_browser(screenshot=False):
             assert page.locator("#instruction option").count() == 8
             assert page.locator("#program button").count() == 14
             assert page.locator(".module").count() == 25
+            assert page.locator("#wave-panel").is_hidden()
+            assert not page.locator("#show-tech").is_checked()
             for name in ["NOP","WAIT","END","DMA_LOAD","DMA_STORE","CONV2D","VEC_ADD","UPSAMPLE2X"]:
                 page.select_option("#instruction",name)
                 for option in page.locator("#case option").all():
                     index = option.get_attribute("value")
                     page.select_option("#case",index)
                     assert page.evaluate("NPULab.position === NPULab.selection.start")
+                    assert "控制器读到" in page.locator("#lesson-title").inner_text()
                     assert page.locator("#edge-fetch_cp").get_attribute("class") == "edge active"
                     page.locator("#seek").evaluate("e=>{e.value=e.max;e.dispatchEvent(new Event('input',{bubbles:true}))}")
                     assert page.evaluate("NPULab.position === NPULab.selection.end")
@@ -112,6 +115,7 @@ def check_browser(screenshot=False):
             page.wait_for_function("NPULab.position > " + str(old+2))
             page.click("#play")
             assert page.locator("#play").get_attribute("aria-pressed") == "false"
+            page.check("#show-tech")
             # Wave cells and scrubber must point to the same real cycle.
             page.locator("#wave .wave-hit").first.click()
             assert page.evaluate("Number(document.querySelector('#seek').value) === NPULab.position - NPULab.selection.start")
@@ -133,16 +137,36 @@ def check_browser(screenshot=False):
             offset = page.evaluate("NPULab.frames.findIndex((f,i)=>i>=NPULab.selection.start && f[NPULab.signals.mac_out_v]==='1')-NPULab.selection.start")
             page.locator("#seek").evaluate("(e,value)=>{e.value=value;e.dispatchEvent(new Event('input',{bubbles:true}))}",offset)
             if screenshot:
+                page.uncheck("#show-tech")
                 page.select_option("#speed","8")
-                page.wait_for_function("!document.querySelector('#toast').classList.contains('visible')")
+                page.wait_for_function("getComputedStyle(document.querySelector('#toast')).opacity === '0'")
                 page.screenshot(path=str(HERE/"preview.png"),full_page=True)
-            assert "6" in page.locator("#edge-detail").inner_text()
+            assert "6" in page.locator("#lesson-action").inner_text()
             # Verify a held VALID is represented by waiting, never transfer.
             page.select_option("#instruction","DMA_LOAD")
             page.select_option("#case","2")
             offset=page.evaluate("NPULab.frames.findIndex((f,i)=>i>=NPULab.selection.start&&f[NPULab.signals.dma_v]==='1'&&f[NPULab.signals.dma_r]==='0')-NPULab.selection.start")
             page.locator("#seek").evaluate("(e,value)=>{e.value=value;e.dispatchEvent(new Event('input',{bubbles:true}))}",offset)
             assert page.locator("#edge-cp_df").get_attribute("class") == "edge wait"
+            assert "等DMA 前端腾出位置" in page.locator("#lesson-title").inner_text()
+            # A 368-cycle address phase explains real arithmetic and its rounds.
+            page.select_option("#case","1")
+            address_phase=page.locator("#lesson-chapters button").filter(has_text="计算搬运位置")
+            assert "368 拍" in address_phase.inner_text()
+            address_phase.click()
+            assert "乘法" in page.locator("#lesson-action").inner_text()
+            assert "16" in page.locator("#lesson-progress-detail").inner_text()
+            local_c=page.evaluate("NPULab.lessons[1].stories.findIndex(s=>s.id==='AGU_ACT_LOCAL_C')")
+            page.locator("#seek").evaluate("(e,value)=>{e.value=value;e.dispatchEvent(new Event('input',{bubbles:true}))}",local_c+5)
+            assert "8 × 2" in page.locator("#lesson-action").inner_text()
+            assert "5 / 16" in page.locator("#lesson-action").inner_text()
+            # Every recorded frame of all 14 cases has a plain-language story.
+            assert page.evaluate("NPULab.lessons.every((l,j)=>l.stories.length===NPULab.cases[j].end-NPULab.cases[j].start+1 && l.stories.every(s=>s.title && s.action && s.why && s.result && !/AGU_|CP_WAIT|POST_|VEC_|UPSAMPLE_/.test(s.action)))")
+            page.select_option("#instruction","WAIT")
+            assert page.locator("#lesson-visual .event-lamp").count()==2
+            page.select_option("#instruction","UPSAMPLE2X")
+            page.locator("#seek").evaluate("e=>{e.value=e.max;e.dispatchEvent(new Event('input',{bubbles:true}))}")
+            assert page.locator("#lesson-visual .copied").count()==4
             # The standalone page loads no scripts, styles or data from HTTP.
             standalone = browser.new_page(viewport={"width":1440,"height":1100})
             standalone.on("pageerror",lambda error: errors.append(str(error)))
@@ -153,9 +177,12 @@ def check_browser(screenshot=False):
             assert requests==[base+"npu-lab.html"]
             standalone.select_option("#instruction","END")
             standalone.locator("#seek").evaluate("e=>{e.value=e.max;e.dispatchEvent(new Event('input',{bubbles:true}))}")
+            standalone.check("#show-tech")
             assert "irq_o = 1" in standalone.locator("#node-irq").text_content()
             standalone.set_viewport_size({"width":390,"height":844})
-            assert standalone.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), "Mobile page overflows"
+            for instruction in ["END","DMA_LOAD","CONV2D","VEC_ADD","UPSAMPLE2X"]:
+                standalone.select_option("#instruction",instruction)
+                assert standalone.evaluate("document.documentElement.scrollWidth <= window.innerWidth"), f"Mobile page overflows: {instruction}"
             assert not errors, errors
             browser.close()
             print("Browser: all 14 cases, stepping, playback, seek, wave, module, exports, offline bundle and mobile layout PASS")

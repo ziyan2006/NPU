@@ -60,6 +60,8 @@
     return { ...cmd, index, start, end: Math.min(end, frames.length - 1), label: caseLabels[index] };
   });
   let chosen = cases[7], position = chosen.start, timer = null, selectedModule = "controller";
+  const lessons = window.createNPULessons({frames,cases,num,one,fire,state,signedLow});
+  const cpPlain = {CP_IDLE:"已空闲",CP_RUN:"可以接收下一条命令",CP_DISPATCH:"检查并交接命令",CP_WAIT_EVENT:"等指定工作完成",CP_WAIT_VECTOR:"等同步运算做完",CP_WAIT_END:"等全部单元空闲",CP_ERROR:"遇到执行错误"};
 
   // These modules and routes preserve the RTL's hierarchy and interface widths.
   // Request and response directions are shown as separate edges.
@@ -173,6 +175,7 @@
       g.append(element("text", {x:n.x+n.width/2, y:n.y+23, "text-anchor":"middle", class:"node-title"}, n.title));
       g.append(element("text", {x:n.x+n.width/2, y:n.y+40, "text-anchor":"middle", class:"node-subtitle"}, n.subtitle));
       g.append(element("text", {x:n.x+n.width/2, y:n.y+57, "text-anchor":"middle", class:"node-status"}, n.status));
+      g.append(element("rect", {x:n.x-4,y:n.y-4,width:n.width+8,height:n.height+8,class:"lesson-focus-ring"}));
       g.addEventListener("click", () => inspect(n.id));
       g.addEventListener("keydown", event => { if (event.key === "Enter" || event.key === " ") { event.preventDefault(); inspect(n.id); } });
       svg.append(g);
@@ -306,6 +309,60 @@
     observations.push({...memory});
   });
 
+  function textBox(tag,text,className="") {const el=document.createElement(tag);el.textContent=text;if(className)el.className=className;return el;}
+  function renderLessonVisual(s,f) {
+    const visual=$("lesson-visual");visual.replaceChildren();let note="";
+    if(s.multiplication){
+      visual.append(textBox("strong",s.calculation,"lesson-calculation"));
+      const rounds=document.createElement("div");rounds.className="calculation-rounds";
+      for(let j=1;j<=16;j++){const dot=textBox("span",String(j),j<=s.mulRound?"done":"");rounds.append(dot);}
+      visual.append(rounds);
+      const done=one(f,s.mulPrefix+"_mul_done");
+      note=done?"已读到乘法器结果："+num(f,s.mulPrefix+"_mul_result"):s.mulRound?"正在逐轮算地址，尚未交接乘法结果。":"准备启动这项地址乘法。";
+    }else if(chosen.name==="UPSAMPLE2X"){
+      const grid=document.createElement("div");grid.className="upsample-visual";
+      grid.append(textBox("div","原像素\n9","source-pixel"),textBox("span","→","visual-operator"));
+      const output=document.createElement("div");output.className="pixel-grid";
+      for(let j=0;j<4;j++){const copied=j<(s.copied||0),cell=textBox("div",copied?"9":"待写",copied?"copied":"");if(j===s.activePixel&&!copied)cell.classList.add("being-written");output.append(cell);}
+      grid.append(output);visual.append(grid);note=`已发送完整像素：${s.copied||0} / 4。每个像素有 8 个通道，需要两个 8 字节数据块。`;
+    }else if(chosen.name==="WAIT"){
+      const bits=(num(f,"events")||0)|(num(f,"event_set")||0);
+      const lamps=s.lamps||[[1,"输入 A0"],[4,"参数 W0"],[16,"卷积 O0"],[64,"写回 O0"]].filter(([bit])=>chosen.imm&bit).map(([bit,label])=>({label,ready:!!(bits&bit)}));
+      lamps.forEach(l=>visual.append(textBox("div",(l.ready?"● 已完成 · ":"○ 未完成 · ")+l.label,"event-lamp"+(l.ready?" lit":""))));
+      note="检查全部指定的灯，包含本沿到达的完成消息；通过后不会关灯。";
+    }else if(chosen.name==="CONV2D"||chosen.name==="VEC_ADD"){
+      const conv=chosen.name==="CONV2D",observed=conv?num(f,"mac_data")===6||observations[position].o!==null:observations[position].o===9;
+      const eq=document.createElement("div");eq.className="lesson-equation";
+      [[conv?"输入":"卷积结果",conv?3:6],[conv?"权重":"保留残差",conv?2:3],["目标结果",conv?6:9]].forEach(([label,value],j)=>{
+        if(j)eq.append(textBox("span",j===1?(conv?"×":"+"):"=","visual-operator"));
+        const box=document.createElement("div");box.className="equation-value"+(j===2&&!observed?" future":"");box.append(textBox("span",label),textBox("b",String(value)));eq.append(box);
+      });visual.append(eq);note=observed?"本例的通道 0 已产生这个结果，其余 7 个通道均为 0。":"这是本例的计算目标，经过准备、读取和计算后才产生结果。";
+    }else if(chosen.name.startsWith("DMA_")){
+      const load=chosen.name==="DMA_LOAD",label=chosen.index===1?"输入 3":chosen.index===2?"权重 2":chosen.index===3?"偏置 0":chosen.index===4||chosen.index===5?"缩放配方 1":"结果 9";
+      const route=document.createElement("div");route.className="lesson-route";
+      route.append(textBox("div",load?"DDR\n外部仓库":"O0\n计算结果区"),textBox("span","→","visual-operator"),textBox("div",load?(chosen.index===1?"A0\n输入工作台":"W0\n参数配方区"):"DDR\n外部仓库"));visual.append(route,textBox("strong",label,"route-payload"));
+      note=s.chapter==="address"||s.chapter==="descriptors"||s.chapter==="accept"?"正在准备搬运，输入或参数本身还没开始交接。":s.chapter==="done"?"这条指令对应的数据已经搬完。":"当前正在执行清零、读写或内存确认。";
+    }else{
+      visual.append(textBox("strong",chosen.name==="NOP"?"接收 → 检查 → 继续":"全部空闲 → 完成标志 → 通知处理器","control-visual"));
+      note=chosen.name==="NOP"?"“处理完一条指令”不代表一定做了计算。":"完成消息经状态寄存器后，产生中断通知。";
+    }
+    $("lesson-example-note").textContent=note;
+  }
+  function renderLesson(f){
+    const lesson=lessons[chosen.index],relative=position-chosen.start,s=lesson.stories[relative];
+    $("lesson-goal").textContent=chosen.name+" · 目标："+lesson.goal;
+    $("lesson-title").textContent=s.title;$("lesson-action").textContent=s.action;
+    $("lesson-why").textContent=s.why;$("lesson-result").textContent=s.result;
+    const current=relative-s.run.start+1,total=s.run.end-s.run.start+1;
+    $("lesson-progress-label").textContent=`第 ${s.chapterIndex+1} / ${lesson.chapters.length} 阶段 · ${s.chapterTitle}`;
+    $("lesson-progress-detail").textContent=`当前这项工作：第 ${current} / ${total} 个时钟（本次录制）${s.multiplication?" · 乘法本身需 16 轮，另有启动与结果交接":""}`;
+    $("lesson-progress").max=total;$("lesson-progress").value=current;
+    $("lesson-focus").replaceChildren(...s.focus.filter(id=>nodeMap[id]).map(id=>{const b=textBox("button",nodeMap[id].title);b.addEventListener("click",()=>inspect(id));return b;}));
+    $("lesson-chapters").replaceChildren(...lesson.chapters.map((p,j)=>{const b=textBox("button",`${j+1}. ${p.title} · ${p.cycles} 拍`,p.id===s.chapter?"current":"");b.setAttribute("aria-current",p.id===s.chapter?"step":"false");b.addEventListener("click",()=>{pause();position=chosen.start+p.start;render();});return b;}));
+    nodes.forEach(n=>$("node-"+n.id).classList.toggle("lesson-focus",s.focus.includes(n.id)));
+    renderLessonVisual(s,f);
+  }
+
   function updateHardware(f, d) {
     edges.forEach(e => {
       const g = $("edge-"+e.id), active = d.active.has(e.id), wait = d.wait.has(e.id);
@@ -317,7 +374,9 @@
       ["active","busy","wait"].forEach(kind => g.classList.toggle(kind, d[kind].has(n.id)));
       const status = g.querySelector(".node-status");
       const states = {cp:state(f,"cp_state","cp_state_e"), df:state(f,"df_state","dma_frontend_state_e"), dma:state(f,"de_state","dma_engine_state_e"), ef:state(f,"ef_state","execution_frontend_state_e"), post:state(f,"post_state","post_state_e")+" · lane "+num(f,"post_lane"), vec:state(f,"v_state","vec_state_e"), up:state(f,"u_state","upsample_state_e"), events:"event_state = "+hex(num(f,"events")), fifo:"count = "+num(f,"fifo_count")+" / 2", irq:"irq_o = "+num(f,"irq")};
-      status.textContent = states[n.id] || (d.active.has(n.id) ? "本上升沿完成传输" : d.busy.has(n.id) ? "正在处理" : n.status);
+      const lesson=lessons[chosen.index].stories[position-chosen.start];
+      const defaults={host:"发送任务与启动命令",csr:"控制任务并汇报状态",loader:"启动阶段已完成",fetch:"读取下一条命令",mem:"安排谁先读说明",df:"准备搬运说明与地址",ef:"准备运算说明",block:"从外部内存读取说明",dma:"执行实际数据搬运",ddr:"存放输入、参数与输出",read:"安排谁先读取 DDR",write:"安排谁先写入 DDR",a:"输入工作台 · 两组",w:"权重与参数配方 · 两组",o:"计算结果区 · 两组",controller:"安排卷积读取与计算",mac:"对应相乘，再相加",buffer:"暂存算好的结果",post:"逐通道调整数值",fifo:"计算结果排队写回",vec:"把两份特征相加",up:"复制像素和行",events:"记录工作是否完成",irq:one(f,"irq")?"已通知处理器完成":"等待任务完成"};
+      status.textContent = $("show-tech").checked ? (states[n.id] || (d.active.has(n.id)?"本上升沿完成传输":d.busy.has(n.id)?"正在处理":n.status)) : n.id==="cp"?cpPlain[state(f,"cp_state","cp_state_e")]:lesson.focus.includes(n.id)?lesson.chapterTitle+" · 当前关注":d.active.has(n.id)?"本沿交接数据":d.busy.has(n.id)?"仍在处理工作":defaults[n.id];
     });
   }
   const pipelineStages = [["乘法", "mac_product", "24-bit"], ["加法 L1", "mac_l1", "25-bit"], ["加法 L2", "mac_l2", "26-bit"], ["Dot", "mac_dot", "27-bit"], ["累加 / 结果", "mac_out_v", "32-bit"]];
@@ -394,7 +453,7 @@
     $("progress-label").textContent=relative+" / "+(chosen.end-chosen.start);
     $("time-range").textContent="K = #"+frames[chosen.start][0]+" · "+chosen.label;
     $("duration").textContent=(chosen.end-chosen.start+1)+" 个真实上升沿 · "+((chosen.end-chosen.start)*10)+" ns 观察跨度";
-    $("seek").value=relative;$("cp-state").textContent=state(f,"cp_state","cp_state_e");
+    $("seek").value=relative;$("cp-state").textContent=$("show-tech").checked?state(f,"cp_state","cp_state_e"):cpPlain[state(f,"cp_state","cp_state_e")];
     $("after-state").textContent=state(after,"cp_state","cp_state_e");
     const [title,detail]=phaseText(f);$("edge-title").textContent=d.notes.length ? (d.active.has("fetch_cp") ? "接收指令与并行活动" : d.active.has("conv_event") ? "卷积完成事件到达" : d.active.has("fifo_o") ? "卷积结果写回" : "本沿发生数据传输") : title;
     const paragraph=document.createElement("p");paragraph.textContent=detail;
@@ -402,7 +461,7 @@
     if(d.notes.length){const ul=document.createElement("ul");ul.className="transfer-list";d.notes.forEach(note=>{const li=document.createElement("li");li.textContent=note;ul.append(li);});$("edge-detail").append(ul);}
     $("handshakes").replaceChildren(...d.handshakes.slice(0,5).map(h=>{const div=document.createElement("div");div.className="handshake"+(h.r?"":" wait");div.textContent=h.name+" = "+h.v+" / "+h.r+(h.r?" ✓":" · 等待");return div;}));
     $("prev").disabled=position===chosen.start;$("next").disabled=position===chosen.end;$("key-next").disabled=position===chosen.end;
-    updateHardware(f,d);updatePipeline(f);renderWave();
+    renderLesson(f);updateHardware(f,d);updatePipeline(f);renderWave();
     const currentPc=one(f,"capture")?num(f,"fetch_pc"):num(f,"cp_state")===0||num(f,"cp_state")===1?null:num(f,"dispatch_pc");
     document.querySelectorAll(".program-command").forEach((b,i)=>{b.classList.toggle("chosen",i===chosen.index);b.classList.toggle("current",currentPc===i*16);});
   }
@@ -428,8 +487,11 @@
     timer=setInterval(()=>{if(position>=chosen.end){pause();return;}position++;render();if(position===chosen.end)pause();},1000/Number($("speed").value));
   }
   function step(delta){pause();position=Math.max(chosen.start,Math.min(chosen.end,position+delta));render();}
-  const keyCache=frames.map(f=>describe(f).notes.length>0);
-  function nextKey(){pause();let next=position+1;while(next<chosen.end&&!keyCache[next])next++;position=Math.min(next,chosen.end);render();}
+  function nextKey(){
+    pause();const lesson=lessons[chosen.index],old=position,current=lesson.stories[position-chosen.start];let next=position+1;
+    while(next<chosen.end){const s=lesson.stories[next-chosen.start];if(s.id!==current.id||s.significant)break;next++;}
+    position=Math.min(next,chosen.end);render();if(position-old>1)toast(`跳过 ${position-old-1} 个中间时钟；时间轴保留真实周期。`);
+  }
   function download(blob,name){const url=URL.createObjectURL(blob),a=document.createElement("a");a.href=url;a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(url),5000);toast("已导出 "+name);}
   function toast(message){$("toast").textContent=message;$("toast").classList.add("visible");setTimeout(()=>$("toast").classList.remove("visible"),2500);}
   $("instruction").replaceChildren(...Object.entries(instructionMeta).map(([name,[label,opcode]])=>{const o=document.createElement("option");o.value=name;o.textContent=opcode+" · "+name+" / "+label;return o;}));
@@ -442,6 +504,7 @@
   $("speed").addEventListener("change",()=>{if(timer){pause();startPlayback();}});
   $("seek").addEventListener("input",()=>{pause();position=chosen.start+Number($("seek").value);render();});
   $("wave-width").addEventListener("change",renderWave);
+  $("show-tech").addEventListener("change",()=>{$("technical-detail").open=$("show-tech").checked;$("wave-panel").hidden=!$("show-tech").checked;render();});
   $("diagram-zoom").addEventListener("change",()=>{
     const zoom=$("diagram-zoom").value;
     $("diagram").style.width=zoom==="fit"?"100%":1400*Number(zoom)/100+"px";
@@ -470,5 +533,5 @@
   buildDiagram();inspect(selectedModule);
   const hashIndex=Number(location.hash.match(/-(\d+)$/)?.[1]);choose(Number.isInteger(hashIndex)&&cases[hashIndex]?hashIndex:7);
   // Read-only access supports reproducible browser validation and inspection.
-  window.NPULab={cases,frames,signals,describe,get selection(){return chosen;},get position(){return position;}};
+  window.NPULab={cases,frames,signals,describe,lessons,get selection(){return chosen;},get position(){return position;}};
 })();
