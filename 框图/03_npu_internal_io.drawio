@@ -1,0 +1,455 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net">
+  <diagram name="03_npu_internal_io">
+    <mxGraphModel page="1" pageWidth="2600" pageHeight="2160">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" parent="1" value="NPU 内部硬件框图与顶层 I/O" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=36;fontColor=#253343;">
+          <mxGeometry x="994.0" y="30.0" width="612" height="36" as="geometry" />
+        </mxCell>
+        <mxCell id="3" parent="1" value="对应当前 npu_top / npu_core RTL · AXI 通道方向均以 NPU 为参照" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=22;fontColor=#77818b;">
+          <mxGeometry x="772.0" y="92.0" width="1056" height="22" as="geometry" />
+        </mxCell>
+        <mxCell id="4" parent="1" value="npu_top：NPU IP 边界" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=24;fontColor=#253343;verticalAlign=top;spacingTop=12;align=left;spacingLeft=15;">
+          <mxGeometry x="390" y="175" width="1760" height="1795" as="geometry" />
+        </mxCell>
+        <mxCell id="5" parent="1" value="npu_core：任务执行核心" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fcfdff;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#253343;dashed=1;verticalAlign=top;spacingTop=12;align=left;spacingLeft=15;">
+          <mxGeometry x="420" y="465" width="1690" height="1450" as="geometry" />
+        </mxCell>
+        <mxCell id="6" parent="1" value="AXI4-Lite 从接口&lt;br&gt;s_axi_ctrl_*&lt;br&gt;&lt;br&gt;输入 NPU：&lt;br&gt;AWADDR[11:0], AWPROT[2:0], AWVALID&lt;br&gt;WDATA[31:0], WSTRB[3:0], WVALID&lt;br&gt;BREADY&lt;br&gt;ARADDR[11:0], ARPROT[2:0], ARVALID&lt;br&gt;RREADY&lt;br&gt;&lt;br&gt;输出 NPU：&lt;br&gt;AWREADY, WREADY, BRESP[1:0], BVALID&lt;br&gt;ARREADY, RDATA[31:0], RRESP[1:0], RVALID" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#faeaea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#253343;">
+          <mxGeometry x="30" y="225" width="330" height="480" as="geometry" />
+        </mxCell>
+        <mxCell id="7" parent="1" value="控制 / 状态寄存器 · npu_csr&lt;br&gt;任务地址、长度、tag、watchdog&lt;br&gt;doorbell / IRQ / 错误 / 性能计数器&lt;br&gt;CSR 窗口：4 KiB" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#faeaea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;">
+          <mxGeometry x="430" y="240" width="450" height="170" as="geometry" />
+        </mxCell>
+        <mxCell id="8" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="325" as="sourcePoint" />
+            <mxPoint x="430" y="325" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="9" parent="1" value="输出：irq_o（1 bit）&lt;br&gt;完成 / 错误 / watchdog 中断" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#faeaea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="30" y="765" width="330" height="80" as="geometry" />
+        </mxCell>
+        <mxCell id="10" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="380" as="sourcePoint" />
+            <mxPoint x="360" y="805" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="390" y="380" />
+              <mxPoint x="390" y="805" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="11" parent="1" value="输入：aclk（100 MHz）&lt;br&gt;输入：aresetn（低有效复位）&lt;br&gt;CSR 与 core 共用" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eef0f3;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="30" y="940" width="330" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="12" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#77818b;strokeWidth=2.4;endArrow=classic;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="360" y="997" as="sourcePoint" />
+            <mxPoint x="390" y="997" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="13" parent="1" value="IN / OUT 表示信号方向&lt;br&gt;双向连线合并请求与反馈&lt;br&gt;握手：valid &amp;&amp; ready&lt;br&gt;在时钟上升沿完成传输" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#77818b;">
+          <mxGeometry x="32.5" y="1092.0" width="323" height="76" as="geometry" />
+        </mxCell>
+        <mxCell id="14" parent="1" value="状态 / 错误 / 性能统计汇总（npu_core 内逻辑）&lt;br&gt;busy / done / error；错误 code[15:0]、PC[31:0]、tag[15:0]&lt;br&gt;完成 tag[31:0]、retired[31:0]；周期 / 字节计数器各 64 bit" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f9eeee;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;">
+          <mxGeometry x="1040" y="240" width="1010" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="15" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1040" y="315" as="sourcePoint" />
+            <mxPoint x="880" y="315" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="16" parent="1" value="状态返回" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#c94d4d;">
+          <mxGeometry x="880.0" y="281.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="17" parent="1" value="执行单元的 busy / done / error / event 汇入控制逻辑；部分反馈连线省略" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#c94d4d;">
+          <mxGeometry x="1104.0" y="411.0" width="882" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="18" parent="1" value="任务生命周期控制&lt;br&gt;IDLE / LOAD / RUN&lt;br&gt;PREPARE / RECOVER" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#faeaea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="450" y="540" width="260" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="19" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="550" y="410" as="sourcePoint" />
+            <mxPoint x="550" y="540" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="20" parent="1" value="task_base[63:0]；bytes/tag/watchdog[31:0]；start/reset" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=15;fontColor=#c94d4d;">
+          <mxGeometry x="285.0" y="437.5" width="780" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="21" parent="1" value="任务加载器&lt;br&gt;npu_task_loader&lt;br&gt;header 校验 / section 基址&lt;br&gt;LUT 预载 [L]" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="770" y="540" width="260" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="22" parent="1" value="指令读取与寄存级&lt;br&gt;npu_command_fetch&lt;br&gt;128-bit 指令 + 32-bit PC" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="1080" y="540" width="270" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="23" parent="1" value="命令处理器&lt;br&gt;npu_command_processor&lt;br&gt;译码 / 分派 / WAIT / END&lt;br&gt;event / watchdog" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#faeaea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="1400" y="540" width="290" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="24" parent="1" value="执行前端 + 描述符缓存&lt;br&gt;npu_execution_frontend&lt;br&gt;CONV / VEC / UPSAMPLE&lt;br&gt;4-line descriptor cache" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#faeaea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#253343;">
+          <mxGeometry x="1760" y="540" width="315" height="135" as="geometry" />
+        </mxCell>
+        <mxCell id="25" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="710" y="606" as="sourcePoint" />
+            <mxPoint x="770" y="606" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="26" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1030" y="595" as="sourcePoint" />
+            <mxPoint x="1080" y="595" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="27" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1350" y="595" as="sourcePoint" />
+            <mxPoint x="1400" y="595" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="28" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1690" y="595" as="sourcePoint" />
+            <mxPoint x="1760" y="595" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="29" parent="1" value="loader_done 启动取指与命令处理" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#c94d4d;">
+          <mxGeometry x="922.0" y="505.0" width="336" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="30" parent="1" value="compute / vector：128-bit 指令" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=15;fontColor=#c94d4d;">
+          <mxGeometry x="1367.5" y="682.5" width="405" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="31" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1500" y="675" as="sourcePoint" />
+            <mxPoint x="480" y="790" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1500" y="707" />
+              <mxPoint x="430" y="707" />
+              <mxPoint x="430" y="790" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="32" parent="1" value="DMA：128-bit 指令 + 32-bit PC" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#c94d4d;">
+          <mxGeometry x="449.0" y="681.0" width="416" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="33" parent="1" value="DMA 前端 + 描述符缓存 + AGU&lt;br&gt;npu_dma_frontend（4-line cache）&lt;br&gt;地址 / stride / 容量检查" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="480" y="740" width="470" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="34" parent="1" value="四客户端共享块请求仲裁&lt;br&gt;npu_memory_arbiter4&lt;br&gt;地址 64 bit / 长度 7 bit / 返回 512 bit" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="1060" y="740" width="480" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="35" parent="1" value="AXI 块读取器&lt;br&gt;npu_axi_block_reader&lt;br&gt;AXI 64-bit → block 512-bit" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="1650" y="740" width="380" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="36" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="900" y="675" as="sourcePoint" />
+            <mxPoint x="1140" y="740" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="900" y="723" />
+              <mxPoint x="1140" y="723" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="37" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1215" y="675" as="sourcePoint" />
+            <mxPoint x="1215" y="740" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="38" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1870" y="675" as="sourcePoint" />
+            <mxPoint x="1480" y="740" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1870" y="718" />
+              <mxPoint x="1480" y="718" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="39" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="790" as="sourcePoint" />
+            <mxPoint x="1060" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="40" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1540" y="790" as="sourcePoint" />
+            <mxPoint x="1650" y="790" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="41" parent="1" value="四个客户端：Loader / Fetch / DMA descriptor / Execution descriptor" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="780.0" y="880.5" width="1020" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="42" parent="1" value="DMA 引擎 · npu_dma_engine&lt;br&gt;DMA_LOAD / DMA_STORE / ZERO&lt;br&gt;AXI burst / 4 KiB 拆分 / 错误检查" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e5f2fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;">
+          <mxGeometry x="480" y="1010" width="470" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="43" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="715" y="840" as="sourcePoint" />
+            <mxPoint x="715" y="1010" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="44" parent="1" value="DMA request / ready" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#c94d4d;">
+          <mxGeometry x="735" y="913.5" width="323" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="45" parent="1" value="三客户端 AXI 读仲裁&lt;br&gt;npu_axi_read_arbiter3&lt;br&gt;Block reader / DMA / Upsample" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e5f2fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="1650" y="1010" width="380" height="120" as="geometry" />
+        </mxCell>
+        <mxCell id="46" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1840" y="840" as="sourcePoint" />
+            <mxPoint x="1840" y="1010" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="47" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="1055" as="sourcePoint" />
+            <mxPoint x="1650" y="1055" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="48" parent="1" value="DMA：AR / R，64-bit 数据" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="1060.0" y="1025.5" width="340" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="49" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="1010" as="sourcePoint" />
+            <mxPoint x="1650" y="1645" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="920" y="958" />
+              <mxPoint x="1595" y="958" />
+              <mxPoint x="1595" y="1645" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="50" parent="1" value="DMA：AW / W / B" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="1111.0" y="930.5" width="238" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="51" parent="1" value="Scratchpad · npu_scratchpad&lt;br&gt;6 bank / 224 KiB / 56 BRAM36" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fffaf0;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;verticalAlign=top;spacingTop=12;align=left;spacingLeft=15;">
+          <mxGeometry x="480" y="1310" width="470" height="405" as="geometry" />
+        </mxCell>
+        <mxCell id="52" parent="1" value="A0 / A1：各 64 KiB&lt;br&gt;输入激活；CONV 读口 128 bit" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff1dc;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="510" y="1390" width="410" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="53" parent="1" value="W0 / W1：各 32 KiB&lt;br&gt;权重 / bias / quant；读口 512 bit" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff1dc;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="510" y="1495" width="410" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="54" parent="1" value="O0 / O1：各 16 KiB&lt;br&gt;输出激活；CONV 写口 128 bit" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff1dc;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="510" y="1600" width="410" height="85" as="geometry" />
+        </mxCell>
+        <mxCell id="55" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="715" y="1130" as="sourcePoint" />
+            <mxPoint x="715" y="1310" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="56" parent="1" value="DMA 读 / 写口：64 bit&lt;br&gt;地址 32 bit / strobe 8 bit" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="735" y="1188.0" width="408" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="57" parent="1" value="CONV2D 计算通路" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f7fcf8;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;dashed=1;verticalAlign=top;spacingTop=12;align=left;spacingLeft=15;">
+          <mxGeometry x="1040" y="1190" width="510" height="515" as="geometry" />
+        </mxCell>
+        <mxCell id="58" parent="1" value="卷积控制器 + 8×8 MAC&lt;br&gt;地址循环 / mask / first / last&lt;br&gt;INT16 × INT8 → 8 × INT32" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6f3ea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="1080" y="1250" width="430" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="59" parent="1" value="Requant / Post · npu_requant_post&lt;br&gt;bias + Q31 / RNE + clamp / activation&lt;br&gt;tanh LUT 预载：[L] data 16 / addr 12 bit" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6f3ea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#253343;">
+          <mxGeometry x="1080" y="1440" width="430" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="60" parent="1" value="2-entry × 128-bit 输出写回 FIFO" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="1080" y="1610" width="430" height="65" as="geometry" />
+        </mxCell>
+        <mxCell id="61" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1295" y="1345" as="sourcePoint" />
+            <mxPoint x="1295" y="1440" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="62" parent="1" value="256 bit（8 × INT32）" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="1315" y="1381.5" width="306" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="63" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1295" y="1545" as="sourcePoint" />
+            <mxPoint x="1295" y="1610" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="64" parent="1" value="128 bit（8 × INT16）" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#147db3;">
+          <mxGeometry x="1320" y="1572.0" width="288" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="65" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="1423" as="sourcePoint" />
+            <mxPoint x="1080" y="1275" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1000" y="1423" />
+              <mxPoint x="1000" y="1275" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="66" parent="1" value="A：128 bit" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="913.0" y="1231.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="67" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="920" y="1530" as="sourcePoint" />
+            <mxPoint x="1080" y="1320" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1020" y="1530" />
+              <mxPoint x="1020" y="1320" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="68" parent="1" value="W：512 bit" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="900.0" y="1466.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="69" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1020" y="1530" as="sourcePoint" />
+            <mxPoint x="1080" y="1490" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1020" y="1490" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="70" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1080" y="1642" as="sourcePoint" />
+            <mxPoint x="920" y="1642" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="71" parent="1" value="O：128 bit" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="914.0" y="1611.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="72" parent="1" value="VEC_ADD · npu_vec_add&lt;br&gt;Residual requant / 饱和相加 / 原位写 O&lt;br&gt;Scratchpad vector 读 / 写端口各 512 bit" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6f3ea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="1060" y="1780" width="490" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="73" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="950" y="1675" as="sourcePoint" />
+            <mxPoint x="1060" y="1830" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="985" y="1675" />
+              <mxPoint x="985" y="1830" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="74" parent="1" value="bank / kind / address / byte strobe&lt;br&gt;CONV：A/W 独立读取，O 写回&lt;br&gt;VEC：共享 vector 端口" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#147db3;">
+          <mxGeometry x="400.0" y="1773.0" width="630" height="54" as="geometry" />
+        </mxCell>
+        <mxCell id="75" parent="1" value="UPSAMPLE2X&lt;br&gt;npu_upsample2x&lt;br&gt;最近邻 2× / 1 KiB 行缓冲&lt;br&gt;直接在 DDR 张量之间读写" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6f3ea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="1650" y="1310" width="380" height="140" as="geometry" />
+        </mxCell>
+        <mxCell id="76" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1840" y="1310" as="sourcePoint" />
+            <mxPoint x="1840" y="1130" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="77" parent="1" value="AR / R" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="1860" y="1206.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="78" parent="1" value="两客户端 AXI 写仲裁&lt;br&gt;npu_axi_write_arbiter2&lt;br&gt;DMA / Upsample" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e5f2fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="1650" y="1600" width="380" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="79" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1840" y="1450" as="sourcePoint" />
+            <mxPoint x="1840" y="1600" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="80" parent="1" value="AW / W / B" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="1860" y="1516.5" width="170" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="81" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1960" y="675" as="sourcePoint" />
+            <mxPoint x="1550" y="1830" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1960" y="698" />
+              <mxPoint x="2090" y="698" />
+              <mxPoint x="2090" y="1830" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="82" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="2090" y="1280" as="sourcePoint" />
+            <mxPoint x="1510" y="1280" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="83" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="2090" y="1370" as="sourcePoint" />
+            <mxPoint x="2030" y="1370" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="84" parent="1" value="执行启动&lt;br&gt;与描述符" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#c94d4d;">
+          <mxGeometry x="1990.0" y="919.0" width="160" height="32" as="geometry" />
+        </mxCell>
+        <mxCell id="85" parent="1" value="指令 128 / descriptor 512 bit&lt;br&gt;CONV bank 选择 / event[7:0]&lt;br&gt;UPSAMPLE：src/dst 各 512 bit" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#c94d4d;">
+          <mxGeometry x="1560.5" y="1754.5" width="459" height="51" as="geometry" />
+        </mxCell>
+        <mxCell id="86" parent="1" value="外部连接说明&lt;br&gt;&lt;br&gt;控制口 → PS GP0&lt;br&gt;内存口 → 协议适配 → PS HP0&lt;br&gt;IRQ → PS IRQ_F2P&lt;br&gt;&lt;br&gt;模型输入 / 输出均存放在 DDR&lt;br&gt;通过 AXI 读入、计算、写回&lt;br&gt;当前无独立 PCM / AXIS 音频口" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="2200" y="225" width="365" height="340" as="geometry" />
+        </mxCell>
+        <mxCell id="87" parent="1" value="AXI4 主接口：读通道&lt;br&gt;m_axi_mem_*&lt;br&gt;&lt;br&gt;AR 输出：&lt;br&gt;ARID[3:0], ARADDR[63:0]&lt;br&gt;ARLEN[7:0], ARSIZE[2:0]&lt;br&gt;ARBURST[1:0], ARLOCK&lt;br&gt;ARCACHE[3:0], ARPROT[2:0]&lt;br&gt;ARQOS[3:0], ARVALID&lt;br&gt;AR 输入：ARREADY&lt;br&gt;&lt;br&gt;R 输入：&lt;br&gt;RID[3:0], RDATA[63:0]&lt;br&gt;RRESP[1:0], RLAST, RVALID&lt;br&gt;R 输出：RREADY" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e5f2fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="2200" y="685" width="365" height="560" as="geometry" />
+        </mxCell>
+        <mxCell id="88" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="2030" y="1040" as="sourcePoint" />
+            <mxPoint x="2200" y="1040" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="89" parent="1" value="AR 地址 →" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="2035.0" y="1005.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="90" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="2200" y="1100" as="sourcePoint" />
+            <mxPoint x="2030" y="1100" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="91" parent="1" value="← R 数据" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="2035.0" y="1131.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="92" parent="1" value="AXI4 主接口：写通道&lt;br&gt;m_axi_mem_*&lt;br&gt;&lt;br&gt;AW 输出：&lt;br&gt;AWID[3:0], AWADDR[63:0]&lt;br&gt;AWLEN[7:0], AWSIZE[2:0]&lt;br&gt;AWBURST[1:0], AWLOCK&lt;br&gt;AWCACHE[3:0], AWPROT[2:0]&lt;br&gt;AWQOS[3:0], AWVALID&lt;br&gt;AW 输入：AWREADY&lt;br&gt;W 输出：WDATA[63:0], WSTRB[7:0]&lt;br&gt;WLAST, WVALID；输入 WREADY&lt;br&gt;B 输入：BID[3:0], BRESP[1:0], BVALID&lt;br&gt;B 输出：BREADY" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e5f2fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#253343;">
+          <mxGeometry x="2200" y="1390" width="365" height="555" as="geometry" />
+        </mxCell>
+        <mxCell id="93" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="2030" y="1630" as="sourcePoint" />
+            <mxPoint x="2200" y="1630" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="94" parent="1" value="AW / W →" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="2035.0" y="1595.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="95" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="2200" y="1675" as="sourcePoint" />
+            <mxPoint x="2030" y="1675" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="96" parent="1" value="← B 响应" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#147db3;">
+          <mxGeometry x="2035.0" y="1711.0" width="160" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="97" parent="1" value="蓝色：数据 / 存储请求与响应    红色：控制 / 地址 / 状态    灰色虚线：时钟与复位" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=21;fontColor=#77818b;">
+          <mxGeometry x="796.0" y="2009.5" width="1008" height="21" as="geometry" />
+        </mxCell>
+        <mxCell id="98" parent="1" value="AXI 箭头按有效载荷方向标示，READY 反向。INT12 激活按 INT16 存储。[L] 为同名 LUT 预载连接。" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#77818b;">
+          <mxGeometry x="720.5" y="2060.5" width="1159" height="19" as="geometry" />
+        </mxCell>
+        <mxCell id="99" parent="1" value="功能展开图：DMA 前端、引擎、Scratchpad、CONV 与 FIFO 同属 npu_dma_subsystem；MAC 实例位于卷积控制器内。" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#77818b;">
+          <mxGeometry x="625.0" y="2101.0" width="1350" height="18" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>

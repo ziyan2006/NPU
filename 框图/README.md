@@ -1,15 +1,22 @@
 # 项目硬件框图
 
-本目录的两张图依据当前 RTL 和 Zynq 集成脚本绘制，描述已实现的 NPU 系统。
+本目录的三张图依据当前 RTL 和 Zynq 集成脚本绘制，描述已实现的 NPU 系统。
 
 | 图 | 用途 |
 |---|---|
+| [NPU 内部硬件框图与 I/O](03_npu_internal_io.md) | 聚焦 NPU 内部：完整模块连接、外部接口方向、关键位宽、59 个顶层端口表 |
 | [系统硬件总框图](01_system_hardware.png) | PS、板载 DDR3L、AXI 控制/数据连接、PL 内部 NPU 模块 |
 | [卷积单元展开框图](02_conv_hardware.png) | A/W/O BRAM、卷积控制器、8×8 MAC、参数预取、重定标/激活、写回 FIFO |
 
 每张图提供 PNG、SVG、PDF 和 diagrams.net 可编辑的 `.drawio` 文件。
 PNG 适合直接插入报告；SVG/PDF 适合放大和打印；`.drawio` 可在
 <https://app.diagrams.net/> 中通过“文件 → 打开”编辑。
+
+## NPU 内部硬件框图与 I/O
+
+![NPU 内部硬件框图与 I/O](03_npu_internal_io.png)
+
+[完整 I/O 表与内部接口说明](03_npu_internal_io.md) · [SVG 矢量图](03_npu_internal_io.svg) · [PDF](03_npu_internal_io.pdf) · [drawio 可编辑文件](03_npu_internal_io.drawio)
 
 ## 系统硬件总框图
 
@@ -60,4 +67,5 @@ PNG 适合直接插入报告；SVG/PDF 适合放大和打印；`.drawio` 可在
 
 ```sh
 python 框图/render_hardware_diagrams.py
+python 框图/render_npu_internal.py
 ```
