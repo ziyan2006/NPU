@@ -52,8 +52,12 @@
   </main>
   <dialog id="route-dialog" class="route-dialog" aria-labelledby="route-title" aria-describedby="route-hint">
     <div class="route-dialog-heading"><span class="eyebrow">这条数据通路在做什么？</span><button id="route-close" class="quiet" aria-label="关闭通路说明" autofocus>关闭 ×</button></div>
-    <h2 id="route-title"></h2><p id="route-direction" class="route-direction"></p>
-    <p id="route-hint" class="route-hint"></p><p id="route-status" class="route-status"></p><p id="route-interface" class="route-interface"></p>
+    <h2 id="route-title"></h2><div id="route-direction" class="route-direction" aria-label="从哪个模块交给哪个模块"></div>
+    <div class="route-payload-line"><span>线上传的是什么？</span><strong id="route-payload"></strong></div>
+    <p id="route-hint" class="route-hint"></p>
+    <div class="route-example-box"><span>放到本网站的小任务里看</span><p id="route-example"></p></div>
+    <p id="route-status" class="route-status"></p>
+    <details id="route-technical" class="route-technical"><summary>想看接口细节，再展开这里</summary><p id="route-interface" class="route-interface"></p><p>带 VALID / READY 的通路：发送方说“东西准备好了”，接收方说“我能接”，两边都同意才在这一拍交过去。</p></details>
     <p class="route-dismiss">点击空白处或按 Esc 可关闭；打开说明时已暂停播放。</p>
   </dialog>
   <div id="toast" role="status" aria-live="polite"></div>

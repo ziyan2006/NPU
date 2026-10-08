@@ -32,6 +32,8 @@ svg{font-family:var(--font)}.group-box{fill:#142030;stroke:#35465c;stroke-dashar
 
 .edge{cursor:pointer;outline:none}.edge path.edge-hit{fill:none;stroke:transparent;stroke-width:22;stroke-dasharray:none;opacity:1;pointer-events:stroke;cursor:pointer}.edge text{cursor:pointer}.edge:hover path:not(.edge-hit),.edge:focus-visible path:not(.edge-hit),.edge.inspected path:not(.edge-hit){filter:drop-shadow(0 0 3px #e2edf7);opacity:1}.edge:focus-visible text{fill:#fff}.route-dialog{width:min(520px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow:auto;padding:24px;color:var(--text);background:#152536;border:1px solid #7094ac;border-radius:14px;box-shadow:0 20px 80px #0009;font-family:var(--font)}.route-dialog::backdrop{background:#050c18b8}.route-dialog-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:14px}.route-dialog-heading .eyebrow{margin:0;color:#a4d6de;letter-spacing:1px}.route-dialog h2{font-size:22px;line-height:1.5}.route-direction{color:#c5a4ff;font-size:13px;margin-top:8px}.route-hint{font-size:16px;line-height:1.9;margin-top:19px}.route-status{padding:12px 14px;background:#0e1e2d;border-radius:8px;color:#b9d1e2;font-size:12px;line-height:1.8;margin-top:18px}.route-interface{font-size:11px;color:var(--muted);margin-top:13px}.route-dismiss{border-top:1px solid var(--border);padding-top:12px;margin-top:16px;font-size:11px;color:var(--muted)}@media(max-width:480px){.route-dialog{padding:19px}.route-dialog h2{font-size:20px}.route-hint{font-size:14px}}
 
+.route-direction{display:flex;align-items:center;gap:12px;margin-top:16px}.route-direction>div{flex:1;min-width:0;padding:10px 12px;background:#203347;border:1px solid #3c5268;border-radius:7px}.route-direction strong{display:block;font-size:13px;color:#e0d0ff}.route-direction>div>span{display:block;color:var(--muted);font-size:10px;margin-top:4px}.route-direction-arrow{flex:none;font-size:20px}.route-payload-line{display:flex;gap:8px;align-items:flex-start;flex-direction:column;margin-top:20px}.route-payload-line>span,.route-example-box>span{font-size:11px;color:var(--muted)}.route-payload-line>strong{font-size:14px;font-weight:500;color:var(--cyan)}.route-hint{margin-top:10px}.route-example-box{margin-top:16px;padding:12px 14px;border-left:3px solid var(--amber);background:#24323f;border-radius:5px}.route-example-box>p{font-size:14px;line-height:1.8;margin-top:5px;color:#e0e8ed}.route-status{margin-top:13px}.route-technical{margin-top:15px;color:var(--muted);font-size:11px}.route-technical summary{cursor:pointer}.route-technical p{margin-top:9px;line-height:1.8}.route-dismiss{margin-top:14px}@media(max-width:480px){.route-direction{gap:8px}.route-direction>div{padding:8px}.route-direction strong{font-size:12px}.route-example-box>p{font-size:13px}}
+
 </style>
 </head>
 <body>
@@ -76,8 +78,12 @@ svg{font-family:var(--font)}.group-box{fill:#142030;stroke:#35465c;stroke-dashar
   </main>
   <dialog id="route-dialog" class="route-dialog" aria-labelledby="route-title" aria-describedby="route-hint">
     <div class="route-dialog-heading"><span class="eyebrow">这条数据通路在做什么？</span><button id="route-close" class="quiet" aria-label="关闭通路说明" autofocus>关闭 ×</button></div>
-    <h2 id="route-title"></h2><p id="route-direction" class="route-direction"></p>
-    <p id="route-hint" class="route-hint"></p><p id="route-status" class="route-status"></p><p id="route-interface" class="route-interface"></p>
+    <h2 id="route-title"></h2><div id="route-direction" class="route-direction" aria-label="从哪个模块交给哪个模块"></div>
+    <div class="route-payload-line"><span>线上传的是什么？</span><strong id="route-payload"></strong></div>
+    <p id="route-hint" class="route-hint"></p>
+    <div class="route-example-box"><span>放到本网站的小任务里看</span><p id="route-example"></p></div>
+    <p id="route-status" class="route-status"></p>
+    <details id="route-technical" class="route-technical"><summary>想看接口细节，再展开这里</summary><p id="route-interface" class="route-interface"></p><p>带 VALID / READY 的通路：发送方说“东西准备好了”，接收方说“我能接”，两边都同意才在这一拍交过去。</p></details>
     <p class="route-dismiss">点击空白处或按 Esc 可关闭；打开说明时已暂停播放。</p>
   </dialog>
   <div id="toast" role="status" aria-live="polite"></div>
@@ -539,75 +545,84 @@ window.createNPUSteps = ({frames,cases,lessons,num,one,fire}) => cases.map(c=>{
     ["conv_event", "fifo", "events", "M1335 670 H1360 V128 H1005 V105", "conv_event_set (after drain)", 1100, 128],
   ].map(([id, from, to, path, label, x, y]) => ({id, from, to, path, label, x, y}));
   const edgeMap = Object.fromEntries(edges.map(e => [e.id, e]));
+  // Titles use everyday verbs; payloads separate requests, instructions,
+  // detailed descriptions, real numbers, and completion messages.
   const routeHints = {
-    host_csr:["任务配置与启动","处理器在这里写入任务位置和启动开关，也可以读取运行状态。就像把工作交给 NPU，并查询它是否做完。"],
-    loader_fetch:["指令区起点","任务装载模块告诉取指单元：这次程序的指令放在 DDR 的哪里。取指单元据此找到第一张派工单。"],
-    fetch_cp:["命令交接","把从 DDR 取回的一条命令交给指令处理器。命令说明要执行 LOAD、卷积或其他操作，处理器检查后再派工。"],
-    cp_events:["完成标记检查","把各项工作的完成标记交给指令处理器。WAIT 检查指定标记是否全亮，满足条件后才继续。"],
-    done_csr:["整个任务完成通知","指令处理器确认所有单元收工后，把整个任务已完成的消息送到状态寄存器。"],
-    csr_irq:["处理器中断通知","状态寄存器根据中断配置通知处理器：NPU 的任务完成了，可以来读取状态和结果。"],
-    cp_df:["DMA 命令派发","控制器把搬运派工单交给 DMA 前端。前端先读说明、算地址，准备好后才交给搬运引擎。"],
-    cp_ef:["计算命令派发","控制器把卷积、残差相加或上采样命令交给执行前端，由前端查齐说明，再启动相应运算单元。"],
-    fetch_req:["下一条命令的读取申请","取指单元申请从 DDR 读取一条命令。这里送的是读取申请，还没有送回命令内容。"],
-    fetch_res:["取回的命令","仲裁模块把已经读完整的命令交回取指单元。它可能是提前取回的下一条指令，暂存后等待执行。"],
-    df_req:["搬运说明的读取申请","DMA 前端需要查数据的位置、形状或参数信息，向共用的收发模块申请读取描述符。这里读的是说明，实际数据稍后再搬。"],
-    df_res:["搬运说明返回","把读齐的描述符交回 DMA 前端，让它知道数据在哪里、尺寸是多少，再据此计算搬运路线。"],
-    ef_req:["计算说明的读取申请","执行前端申请读取卷积或其他运算需要的详细说明，例如数据尺寸、步长和存放位置。"],
-    ef_res:["计算说明返回","把读齐的说明交回执行前端，用来准备并启动卷积、残差相加或上采样。"],
-    mem_block:["获准执行的块读取申请","共用仲裁模块选出一个读取申请，把地址和长度交给块读取器。多个单元想读说明或命令时，需要在这里排队。"],
-    block_read:["命令与说明的 DDR 读地址","块读取器把命令或描述符的读取地址送到读仲裁器，等待它安排访问 DDR。"],
-    read_block:["命令与说明的返回数据","读仲裁器把 DDR 返回的小数据块送回块读取器。块读取器把它们拼成完整命令或描述符，再交给申请者。"],
-    df_dma:["算好的搬运路线","DMA 前端把起始地址、长度、行间隔和必要的清零信息交给搬运引擎。前端负责规划，引擎按路线真正搬数据。"],
-    dma_a:["输入写入 A 工作区","搬运引擎把从 DDR 读回的输入存入 A 工作区，供卷积读取；准备输入时也通过这条线写入填充用的 0。"],
-    dma_w:["权重与参数写入 W 工作区","把从 DDR 读回的权重、偏置或缩放参数存入 W 工作区，供卷积和残差相加使用。"],
-    dma_o:["输出数据交给搬运引擎","O 工作区把计算结果读给 DMA 引擎，引擎暂存后再送回 DDR。本例通道 0 的结果是 9。"],
-    dma_o_req:["申请读取 O 中的结果","DMA 引擎告诉 O 工作区要读取哪个位置。同步存储器收到申请后，后续周期才返回数据。"],
-    a_req:["卷积输入的读取申请","卷积控制器向 A 工作区申请读取当前卷积位置的输入。申请携带位置，数据从另一条返回通路送回。"],
-    a_mac:["卷积输入返回","A 工作区把一组 8 个输入通道交给卷积控制器。本例通道 0 的输入为 3，等对应权重到齐后再一起计算。"],
-    w_req:["卷积权重与参数的读取申请","卷积控制器向 W 工作区申请读取权重，或提前读取后处理要用的偏置与缩放参数。"],
-    w_mac:["卷积权重与参数返回","W 工作区把权重或预取参数交给卷积控制器。本例参与计算的权重为 2；权重和输入需要对应到同一组通道。"],
-    ef_conv:["启动卷积并交接说明","执行前端把卷积尺寸、分块说明、工作区选择和完成事件交给卷积控制器，让它开始安排读取和计算。"],
-    ctrl_mac:["输入与权重进入 MAC","控制器把读齐并对齐的输入、权重和本组数据的控制信息送入 MAC。本例开始计算 3 × 2。"],
-    mac_buf:["累加结果进入缓冲","MAC 把 8 个输出通道的整数累加结果交给寄存缓冲。本例通道 0 得到 6，缓冲先接住它，等待后处理取走。"],
-    buf_post:["累加结果交给后处理","缓冲把算好的结果交给后处理单元，逐通道加偏置、缩放、舍入并限制范围。本例 6 调整后仍是 6。"],
-    post_fifo:["处理结果进入写回队列","后处理把可保存的 8 通道结果送入写回 FIFO。先进入队列，再由队列写入 O，两个交接可以发生在不同周期。"],
-    fifo_o:["卷积结果写入 O","写回队列把结果存入 O 工作区。本例保存通道 0 的值 6；队列排空后才能宣布卷积完成。"],
-    ef_vec:["启动残差相加","执行前端把命令和计算说明交给残差相加单元，开始读取两份特征并准备相加。"],
-    vec_ef:["残差相加完成通知","残差相加单元通知执行前端结果已经存好，执行前端随后解除控制器对这条同步指令的等待。"],
-    vec_req:["保留输入的读取申请","残差相加单元申请从 A 工作区读取旁路保留的输入。本例需要拿回原来的 3。"],
-    vec_wreq:["残差缩放参数的读取申请","残差相加单元申请从 W 工作区读取缩放参数，让保留输入与卷积结果的数值尺度一致。"],
-    vec_oreq:["卷积结果的读取申请","残差相加单元申请读取 O 工作区里的卷积结果。本例需要拿到刚算好的 6。"],
-    a_vec:["保留的输入返回","A 工作区把原输入交给残差相加单元，本例通道 0 为 3。它会先按残差缩放参数调整，再参与相加。"],
-    w_vec:["残差缩放参数返回","W 工作区把残差专用的缩放配方交给相加单元。本例比例为 1，因此 3 调整后仍然是 3。"],
-    o_vec:["卷积结果返回","O 工作区把卷积结果交给残差相加单元。本例通道 0 为 6，等另一份特征也到齐后再相加。"],
-    vec_o:["残差相加结果写入 O","把对应通道的两份特征相加并存回 O。本例 6 + 3 = 9；若超出可保存范围，会限制在边界值。"],
-    ef_up:["启动上采样并交接位置","执行前端把命令、输入说明和输出说明交给上采样单元，让它知道从 DDR 哪里读、复制后写到哪里。"],
-    up_ef:["上采样完成通知","上采样单元确认复制后的输出已写完并收到内存确认，通知执行前端结束这条同步指令。"],
-    ddr_r:["DDR 返回的读数据","DDR 把读取的数据送给读仲裁器。仲裁器按这次读事务的归属，把数据交给块读取器、DMA 或上采样。"],
-    read_ddr:["发往 DDR 的读地址","读仲裁器把选中的起始地址和读取长度交给 DDR。地址申请被接收后，DDR 才从返回通路送出数据。"],
-    read_dma:["DDR 数据交给 DMA","把属于 DMA 搬运的返回数据送给搬运引擎，引擎随后把它写入 A 或 W 工作区。"],
-    dma_read:["实际搬运的 DDR 读取申请","DMA 引擎申请读取输入、权重或参数本身。说明和地址已经准备好，这次申请才是为搬实际数据。"],
-    dma_write:["DMA 写地址与结果数据","DMA 引擎把写地址和从 O 读出的结果数据交给写仲裁器，安排写回 DDR。地址和数据各有自己的交接。"],
-    write_dma:["DDR 写入确认交给 DMA","写仲裁器把内存的写入确认交给 DMA。数据发完后仍需这份确认，搬运才算完成。"],
-    write_ddr:["发往 DDR 的写地址与数据","写仲裁器把获准的写地址和数据送到 DDR，来源可能是 DMA 或上采样。发完数据后还要等待返回的写入确认。"],
-    ddr_b:["DDR 写入确认","DDR 返回这次写事务的状态，由写仲裁器交给发起写入的单元。它是一条确认消息，不携带像素数据。"],
-    up_read:["上采样的 DDR 读取申请","上采样单元申请从 DDR 读取原来的一行。先读入本地行缓冲，复制时就能反复使用。"],
-    read_up:["原始像素进入行缓冲","把 DDR 返回的数据交给上采样单元，存进它的行缓冲。本例原像素通道 0 为 9，之后要复制成四个像素。"],
-    up_write:["复制后的像素写回 DDR","上采样单元把复制后的行和像素交给写仲裁器，安排写回 DDR。本例一个像素扩展为 2 × 2 的四个像素。"],
-    write_up:["DDR 写入确认交给上采样","内存确认一段输出已经写完后，写仲裁器把确认交给上采样单元。全部输出确认后才报告完成。"],
-    dma_event:["搬运完成标记","DMA 完成指定搬运后点亮相应完成标记，让 WAIT 知道输入、参数或写回结果已经准备好。"],
-    conv_event:["卷积完成标记","卷积结果已经写入 O，流水线和写回队列也已排空，这时才点亮完成标记，让后续工作安全使用结果。"],
+    host_csr:["告诉 NPU：开始干活","设置和启动按钮","处理器告诉 NPU 任务放在哪里，然后按下启动按钮。","就像先把作业放到桌上，再说：开始做这份作业。"],
+    loader_fetch:["告诉取指单元：命令在哪里","命令的存放位置","任务准备器告诉取指单元去哪里拿命令。","知道派工单放在哪一格，才能从第一张开始拿。"],
+    fetch_cp:["把派工单交给控制器","一条命令","取指单元把命令交给控制器，告诉它接下来要搬数据还是做计算。","拿到 LOAD，就安排搬运；拿到 CONV，就安排卷积。"],
+    cp_events:["告诉控制器：哪些工作做完了","一组完成指示灯","控制器看这些灯，判断需要等待的工作是否已经做完。","等输入和权重的灯都亮了，WAIT 才放行。"],
+    done_csr:["告诉控制面板：整个任务做完了","完成消息","控制器确认大家都收工后，更新控制面板上的完成状态。","输入 3 已经算成结果 9，并复制成四个像素，这份任务结束。"],
+    csr_irq:["通知处理器：可以来取结果了","完成提醒","控制面板通知外部处理器，NPU 已经完成任务。","就像作业做完后举手，让老师来检查结果。"],
+    cp_df:["把搬运工作交给准备员","搬运命令","控制器把 LOAD 或 STORE 交给搬运准备员，让它先查位置、算路线。","LOAD 输入：把 DDR 里的输入搬到 A；STORE：把 O 的结果送回 DDR。"],
+    cp_ef:["把计算工作交给准备员","计算命令","控制器让计算准备员查齐资料，再启动对应的计算器。","CONV 做乘加，VEC_ADD 做相加，UPSAMPLE 做像素复制。"],
+    fetch_req:["申请拿下一张派工单","读取命令的申请","取指单元说：请从 DDR 把下一条命令拿给我。","这里传的是“我要哪条命令”，命令内容会从另一条线返回。"],
+    fetch_res:["把取回的命令交给取指单元","一条取回的命令","命令已经从 DDR 拿回来了，现在交给取指单元暂存。","当前还在等权重 LOAD，下一条偏置 LOAD 的命令也可以先拿回来。"],
+    df_req:["申请查搬运用的说明","读取说明的申请","搬运准备员问：数据放在哪里，有多大？请把对应说明拿来。","准备 LOAD 时先查位置和大小；输入 3 或权重 2 要等后面才搬。"],
+    df_res:["把搬运说明交给准备员","位置、大小等详细说明","说明查到了，交给搬运准备员，让它安排从哪里搬、搬多少。","就像拿到货物清单后，才能规划取货路线。"],
+    ef_req:["申请查计算用的说明","读取说明的申请","计算准备员问：这次用哪些输入、结果放哪里？请把对应说明拿来。","做卷积前，需要知道输入尺寸和卷积核大小。"],
+    ef_res:["把计算说明交给准备员","计算需要的详细说明","把查到的资料交给计算准备员，让它安排这次计算。","说明写着怎么组织数据；真正的输入 3 和权重 2 还要另外读取。"],
+    mem_block:["轮到这份读取申请了","要读的位置和长度","排队处选出一份申请，让读取器去 DDR 取东西。","取命令和查说明共用一个读取器，需要按顺序安排。"],
+    block_read:["申请从 DDR 拿命令或说明","读取位置和数量","读取器说：请从 DDR 的这个位置取这么多内容。","就像告诉仓库：去第几格，拿几份资料。"],
+    read_block:["把拿回的资料交给读取器","命令或说明的一部分","从 DDR 拿回的资料分几小份送来，读取器把它们收齐。","资料收完整后，再交给取指单元或准备员。"],
+    df_dma:["告诉搬运工：按这条路线搬","算好的搬运路线","准备员把起点、数量和摆放位置交给搬运工，让它开始搬。","准备员负责查清楚，搬运工负责把数据真正送过去。"],
+    dma_a:["把输入放进 A","输入数值，也可能是清零用的 0","搬运工把输入存到 A，计算时就能在 NPU 内部直接取用。","先把工作区清零，再把输入 3 放到有效位置。"],
+    dma_w:["把权重和参数放进 W","权重、偏置或缩放参数","搬运工把计算要用的数值存到 W，留给计算器读取。","这个小任务的权重是 2，偏置是 0，缩放比例是 1。"],
+    dma_o:["把 O 的结果交给搬运工","计算结果","O 把已经算好的结果交给搬运工，准备送回 DDR。","这里拿到的结果是 9，接着把它搬到外部仓库。"],
+    dma_o_req:["申请拿 O 里的结果","读取结果的申请","搬运工说：请把 O 里这个位置的结果拿给我。","先提出申请，稍后才从另一条返回线收到结果 9。"],
+    a_req:["申请拿卷积要用的输入","读取输入的申请","卷积调度器向 A 要当前要计算的输入。","相当于说：请把这次计算需要的输入 3 拿给我。"],
+    a_mac:["把输入交给卷积调度器","输入数值","A 把读出的输入交给卷积调度器，等权重也到齐后再计算。","本例有一组 8 个数，其中第一个是 3，其余都是 0。"],
+    w_req:["申请拿卷积用的权重或参数","读取权重或参数的申请","卷积调度器向 W 要计算需要的权重，或后面调整数值要用的参数。","相当于说：请把权重 2 拿来；偏置和缩放配方也要准备好。"],
+    w_mac:["把权重或参数交给卷积调度器","权重或调整数值的参数","W 把需要的数值交给卷积调度器。","输入 3 与对应的权重 2 都拿到后，才能送去相乘。"],
+    ef_conv:["告诉卷积调度器：开始计算","卷积说明和启动消息","计算准备员交齐资料，让卷积调度器开始取输入和权重。","知道用哪块 A、哪块 W，再安排计算 3 × 2。"],
+    ctrl_mac:["把输入和权重一起送去计算","配对的输入与权重","卷积调度器把输入和对应权重一起交给乘加计算器。","这里送入 3 和 2，后面的计算器会算出 3 × 2 = 6。"],
+    mac_buf:["把算出的 6 暂时存起来","乘加结果","乘加计算器把结果交给暂存区，等后面的数值调整器来取。","算好了先放在这里，后面的模块慢一点也能接住结果。"],
+    buf_post:["把结果交给数值调整器","还需要调整的计算结果","暂存区把结果交出去，加偏置、调整大小，再限制到能保存的范围。","本例偏置为 0、比例为 1，所以 6 调整后仍是 6。"],
+    post_fifo:["让处理好的结果排队保存","调整好的结果","数值调整器把结果交给排队区，等待写入 O。","就像做好一道题，先放到待收作业区，再存进结果本。"],
+    fifo_o:["把卷积结果 6 存进 O","卷积计算结果","排队区把结果正式存入 O，后面的相加计算就能读取它。","相加时会从 O 取出这个 6，再加上保留的输入 3。"],
+    ef_vec:["告诉相加计算器：开始干活","相加说明和启动消息","计算准备员让相加计算器拿到两份数据后，把对应位置相加。","一份是卷积结果 6，一份是保留的输入 3。"],
+    vec_ef:["报告：相加结果已经存好了","相加完成消息","相加计算器告诉准备员，这项工作已经完成，可以继续下一条命令。","结果 9 已经存到 O，控制器可以安排把它送回 DDR。"],
+    vec_req:["申请拿保留的原输入","读取输入的申请","相加计算器向 A 要之前保留下来的输入。","这一份是原来的 3，准备和卷积结果 6 相加。"],
+    vec_wreq:["申请拿相加前的缩放配方","读取参数的申请","相加计算器向 W 要配方，把两份数调整到可直接相加的尺度。","本例配方的比例是 1，原输入 3 不需要改变大小。"],
+    vec_oreq:["申请拿卷积算出的结果","读取结果的申请","相加计算器向 O 要卷积刚算好的结果。","这一份是 6，还要等另一份 3 到齐。"],
+    a_vec:["把保留的 3 交给相加计算器","保留的输入数值","A 把原输入交给相加计算器，作为第二份要相加的数据。","卷积结果 6 加上这份原输入 3，得到 9。"],
+    w_vec:["把缩放配方交给相加计算器","缩放参数","W 告诉相加计算器，原输入要先放大或缩小多少。","本例比例是 1，所以 3 调整后还是 3。"],
+    o_vec:["把卷积结果 6 交给相加计算器","卷积计算结果","O 把卷积结果交给相加计算器，作为第一份要相加的数据。","还需要另一条线送来原输入 3，才能算出 9。"],
+    vec_o:["把相加结果 9 存进 O","相加后的结果","相加计算器把新结果写回 O，替换之前的卷积结果。","O 里原来是 6，这次算出 6 + 3 = 9 后，存进去的是 9。"],
+    ef_up:["告诉像素复制器：开始复制","输入、输出位置和启动消息","计算准备员告诉像素复制器从哪里读、复制后写到哪里。","本例把一个像素放大为 2 × 2 的四个像素。"],
+    up_ef:["报告：四个像素都写好了","上采样完成消息","像素复制器确认输出写完后，告诉准备员可以继续下一条命令。","四个输出像素的第一个通道都是 9。"],
+    ddr_r:["仓库把读出的内容送回来","从 DDR 读出的内容","DDR 把读取的内容送到分配处，由它转交给提出申请的模块。","可能送来命令、说明、输入或权重，要看这次是谁申请的。"],
+    read_ddr:["告诉仓库：从哪里取、取多少","读取位置和数量","读取分配处把排到的申请送给 DDR，让它开始取内容。","这条线先交代要取什么，取到的内容稍后从返回线送回来。"],
+    read_dma:["把仓库取来的数据交给搬运工","输入、权重或参数数值","分配处把属于这次搬运的数据交给搬运工。","输入 3 会接着存入 A；权重 2 会接着存入 W。"],
+    dma_read:["搬运工申请去仓库取数据","读取数据的申请","搬运工按算好的路线，申请从 DDR 取输入、权重或参数。","取输入 3 的位置已经算好，现在可以开始这趟搬运。"],
+    dma_write:["搬运工交出要存回仓库的结果","存放位置和计算结果","搬运工把结果和要保存的位置交给写入排队处。","本例准备把 O 里的 9 保存到 DDR。"],
+    write_dma:["告诉搬运工：仓库已经处理这次写入","写入回复","仓库对写入做出回复，排队处把回复交给搬运工检查。","不能只看结果发出去了，还要等仓库回复这次写入是否成功。"],
+    write_ddr:["把结果送进仓库","写入位置和数据","写入排队处把排到的数据送给 DDR 保存。","可能保存相加结果 9，也可能保存复制后的四个像素。"],
+    ddr_b:["仓库回复这次写入的结果","写入成功或出错的回复","DDR 把写入状态告诉排队处，再由它交给搬运工或像素复制器检查。","就像交完作业后等一句回复：收到了，或者这次出了问题。"],
+    up_read:["申请从仓库拿原来的像素","读取原像素的申请","像素复制器申请从 DDR 取原来的一行数据。","先拿到原像素，后面才能把它复制四份。"],
+    read_up:["把原像素交给复制器暂存","原像素的数值","从 DDR 取回原像素，放到复制器内部的暂存区。","本例第一个通道为 9，其他通道为 0，复制时反复使用这一份。"],
+    up_write:["把复制后的像素送回仓库","复制后的像素数据","像素复制器把复制好的输出送到写入排队处，准备存进 DDR。","一个像素横着写两份，再把这一行写两份，得到四个像素。"],
+    write_up:["把仓库的写入回复交给复制器","写入回复","像素复制器检查仓库的回复，确认这批输出是否保存成功。","全部输出都收到成功回复后，才报告复制完成。"],
+    dma_event:["搬完了，点亮对应的完成灯","搬运完成通知","搬运工做完这项工作后，把对应的完成灯点亮。","输入已放进 A，输入完成灯亮；WAIT 就能看到输入已准备好。"],
+    conv_event:["结果存好了，点亮卷积完成灯","卷积完成通知","卷积结果已经存进 O，待保存的队列也清空了，这时点亮完成灯。","只有这盏灯亮了，后面才可以安全地拿 6 去与 3 相加。"],
   };
+  const routeNodeNames={host:"处理器",csr:"控制面板",loader:"任务准备器",fetch:"取指单元",cp:"指令控制器",events:"完成指示灯",irq:"完成通知",mem:"读取申请排队处",df:"搬运准备员",ef:"计算准备员",block:"命令和说明读取器",dma:"搬运工",ddr:"外部仓库 DDR",read:"读取分配处",write:"写入排队处",a:"输入存放区 A",w:"权重与参数区 W",o:"结果存放区 O",controller:"卷积调度器",mac:"乘加计算器",buffer:"结果暂存区",post:"数值调整器",fifo:"结果排队区",vec:"相加计算器",up:"像素复制器"};
   let selectedRoute=null,routeTrigger=null;
   function showRoute(id,trigger){
     pause();selectedRoute=id;routeTrigger=trigger;
-    const e=edgeMap[id],[title,hint]=routeHints[id];
+    const e=edgeMap[id],[title,payload,hint,example]=routeHints[id];
     $("route-title").textContent=title;
-    $("route-direction").textContent=nodeMap[e.from].title+" → "+nodeMap[e.to].title;
+    $("route-direction").replaceChildren(...[e.from,null,e.to].map(node=>{
+      if(node===null)return textBox("span","→","route-direction-arrow");
+      const box=document.createElement("div");box.append(textBox("strong",routeNodeNames[node]),textBox("span",nodeMap[node].title));return box;
+    }));
+    $("route-payload").textContent=payload;
     $("route-hint").textContent=hint;
+    $("route-example").textContent=example;
     $("route-interface").textContent="图中接口标注："+e.label;
+    $("route-technical").open=false;
     const d=describe(frames[position]),visible=stepMode()?stepActivities(d):d;
-    $("route-status").textContent=`当前 K+${position-chosen.start}：`+(d.active.has(id)?"本上升沿发生交接。"+(visible.active.has(id)?"":"这属于并行活动，逐步骤框图暂未高亮。") :d.wait.has(id)?"申请已经有效，正在等待接收方允许交接。":"当前采样未标记这条通路发生交接；可以在其他步骤查看它。")+" 图中的箭头表示申请、数据或通知的方向，接收许可 READY 通常沿相反方向返回。";
+    $("route-status").textContent=`这一拍（K+${position-chosen.start}）：`+(d.active.has(id)?"东西正在沿这条线交过去。"+(visible.active.has(id)?"":"它正在帮助另一项同时进行的工作，所以当前步骤没有把它点亮。") :d.wait.has(id)?"还没交出去，对面还没准备好接收。":"画面没有标出这条线在传东西。点击它是查看用途，不会启动传输。");
     edges.forEach(edge=>$("edge-"+edge.id).classList.toggle("inspected",edge.id===id));
     $("route-dialog").showModal();
   }
