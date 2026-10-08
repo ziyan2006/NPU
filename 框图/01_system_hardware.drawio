@@ -1,0 +1,277 @@
+<?xml version='1.0' encoding='utf-8'?>
+<mxfile host="app.diagrams.net">
+  <diagram name="01_system_hardware">
+    <mxGraphModel page="1" pageWidth="1920" pageHeight="1390">
+      <root>
+        <mxCell id="0" />
+        <mxCell id="1" parent="0" />
+        <mxCell id="2" parent="1" value="Zynq-7020 人声分离 NPU · 系统硬件框图" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=34;fontColor=#253343;">
+          <mxGeometry x="501.0" y="31.0" width="918" height="34" as="geometry" />
+        </mxCell>
+        <mxCell id="3" parent="1" value="当前实现：PS 控制 + DDR 存储 + PL 可编程 CNN 加速器" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#77818b;">
+          <mxGeometry x="600.0" y="86.0" width="720" height="20" as="geometry" />
+        </mxCell>
+        <mxCell id="4" parent="1" value="Zynq XC7Z020" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#35485b;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=23;fontColor=#253343;verticalAlign=top;spacingTop=12;align=left;spacingLeft=15;">
+          <mxGeometry x="330" y="170" width="1540" height="1080" as="geometry" />
+        </mxCell>
+        <mxCell id="5" parent="1" value="PS · 处理系统" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#f8fafc;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;dashed=1;verticalAlign=top;spacingTop=12;align=left;spacingLeft=15;">
+          <mxGeometry x="355" y="225" width="300" height="980" as="geometry" />
+        </mxCell>
+        <mxCell id="6" parent="1" value="PL · 可编程逻辑" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fcfdff;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;dashed=1;verticalAlign=top;spacingTop=12;align=left;spacingLeft=15;">
+          <mxGeometry x="680" y="225" width="1150" height="980" as="geometry" />
+        </mxCell>
+        <mxCell id="7" parent="1" value="NPU IP：npu_top / npu_core" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#ffffff;strokeColor=#4d8eaf;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;dashed=1;verticalAlign=top;spacingTop=12;align=left;spacingLeft=15;">
+          <mxGeometry x="875" y="285" width="925" height="890" as="geometry" />
+        </mxCell>
+        <mxCell id="8" parent="1" value="板载 DDR3L&lt;br&gt;1 GiB / 32-bit&lt;br&gt;任务 · 权重 · 输入 / 输出" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff1dc;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;">
+          <mxGeometry x="35" y="570" width="255" height="180" as="geometry" />
+        </mxCell>
+        <mxCell id="9" parent="1" value="ARM Cortex-A9&lt;br&gt;任务提交 / 结果检查&lt;br&gt;裸机 NPU 驱动" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8eef8;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;">
+          <mxGeometry x="390" y="325" width="230" height="125" as="geometry" />
+        </mxCell>
+        <mxCell id="10" parent="1" value="PS 内部互连&lt;br&gt;与 DDR 控制器" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e8eef8;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;">
+          <mxGeometry x="390" y="580" width="230" height="150" as="geometry" />
+        </mxCell>
+        <mxCell id="11" parent="1" value="FCLK0：100 MHz&lt;br&gt;PS 复位输出" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#eef0f3;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;">
+          <mxGeometry x="390" y="940" width="230" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="12" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="505" y="450" as="sourcePoint" />
+            <mxPoint x="505" y="580" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="13" parent="1" value="存储器访问" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="525" y="506.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="14" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="290" y="655" as="sourcePoint" />
+            <mxPoint x="390" y="655" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="15" parent="1" value="DDR" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#147db3;">
+          <mxGeometry x="260.0" y="616.5" width="160" height="17" as="geometry" />
+        </mxCell>
+        <mxCell id="16" parent="1" value="CSR 控制 / 状态&lt;br&gt;npu_csr&lt;br&gt;基址 0x43C00000" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#faeaea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="950" y="330" width="240" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="17" parent="1" value="命令处理器 / 任务生命周期&lt;br&gt;译码 · 分派 · event · watchdog" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#faeaea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=20;fontColor=#253343;">
+          <mxGeometry x="1270" y="330" width="460" height="115" as="geometry" />
+        </mxCell>
+        <mxCell id="18" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="375" as="sourcePoint" />
+            <mxPoint x="950" y="375" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="19" parent="1" value="GP0 → AXI4-Lite（32-bit）" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#c94d4d;">
+          <mxGeometry x="596.0" y="342.0" width="368" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="20" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1190" y="388" as="sourcePoint" />
+            <mxPoint x="1270" y="388" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="21" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1030" y="330" as="sourcePoint" />
+            <mxPoint x="570" y="325" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1030" y="270" />
+              <mxPoint x="570" y="270" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="22" parent="1" value="IRQ_F2P：完成 / 错误中断" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=15;fontColor=#c94d4d;">
+          <mxGeometry x="622.5" y="286.5" width="255" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="23" parent="1" value="AXI 互连&lt;br&gt;与协议适配&lt;br&gt;AXI4 ↔ AXI3" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#253343;">
+          <mxGeometry x="700" y="570" width="150" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="24" parent="1" value="共享 AXI 访问&lt;br&gt;读 / 写仲裁器&lt;br&gt;64-bit 数据接口" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e5f2fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="915" y="570" width="220" height="190" as="geometry" />
+        </mxCell>
+        <mxCell id="25" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="670" as="sourcePoint" />
+            <mxPoint x="700" y="670" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="26" parent="1" value="HP0" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#147db3;">
+          <mxGeometry x="580.0" y="634.0" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="27" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="850" y="670" as="sourcePoint" />
+            <mxPoint x="915" y="670" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="28" parent="1" value="AXI4" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=14;fontColor=#147db3;">
+          <mxGeometry x="802.0" y="635.0" width="160" height="14" as="geometry" />
+        </mxCell>
+        <mxCell id="29" parent="1" value="任务 / 指令 / 描述符前端&lt;br&gt;Loader · Fetch · Cache · Execution Frontend" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#edf4fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=19;fontColor=#253343;">
+          <mxGeometry x="1190" y="485" width="540" height="95" as="geometry" />
+        </mxCell>
+        <mxCell id="30" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1500" y="445" as="sourcePoint" />
+            <mxPoint x="1500" y="485" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="31" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1025" y="570" as="sourcePoint" />
+            <mxPoint x="1190" y="533" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1025" y="533" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="32" parent="1" value="共享块读取" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#147db3;">
+          <mxGeometry x="1025.0" y="504.0" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="33" parent="1" value="DMA 前端 / 引擎&lt;br&gt;描述符解析 · 地址生成&lt;br&gt;DDR ↔ BRAM 搬运" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e5f2fa;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="1190" y="650" width="245" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="34" parent="1" value="UPSAMPLE2X&lt;br&gt;最近邻 2× 上采样&lt;br&gt;1 KiB 行缓冲" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6f3ea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="1480" y="650" width="250" height="100" as="geometry" />
+        </mxCell>
+        <mxCell id="35" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1305" y="580" as="sourcePoint" />
+            <mxPoint x="1305" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="36" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1605" y="580" as="sourcePoint" />
+            <mxPoint x="1605" y="650" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="37" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1135" y="705" as="sourcePoint" />
+            <mxPoint x="1190" y="705" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="38" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1080" y="760" as="sourcePoint" />
+            <mxPoint x="1605" y="750" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1080" y="790" />
+              <mxPoint x="1605" y="790" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="39" parent="1" value="直接访问 DDR" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#147db3;">
+          <mxGeometry x="1470.0" y="768.0" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="40" parent="1" value="片上 Scratchpad · BRAM（224 KiB）&lt;br&gt;A0/A1：各 64 KiB    W0/W1：各 32 KiB    O0/O1：各 16 KiB" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#fff1dc;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="1190" y="845" width="540" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="41" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1305" y="750" as="sourcePoint" />
+            <mxPoint x="1305" y="845" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="42" parent="1" value="64-bit DMA 端口" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#147db3;">
+          <mxGeometry x="1325" y="802.0" width="208" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="43" parent="1" value="CONV2D 计算通路&lt;br&gt;控制器 + 8×8 MAC&lt;br&gt;量化 / 激活 + 写回 FIFO" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6f3ea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="1190" y="1030" width="300" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="44" parent="1" value="VEC_ADD&lt;br&gt;残差重定标&lt;br&gt;饱和相加" vertex="1" style="rounded=0;whiteSpace=wrap;html=1;fillColor=#e6f3ea;strokeColor=#526475;strokeWidth=2;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#253343;">
+          <mxGeometry x="1530" y="1030" width="200" height="105" as="geometry" />
+        </mxCell>
+        <mxCell id="45" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1340" y="950" as="sourcePoint" />
+            <mxPoint x="1340" y="1030" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="46" parent="1" value="A/W 读取 · O 写回" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=15;fontColor=#147db3;">
+          <mxGeometry x="1112.5" y="980.5" width="195" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="47" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1630" y="950" as="sourcePoint" />
+            <mxPoint x="1630" y="1030" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="48" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1730" y="545" as="sourcePoint" />
+            <mxPoint x="1455" y="1030" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1770" y="545" />
+              <mxPoint x="1770" y="990" />
+              <mxPoint x="1455" y="990" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="49" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1770" y="990" as="sourcePoint" />
+            <mxPoint x="1695" y="1030" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="1695" y="990" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="50" parent="1" value="执&lt;br&gt;行&lt;br&gt;控&lt;br&gt;制" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#c94d4d;">
+          <mxGeometry x="1680.0" y="853.0" width="160" height="64" as="geometry" />
+        </mxCell>
+        <mxCell id="51" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#77818b;strokeWidth=2.4;endArrow=classic;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="620" y="995" as="sourcePoint" />
+            <mxPoint x="875" y="1155" as="targetPoint" />
+            <Array as="points">
+              <mxPoint x="740" y="995" />
+              <mxPoint x="740" y="1155" />
+            </Array>
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="52" parent="1" value="时钟 / 复位" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=16;fontColor=#77818b;">
+          <mxGeometry x="685.0" y="1127.0" width="160" height="16" as="geometry" />
+        </mxCell>
+        <mxCell id="53" parent="1" value="NPU 内部同一时钟域" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=15;fontColor=#77818b;">
+          <mxGeometry x="982.5" y="1148.5" width="165" height="15" as="geometry" />
+        </mxCell>
+        <mxCell id="54" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#147db3;strokeWidth=2.4;endArrow=classic;startArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="430" y="1300" as="sourcePoint" />
+            <mxPoint x="500" y="1300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="55" parent="1" value="数据 / 存储访问" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#147db3;">
+          <mxGeometry x="515" y="1291.0" width="162" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="56" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#c94d4d;strokeWidth=2.4;endArrow=classic;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="820" y="1300" as="sourcePoint" />
+            <mxPoint x="890" y="1300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="57" parent="1" value="控制 / 状态 / 中断" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#c94d4d;">
+          <mxGeometry x="905" y="1291.0" width="216" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="58" parent="1" edge="1" style="html=1;rounded=0;strokeColor=#77818b;strokeWidth=2.4;endArrow=classic;dashed=1;">
+          <mxGeometry relative="1" as="geometry">
+            <mxPoint x="1270" y="1300" as="sourcePoint" />
+            <mxPoint x="1340" y="1300" as="targetPoint" />
+          </mxGeometry>
+        </mxCell>
+        <mxCell id="59" parent="1" value="时钟 / 复位" vertex="1" style="text;html=1;align=left;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=18;fontColor=#77818b;">
+          <mxGeometry x="1355" y="1291.0" width="160" height="18" as="geometry" />
+        </mxCell>
+        <mxCell id="60" parent="1" value="功能框图：合并部分共享访问与握手信号。WM8960、I2S、STFT/iSTFT 与按键音频通路尚待系统集成。" vertex="1" style="text;html=1;align=center;verticalAlign=middle;fontFamily=Noto Sans CJK SC;fontSize=17;fontColor=#77818b;">
+          <mxGeometry x="492.5" y="1341.5" width="935" height="17" as="geometry" />
+        </mxCell>
+      </root>
+    </mxGraphModel>
+  </diagram>
+</mxfile>
