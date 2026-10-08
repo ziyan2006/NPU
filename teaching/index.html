@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>NPU 时钟实验室 · 硬件与数据流教学</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="trace.js" defer></script>
+  <script src="app.js" defer></script>
+</head>
+<body>
+  <header class="masthead">
+    <div class="brand"><span class="brand-mark" aria-hidden="true">N</span><div><span class="eyebrow">STEM NPU / INTERACTIVE LAB</span><h1>NPU 时钟实验室</h1></div></div>
+    <div class="header-meta"><span class="badge"><i></i>真实 RTL 轨迹</span><span>100 MHz · 每周期 10 ns</span><a href="README.md">使用说明 ↗</a></div>
+  </header>
+  <main>
+    <section class="intro"><div><h2>跟着一个时钟，看懂一次运算。</h2><p>选一条指令，观察模块如何接收、处理和传递数据。点击硬件模块，还能查看它的接口与源码。</p></div><button id="help-button" class="quiet" aria-expanded="false" aria-controls="guide">第一次使用？</button></section>
+    <aside id="guide" class="guide" hidden><strong>推荐从 CONV2D 开始</strong><p>先点“下一关键沿”看描述符读取，再看 A / W 数据进入 MAC，最后看后处理与 O0 写回。想检查中间的等待，使用“下一时钟”或拖动时间轴。青色箭头表示本上升沿确实完成传输；VALID 和 READY 必须同时为 1。</p><p>ASYNC 表示“派发后允许继续执行后续指令”；SATURATE 表示“超出整数范围时夹到边界”；FUSED_POST 表示“把量化与激活合在卷积后处理里”。</p><p>这是一个固定小任务的仿真回放。每条指令保留任务中的上下文，因此异步 DMA / CONV2D 执行时，后续 WAIT 或取指可能同时活动。</p></aside>
+    <section class="toolbar panel" aria-label="演示控制">
+      <div class="select-group"><label for="instruction">选择指令</label><select id="instruction"></select></div>
+      <div class="select-group case-group"><label for="case">任务中的实例</label><select id="case"></select></div>
+      <div class="divider"></div>
+      <div class="buttons"><button id="reset" title="回到这个实例的起点">↺ 起点</button><button id="prev" aria-label="上一时钟">←</button><button id="play" class="primary">▶ 播放</button><button id="next">下一时钟 →</button><button id="key-next" class="accent">下一关键沿 ⇥</button></div>
+      <div class="select-group speed-group"><label for="speed">播放速度</label><select id="speed"><option value="2">2 周期 / 秒</option><option value="8" selected>8 周期 / 秒</option><option value="30">30 周期 / 秒</option></select></div>
+    </section>
+    <section class="clock-strip panel" aria-label="时间轴">
+      <div class="clock-readout"><span class="eyebrow">当前上升沿</span><strong id="clock">K + 0</strong><span id="absolute-clock"></span></div>
+      <div class="timeline"><div class="timeline-top"><span id="time-range"></span><span id="progress-label"></span></div><label class="sr-only" for="seek">选择时钟</label><input id="seek" type="range" min="0" max="1" value="0"><div class="timeline-bottom"><span id="duration"></span><span>← / → 单步 · 空格播放 · N 下一关键沿</span></div></div>
+      <div class="phase-label"><span class="eyebrow">指令处理器</span><code id="cp-state"></code></div>
+    </section>
+    <div class="workspace">
+      <section class="diagram-panel panel"><div class="panel-heading"><div><span class="eyebrow">01 / HARDWARE</span><h3>硬件与当前数据流</h3></div><div class="legend"><span><i class="transfer"></i>本沿传输</span><span><i class="busy"></i>处理中</span><span><i class="stall"></i>握手等待</span></div></div><div class="diagram-scroll"><svg id="diagram" viewBox="0 0 1400 810" role="img" aria-label="NPU 内部硬件框图，点击模块查看说明"></svg></div><div class="diagram-footer"><span>框图以 npu_core 实例连接为依据；MAC 内部流水级在下方展开。</span><div class="diagram-actions"><label for="diagram-zoom">缩放</label><select id="diagram-zoom"><option value="fit">适配窗口</option><option value="100">100%</option><option value="125">125%</option></select><button id="download-svg" class="quiet">保存 SVG ↓</button></div></div></section>
+      <aside class="inspector"><section class="panel step-panel"><span class="eyebrow">02 / THIS EDGE</span><h3 id="edge-title"></h3><div id="edge-detail"></div><div id="handshakes"></div><div class="next-state"><span>本沿后 CP 状态</span><code id="after-state"></code></div></section><section class="panel module-panel"><span class="eyebrow">MODULE INSPECTOR</span><h3 id="module-title"></h3><p id="module-detail"></p><div id="module-io"></div><a id="module-source" target="_blank" rel="noopener">查看 RTL 源码 ↗</a></section></aside>
+    </div>
+    <section class="panel pipeline-panel"><div class="panel-heading"><div><span class="eyebrow">03 / DATAPATH</span><h3>MAC 流水线与存储结果</h3></div><span class="subtle">无停顿时，接收输入后第 4 个周期产生结果</span></div><div class="datapath-grid"><div><div id="mac-pipeline" class="mac-pipeline"></div><p class="subtle pipeline-note">64 路 INT16 × INT8 乘法 → 8 路 INT32 累加。单个输入 token 走完流水线，不代表整条 CONV2D 已完成。</p></div><div id="memory-values" class="memory-values"></div></div></section>
+    <section class="panel wave-panel"><div class="panel-heading"><div><span class="eyebrow">04 / TIMING</span><h3>握手与状态波形</h3></div><div class="wave-options"><label for="wave-width">观察窗口</label><select id="wave-width"><option value="16">16 周期</option><option value="32" selected>32 周期</option><option value="64">64 周期</option></select><button id="export-trace" class="quiet">导出本实例 CSV ↓</button></div></div><div class="wave-scroll"><svg id="wave" role="img" aria-label="时钟、握手与状态波形，点击跳转到对应周期"></svg></div><p class="wave-note">信号采样于上升沿前；光标对应的 VALID ∧ READY 在本上升沿被接收。虚线标记握手等待，X 表示尚未定义的信号。</p></section>
+    <section class="panel program-panel"><div class="panel-heading"><div><span class="eyebrow">05 / TASK CONTEXT</span><h3>这个小任务如何串起来</h3></div><span class="subtle">输入 3 → 卷积 6 → 残差 9 → 2 × 2 输出</span></div><div id="program"></div><div id="instruction-info" class="instruction-info"></div></section>
+    <footer><span id="trace-meta"></span><span>离线可用 · 不依赖网络字体或前端框架 · <a href="../框图/03_npu_internal_io.svg" target="_blank" rel="noopener">原始 NPU 框图 ↗</a></span></footer>
+  </main>
+  <div id="toast" role="status" aria-live="polite"></div>
+  <noscript>请启用 JavaScript，以播放 NPU 时钟轨迹。</noscript>
+</body>
+</html>
