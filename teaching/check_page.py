@@ -84,6 +84,9 @@ def check_browser(screenshot=False):
             assert page.evaluate("NPULab.mode === 'steps'")
             assert page.locator("#wave-panel").is_visible()
             assert page.locator("#key-next").is_hidden()
+            # The block reader has separate request and response connections,
+            # and the response is driven by its real VALID/READY handshake.
+            assert page.evaluate("NPULab.frames.every(f=>NPULab.describe(f).active.has('block_mem')===(f[NPULab.signals.block_res_v]==='1'&&f[NPULab.signals.block_res_r]==='1'))")
             page.select_option("#speed","30")
             page.click("#play")
             page.wait_for_function("NPULab.teachingStep.index === 1")
@@ -109,6 +112,17 @@ def check_browser(screenshot=False):
                 assert page.evaluate("NPULab.teachingStep.index")==count-2
             page.select_option("#instruction","DMA_LOAD")
             page.select_option("#case","1")
+            page.locator("#lesson-chapters button").filter(has_text="读齐这次工作所需的说明").click()
+            assert "active" in page.locator("#edge-block_mem").get_attribute("class")
+            assert "active" in page.locator("#edge-df_res").get_attribute("class")
+            page.locator("#edge-block_mem").focus()
+            page.locator("#edge-block_mem").press("Enter")
+            assert "拼完整" in page.locator("#route-title").inner_text()
+            assert "最初要资料的模块" in page.locator("#route-hint").inner_text()
+            page.keyboard.press("Escape")
+            page.click("#node-block")
+            assert "connected" in page.locator("#edge-block_mem").get_attribute("class")
+            assert "connected" in page.locator("#edge-mem_block").get_attribute("class")
             address_step=page.locator("#lesson-chapters button").filter(has_text="算好地址")
             assert address_step.count()==1
             address_step.click()

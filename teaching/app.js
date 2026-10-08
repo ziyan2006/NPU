@@ -116,7 +116,8 @@
     ["df_res", "mem", "df", "M320 225 H350", "512", 322, 237],
     ["ef_req", "ef", "mem", "M675 195 H580 V155 H245 V170", "descriptor request", 356, 153],
     ["ef_res", "mem", "ef", "M310 245 V275 H830 V245", "512-bit response", 555, 268],
-    ["mem_block", "mem", "block", "M210 245 V305", "addr64 / len7", 213, 285],
+    ["mem_block", "mem", "block", "M210 245 V305", "addr64 / len7", 214, 264],
+    ["block_mem", "block", "mem", "M285 305 V245", "返回 512 位", 291, 293],
     ["block_read", "block", "read", "M195 380 V450", "AR", 200, 420],
     ["read_block", "read", "block", "M270 450 V380", "R64", 274, 420],
     ["df_dma", "df", "dma", "M445 245 V310", "DMA request", 451, 295],
@@ -179,6 +180,7 @@
     ef_req:["申请查计算用的说明","读取说明的申请","计算准备员问：这次用哪些输入、结果放哪里？请把对应说明拿来。","做卷积前，需要知道输入尺寸和卷积核大小。"],
     ef_res:["把计算说明交给准备员","计算需要的详细说明","把查到的资料交给计算准备员，让它安排这次计算。","说明写着怎么组织数据；真正的输入 3 和权重 2 还要另外读取。"],
     mem_block:["轮到这份读取申请了","要读的位置和长度","排队处选出一份申请，让读取器去 DDR 取东西。","取命令和查说明共用一个读取器，需要按顺序安排。"],
+    block_mem:["把拼完整的资料交回排队处","读齐的命令或说明，以及是否出错","读取器把分批收到的内容拼完整，再交回排队处，由它送给最初要资料的模块。","DMA 准备员要的说明，会沿这条线先交回排队处，再从返回线交给 DMA 准备员。"],
     block_read:["申请从 DDR 拿命令或说明","读取位置和数量","读取器说：请从 DDR 的这个位置取这么多内容。","就像告诉仓库：去第几格，拿几份资料。"],
     read_block:["把拿回的资料交给读取器","命令或说明的一部分","从 DDR 拿回的资料分几小份送来，读取器把它们收齐。","资料收完整后，再交给取指单元或准备员。"],
     df_dma:["告诉搬运工：按这条路线搬","算好的搬运路线","准备员把起点、数量和摆放位置交给搬运工，让它开始搬。","准备员负责查清楚，搬运工负责把数据真正送过去。"],
@@ -323,6 +325,7 @@
     transfer("fetch_req", ["fetch_req"], "取指单元请求读取下一条 16 字节命令。");
     transfer("fetch_res", ["fetch_res"], "取指单元接收完整的命令块响应。");
     transfer("block_req", ["mem_block"], "仲裁后的块读请求被 AXI 块读取器接收。");
+    transfer("block_res", ["block_mem"], "AXI 块读取器把拼好的 512 位内容及返回状态交回仲裁模块，再转交给原申请者。");
     transfer("df_req", ["df_req"], "DMA 描述符缓存未命中，发出块读请求。");
     transfer("df_res", ["df_res"], "完整的 512 位描述符返回 DMA 前端。");
     transfer("ef_req", ["ef_req"], "执行前端缓存未命中，发出描述符块读请求。");
@@ -474,7 +477,7 @@
       const p=currentStep(),allowed=new Set(p.allowed);
       if(p.id==="descriptors"){
         const client=chosen.name.startsWith("DMA_")?"df":"ef";
-        if(blockOwners[position]!==client)["mem_block","block_read","read_ddr","ddr_r","read_block"].forEach(id=>allowed.delete(id));
+        if(blockOwners[position]!==client)["mem_block","block_mem","block_read","read_ddr","ddr_r","read_block"].forEach(id=>allowed.delete(id));
         if(!d.active.has("block_read"))allowed.delete("read_ddr");
         if(!d.active.has("read_block"))allowed.delete("ddr_r");
       }

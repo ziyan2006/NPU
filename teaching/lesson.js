@@ -252,7 +252,7 @@ window.createNPUSteps = ({frames,cases,lessons,num,one,fire}) => cases.map(c=>{
       case "dispatch":allowed=route(dma?"cp_df":"cp_ef");preferred=[dma?"dma":c.name==="CONV2D"?"conv":"vec"];break;
       case "descriptors":
         title="读齐这次工作所需的说明";action="根据命令中的编号，查询数据的位置、尺寸和计算参数；把多次查询、返回和缓存检查合成一步。";why="命令是派工单，描述符是详细资料，真正的输入和权重还需要随后读取。";result="取得说明后，继续准备地址或把工作交给运算单元。";
-        focus=route(dma?"df mem block read ddr":"ef mem block read ddr");allowed=route(dma?"df_req df_res mem_block block_read read_ddr ddr_r read_block":"ef_req ef_res mem_block block_read read_ddr ddr_r read_block ef_conv ef_vec ef_up");preferred=dma?["df_res"]:["ef_res","conv_start","vec_start","up_start"];break;
+        focus=route(dma?"df mem block read ddr":"ef mem block read ddr");allowed=route(dma?"df_req df_res mem_block block_mem block_read read_ddr ddr_r read_block":"ef_req ef_res mem_block block_mem block_read read_ddr ddr_r read_block ef_conv ef_vec ef_up");preferred=dma?["df_res"]:["ef_res","conv_start","vec_start","up_start"];break;
       case "address":
         title="算好地址、长度与访问范围";action="把行、列、通道和分块位置换算成实际字节地址，并检查访问范围。所有地址乘法和等待结果的时钟合成一步。";why="硬件读写需要明确的起点、间隔和长度，不能直接按“一个像素”访问内存。";result="本段地址准备结束，随后继续读取数据或交接搬运请求。";break;
       case "clear":title="清零输入工作区";action="把本次输入工作区写成 0，随后用有效输入覆盖对应位置。";allowed=route("dma_a");preferred=["sp_w"];break;
